@@ -11,18 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('collabs', function (Blueprint $table) {
-            $table->unsignedBigInteger('choirs_id');
-            $table->foreign('choirs_id')->references('id')->on('choirs');
+        Schema::create('donations', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama', 255);
+            $table->integer('jumlah');
 
-            $table->unsignedBigInteger('events_id');
-            $table->foreign('events_id')->references('id')->on('events');
+            $table->unsignedBigInteger('concerts_id');
+            $table->foreign('concerts_id')->references('id')->on('concerts');
+            $table->unsignedBigInteger('users_id');
+            $table->foreign('users_id')->references('id')->on('users');
 
-            $table->enum('penyelenggara', ['YA', 'TIDAK'])->default(1);
             $table->enum('isactive', [0, 1])->default(1);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
-            $table->primary(['choirs_id', 'events_id']);
         });
     }
 
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('collabs');
+        Schema::dropIfExists('donations');
     }
 };

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <a href="{{ $backUrl ?? route('concerts.index') }}" class="btn btn-outline-primary">Kembali</a>
+    <a href="{{ $backUrl ?? route('eticket.index') }}" class="btn btn-outline-primary">Kembali</a>
 
     <div class="row mt-3">
         <div class="col-12 col-lg-8">
@@ -58,7 +58,7 @@
             <div class="card shadow position-sticky" style="top: 8rem;">
                 <div class="card-body">
                     @foreach($tickets as $ticket)
-                    <div class="mb-2 ticket-item" data-price="{{ $ticket->harga }}">
+                    <div class="mb-2 ticket-item" data-id="{{ $ticket->id }}" data-price="{{ $ticket->harga }}">
                         <h5>{{ $ticket->nama }}</h5>
                         <div class="d-flex align-items-center">
                             <p class="text-primary fs-6">Berakhir pada {{ \Carbon\Carbon::parse($ticket->pembelian_terakhir)->translatedFormat('d F Y H:i') }} WIB</p>
@@ -78,7 +78,18 @@
                         <h6>Total <span id="total-tickets">0</span> tiket</h6>
                         <h6 class="fw-bold">Rp<span id="total-price">0</span></h6>
                     </div>
-                    <a href="{{ route('eticket.purchase', ['id' => $concert->id]) }}" class="btn btn-primary w-100 fs-6 fw-bold">Beli Tiket</a>
+                    <form action="{{ route('eticket.order', ['id' => $concert->id]) }}" id="form-beli" method="POST">
+                        @csrf
+                        <input type="hidden" name="tickets" id="selected-tickets">
+                        <button type="submit" onclick="event.preventDefault(); beliTiket();" class="btn btn-primary w-100 fs-6 fw-bold">Beli Tiket</button>
+                    </form>
+                    @if(session('error'))
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            alert("{{ session('error') }}");
+                        });
+                    </script>
+                    @endif
                 </div>
             </div>
         </div>
@@ -89,6 +100,7 @@
 @section('js')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        //Total Pembelian
         const totalTicketsElement = document.getElementById("total-tickets");
         const totalPriceElement = document.getElementById("total-price");
         const MAX_TOTAL_TICKETS = 5; // Maximum total tickets allowed
@@ -111,6 +123,7 @@
             return totalTickets; // Return total tickets for validation
         }
 
+        //Kurangin tiket
         document.querySelectorAll(".btn-minus").forEach(button => {
             button.addEventListener("click", function() {
                 let ticketItem = this.closest(".ticket-item");
@@ -127,6 +140,7 @@
             });
         });
 
+        //Tambah Tiket
         document.querySelectorAll(".btn-plus").forEach(button => {
             button.addEventListener("click", function() {
                 let ticketItem = this.closest(".ticket-item");
@@ -144,6 +158,27 @@
                 updateTotal();
             });
         });
+
+        //Beli Tiket
+        function beliTiket() {
+            let selectedTickets = [];
+            document.querySelectorAll(".ticket-item").forEach(item => {
+                let quantity = parseInt(item.querySelector(".ticket-quantity").textContent);
+                if (quantity > 0) {
+                    selectedTickets.push({
+                        id: item.dataset.id, // Add ticket ID for reference
+                        nama: item.querySelector("h5").textContent.trim(),
+                        harga: item.dataset.price,
+                        jumlah: quantity
+                    });
+                }
+            });
+            // Store selected tickets in hidden input
+            document.getElementById("selected-tickets").value = JSON.stringify(selectedTickets);
+            // Submit the form
+            document.getElementById("form-beli").submit();
+        }
+        window.beliTiket = beliTiket;
     });
 </script>
 @endsection

@@ -18,9 +18,12 @@ return new class extends Migration
             $table->string('seating_plan', 255);
             $table->string('syarat_ketentuan', 1000);
             $table->string('link_ebooklet', 255);
-            $table->enum('donasi', ['Ya', 'Tidak']);
+            $table->enum('donasi', ['YA', 'TIDAK']);
+            $table->string('no_rekening', 45);
 
-            $table->unsignedBigInteger('events_id')->nullable();
+            $table->unsignedBigInteger('banks_id');
+            $table->foreign('banks_id')->references('id')->on('banks');
+            $table->unsignedBigInteger('events_id');
             $table->foreign('events_id')->references('id')->on('events');
 
             $table->enum('isactive', [0, 1])->default(1);

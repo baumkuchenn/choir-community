@@ -61,60 +61,7 @@
         <h3><b>Penyelenggara Favorit</b></h3>
         <div id="penyelenggaraCarousel" class="carousel slide mb-4 p-0" data-bs-ride="false">
             <div class="carousel-inner carousel-container" data-name="penyelenggara" data-events='@json($penyelenggara)'>
-                <div class="carousel-item penyelenggara-item active h-auto">
-                    <div class="row">
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <a href="#" class="text-decoration-none">
-                                <div class="card border-0 text-center">
-                                    <div class="card-body">
-                                        <img src="https://picsum.photos/id/14/2000/1000" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="Profile Picture">
-                                        <h5 class="card-title mt-3">Ubaya Choir</h5>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <a href="#" class="text-decoration-none">
-                                <div class="card border-0 text-center">
-                                    <div class="card-body">
-                                        <img src="https://picsum.photos/id/15/2000/1000" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="Profile Picture">
-                                        <h5 class="card-title mt-3">Coro Semplice</h5>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <a href="#" class="text-decoration-none">
-                                <div class="card border-0 text-center">
-                                    <div class="card-body">
-                                        <img src="https://picsum.photos/id/16/2000/1000" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="Profile Picture">
-                                        <h5 class="card-title mt-3">Chandelier Choir</h5>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <a href="#" class="text-decoration-none">
-                                <div class="card border-0 text-center">
-                                    <div class="card-body">
-                                        <img src="https://picsum.photos/id/17/2000/1000" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="Profile Picture">
-                                        <h5 class="card-title mt-3">PCU Choir</h5>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-2">
-                            <a href="#" class="text-decoration-none">
-                                <div class="card border-0 text-center">
-                                    <div class="card-body">
-                                        <img src="https://picsum.photos/id/18/2000/1000" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="Profile Picture">
-                                        <h5 class="card-title mt-3">PSM ITS</h5>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+
             </div>
             <button class="carousel-control-prev w-auto ps-2 opacity-100" type="button" data-bs-target="#penyelenggaraCarousel" data-bs-slide="prev">
                 <i class="fa-solid fa-arrow-left text-body bg-body border fs-5 p-1 rounded-circle"></i>
@@ -127,6 +74,58 @@
         </div>
     </div>
 </div>
+
+@if($purchases && $purchases->isNotEmpty())
+<div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
+    <div class="card shadow">
+        <div class="card-body">
+            <h5 class="fw-bold">Daftar Pembelian Tertunda</h5>
+            @foreach($purchases as $purchase)
+            <form action="{{ route('eticket.purchase', ['id' => $purchase->id]) }}" method="POST" class="d-inline">
+                @csrf
+                <input type="hidden" name="purchase-menu" value="check-purchase">
+                <a href="" class="mt-2 d-flex align-items-center gap-3 text-decoration-none text-dark"
+                    onclick="this.closest('form').submit(); return false;">
+                    <img src="{{ $purchase->gambar }}" style="width: 60px; height: 60px; object-fit: cover;">
+                    <div class="">
+                        <p class="text-warning mb-0 fw-bold" id="timer"></p>
+                        <p class="mb-0">{{ $purchase->nama }}</p>
+                        <p class="mb-0 fw-light">
+                            <i class="fa-solid fa-ticket fa-fw fs-6"></i>
+                            {{ $purchase->jumlah_tiket }} tiket
+                            <span class="fw-bold">Rp{{ number_format($purchase->total_tagihan, 0, ',', '.') }}</span>
+                        </p>
+                    </div>
+                </a>
+            </form>
+            <script>
+                let waktuPembelian = new Date("{{ $purchase->waktu_pembelian }}").getTime();
+                let expiryTime = waktuPembelian + (24 * 60 * 60 * 1000); // Add 24 hours
+
+                function updateTimer() {
+                    let now = new Date().getTime();
+                    let remaining = expiryTime - now;
+
+                    if (remaining <= 0) {
+                        document.getElementById("countdown").innerHTML = "<strong>Pembayaran telah kadaluarsa!</strong>";
+                        return;
+                    }
+
+                    let hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
+                    let minutes = Math.floor((remaining / (1000 * 60)) % 60);
+                    let seconds = Math.floor((remaining / 1000) % 60);
+
+                    document.getElementById("timer").innerText = `${hours}:${minutes}:${seconds}`;
+                }
+
+                setInterval(updateTimer, 1000);
+                updateTimer();
+            </script>
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
 @endsection
 
 @section('js')
@@ -196,7 +195,7 @@
                         <a href="/eticket/${item.id}" class="text-decoration-none">
                             <div class="card border-0 text-center">
                                 <div class="card-body">
-                                    <img src="${item.logo}" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="${item.name}">
+                                    <img src="${item.logo}" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="${item.nama}">
                                     <h5 class="card-title mt-3">${item.nama}</h5>
                                 </div>
                             </div>
@@ -231,7 +230,6 @@
         updateAllCarousels();
         // Run when window resizes
         window.addEventListener("resize", updateAllCarousels);
-
     });
 </script>
 @endsection

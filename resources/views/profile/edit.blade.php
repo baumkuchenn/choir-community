@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="ps-3 pe-3 d-flex flex-nowrap">
-    <div class="d-flex flex-column flex-shrink-0 p-3 border-end" style="width: 20%;">
+    <div class="d-none d-lg-flex flex-column flex-shrink-0 p-3 border-end" style="width: 20%;">
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
-                <a href="#" class="nav-link text-body">
+                <a href="{{ route('eticket.myticket') }}" class="nav-link text-body">
                     <i class="fas fa-ticket fa-fw me-2"></i>
                     Tiket Saya
                 </a>
@@ -25,8 +25,14 @@
         </ul>
     </div>
     <div class="ps-3" style="width: 90%;">
+        @if(session('status') === 'profile-updated')
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            Profil berhasil diperbarui!
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
         <div class="col-md-7 col-lg-11 mx-auto border-bottom border-3">
-            <h4 class="mb-3">Profil Kamu</h4>
+            <h4 class="mb-3 fw-bold">Profil Kamu</h4>
             <form id="send-verification" method="POST" action="{{ route('verification.send') }}">
                 @csrf
             </form>
@@ -99,7 +105,7 @@
         </div>
 
         <div class="col-md-7 col-lg-11 mx-auto mt-3">
-            <h4 class="mb-3">Ganti Password</h4>
+            <h4 class="mb-3 fw-bold">Ganti Password</h4>
             <form class="mb-3" method="POST" action="{{ route('password.update') }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')

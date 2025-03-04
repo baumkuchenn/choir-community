@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+
+<head>
+    <script src="{{asset('js/color-modes.js')}}"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Choir Management: E-ticketing</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
+    <link href="{{asset('dist/css/bootstrap.min.css')}}" rel="stylesheet">
+
+    <link href="{{asset('css/header-only.css')}}" rel="stylesheet">
+</head>
+
+<body>
+    <header class="fixed-top">
+        <div class="p-3 mb-4 bg-body border-bottom">
+            <div class="container">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-lg-5">
+                    <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none p-1">
+                        <b> Choir Management </b>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        @yield('content')
+    </main>
+    <script src="{{asset('dist/js/bootstrap.bundle.min.js')}}"></script>
+    @yield('js')
+</body>
+
+</html>

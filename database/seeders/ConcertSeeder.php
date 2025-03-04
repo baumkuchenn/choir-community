@@ -25,6 +25,9 @@ class ConcertSeeder extends Seeder
                                        5. Proin gravida feugiat auctor. Etiam ut aliquam purus. Nunc sagittis efficitur nunc, at pulvinar elit pretium ut.',
                 'link_ebooklet' => 'https://picsum.photos/id/9/2000/1000',
                 'donasi' => 'Tidak',
+                'no_rekening' => '80xxxxxxxxxxxxxxx',
+                'pemilik_rekening' => 'Ubaya Choir',
+                'banks_id' => 1,
                 'events_id' => 1,
             ],
             [
@@ -38,6 +41,9 @@ class ConcertSeeder extends Seeder
                                        5. Proin gravida feugiat auctor. Etiam ut aliquam purus. Nunc sagittis efficitur nunc, at pulvinar elit pretium ut.',
                 'link_ebooklet' => 'https://picsum.photos/id/9/2000/1000',
                 'donasi' => 'Tidak',
+                'no_rekening' => '80xxxxxxxxxxxxxxx',
+                'pemilik_rekening' => 'Coro Semplice',
+                'banks_id' => 1,
                 'events_id' => 2,
             ],
             [
@@ -51,6 +57,9 @@ class ConcertSeeder extends Seeder
                                        5. Proin gravida feugiat auctor. Etiam ut aliquam purus. Nunc sagittis efficitur nunc, at pulvinar elit pretium ut.',
                 'link_ebooklet' => 'https://picsum.photos/id/9/2000/1000',
                 'donasi' => 'Tidak',
+                'no_rekening' => '80xxxxxxxxxxxxxxx',
+                'pemilik_rekening' => 'Batavia Madrigal Singer',
+                'banks_id' => 1,
                 'events_id' => 3,
             ],
             [
@@ -64,6 +73,9 @@ class ConcertSeeder extends Seeder
                                        5. Proin gravida feugiat auctor. Etiam ut aliquam purus. Nunc sagittis efficitur nunc, at pulvinar elit pretium ut.',
                 'link_ebooklet' => 'https://picsum.photos/id/9/2000/1000',
                 'donasi' => 'Tidak',
+                'no_rekening' => '80xxxxxxxxxxxxxxx',
+                'pemilik_rekening' => 'Chandelier Choir',
+                'banks_id' => 1,
                 'events_id' => 4,
             ],
             [
@@ -77,6 +89,9 @@ class ConcertSeeder extends Seeder
                                        5. Proin gravida feugiat auctor. Etiam ut aliquam purus. Nunc sagittis efficitur nunc, at pulvinar elit pretium ut.',
                 'link_ebooklet' => 'https://picsum.photos/id/9/2000/1000',
                 'donasi' => 'Tidak',
+                'no_rekening' => '80xxxxxxxxxxxxxxx',
+                'pemilik_rekening' => 'PCU Choir',
+                'banks_id' => 1,
                 'events_id' => 5,
             ],
         ]);

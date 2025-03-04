@@ -22,7 +22,8 @@ class DatabaseSeeder extends Seeder
             // ChoirSeeder::class,
             // EventSeeder::class,
             // ConcertSeeder::class,
-            TicketSeeder::class,
+            // TicketSeeder::class,
+            BankSeeder::class,
         ]);
     }
 }

@@ -189,7 +189,7 @@
                     <div class="d-flex flex-wrap align-items-center justify-content-center text-end">
                         @if (Route::has('login'))
                         @auth
-                        <a href="#" class="btn me-2">
+                        <a href="{{ route('eticket.myticket') }}" class="btn me-2">
                             <i class="fas fa-ticket fa-fw"></i>
                             Tiket Saya
                         </a>
@@ -205,7 +205,7 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
-                                    <form method="POST" action="{{ route('logout') }}">
+                                    <form method="POST" action="{{ route('logout') }}" class="mb-0">
                                         @csrf
                                         <button type="submit" class="dropdown-item text-danger">Keluar</button>
                                     </form>

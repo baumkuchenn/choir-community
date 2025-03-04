@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\PersonalInfoController as AuthPersonalInfoController;
 use App\Http\Controllers\ConcertController;
 use App\Http\Controllers\EticketController;
+use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -39,6 +41,11 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/personal-info', [AuthPersonalInfoController::class, 'showForm'])->name('personal-info.show');
+    Route::post('/personal-info', [AuthPersonalInfoController::class, 'store'])->name('personal-info.store');
+});
+
 //Profile
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -48,8 +55,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 //Rute e-ticketing
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('eticket', EticketController::class);;
-    Route::get('/eticket/{id}/purchase', [EticketController::class, 'purchase'])->name('eticket.purchase');
+    Route::get('/eticket/myticket', [EticketController::class, 'myticket'])->name('eticket.myticket');
+    Route::resource('eticket', EticketController::class);
+    Route::post('/eticket/{id}/order', [EticketController::class, 'order'])->name('eticket.order');
+    Route::post('/eticket/{id}/purchase', [EticketController::class, 'purchase'])->name('eticket.purchase');
+    Route::post('/eticket/{id}/payment', [EticketController::class, 'payment'])->name('eticket.payment');
+    Route::post('/eticket/{id}/invoice', [EticketController::class, 'invoice'])->name('eticket.invoice');
+    Route::post('/eticket/{id}/feedback', [EticketController::class, 'feedback'])->name('eticket.feedback');
+    // Route::post('/eticket/{id}/verifikasi', [EticketController::class, 'verifikasi'])->name('eticket.verifikasi');
 });
 
 require __DIR__ . '/auth.php';

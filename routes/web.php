@@ -1,10 +1,16 @@
 <?php
 
 use App\Http\Controllers\Auth\PersonalInfoController as AuthPersonalInfoController;
+use App\Http\Controllers\ChoirController;
 use App\Http\Controllers\ConcertController;
 use App\Http\Controllers\EticketController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\ManagementController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TicketTypeController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -48,13 +54,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 //Profile
 Route::middleware(['auth', 'verified'])->group(function () {
+    //Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
-//Rute e-ticketing
-Route::middleware(['auth', 'verified'])->group(function () {
+    //Rute e-ticketing
     Route::get('/eticket/myticket', [EticketController::class, 'myticket'])->name('eticket.myticket');
     Route::resource('eticket', EticketController::class);
     Route::post('/eticket/{id}/order', [EticketController::class, 'order'])->name('eticket.order');
@@ -62,7 +67,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/eticket/{id}/payment', [EticketController::class, 'payment'])->name('eticket.payment');
     Route::post('/eticket/{id}/invoice', [EticketController::class, 'invoice'])->name('eticket.invoice');
     Route::post('/eticket/{id}/feedback', [EticketController::class, 'feedback'])->name('eticket.feedback');
-    // Route::post('/eticket/{id}/verifikasi', [EticketController::class, 'verifikasi'])->name('eticket.verifikasi');
+
+    //Rute Manajemen
+    Route::prefix('management')->group(function () {
+        Route::resource('/', ManagementController::class)->names('management');
+        Route::resource('events', EventController::class);
+        Route::post('/events/{id}/payment', [EventController::class, 'payment'])->name('events.payment');
+        Route::post('/events/{id}/verification', [EventController::class, 'verifikasi'])->name('events.verification');
+        Route::get('/events/check-in/{id}', [EventController::class, 'checkIn'])->name('events.checkIn');
+        Route::resource('ticket-types', TicketTypeController::class);
+        Route::resource('members', MemberController::class);
+        Route::resource('roles', RoleController::class);
+
+        Route::get('/calendar', [ManagementController::class, 'calendar'])->name('management.calendar');
+        Route::post('/notification', [ManagementController::class, 'notification'])->name('management.notification');
+
+        //Daftar atau buat choir
+        Route::resource('choir', ChoirController::class);
+        Route::post('choir/join', [ChoirController::class, 'join'])->name('choir.join');
+    });
 });
 
 require __DIR__ . '/auth.php';

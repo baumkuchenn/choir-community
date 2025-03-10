@@ -88,3 +88,62 @@ body {
         padding: 0 !important;
     }
 }
+
+
+/* CALENDAR
+  -------------------------------------------------- */
+.fc-toolbar-title {
+    font-family: var(--bs-body-font-family);
+    font-size: 1.25rem !important;
+    font-weight: 700;
+    color: var(--bs-body-color);
+}
+
+.fc a {
+    color: black !important;
+    text-decoration: none !important;
+}
+
+
+/* SEATING PLAN IMAGE
+  -------------------------------------------------- */
+
+/* Seating Plan Image Container */
+.seating-plan-container {
+    position: relative;
+    display: inline-block;
+    /* max-width: 300px; */
+    /* Adjust as needed */
+}
+
+/* Seating Plan Image */
+.seating-plan-container img {
+    width: 100%;
+    border-radius: 5px;
+}
+
+/* Overlay (shown on hover) */
+.seating-plan-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Show overlay when hovering over the image */
+.seating-plan-container:hover .seating-plan-overlay {
+    opacity: 1;
+}
+
+/* Button Styling */
+.seating-plan-overlay .btn {
+    padding: 5px 10px;
+}

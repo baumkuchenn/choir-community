@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class ConcertController extends Controller
+class ManagementController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        $choir = $user->choirs->first();
+        $notifications = $user->notifications()->latest()->take(5)->get();
+
+        return view('management.index', compact('choir', 'notifications'));
     }
 
     /**
@@ -60,5 +66,22 @@ class ConcertController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function calendar()
+    {
+        $events = Event::select(
+            'nama as title',
+            'tanggal_mulai as start',
+            'tanggal_selesai as end',
+            'jam_mulai',
+            'jam_selesai',
+            'lokasi'
+        )
+            ->join('collabs', 'events.id', '=', 'collabs.events_id')
+            ->where('choirs_id', Auth::user()->choirs->first()->id)
+            ->get();
+
+        return response()->json($events);
     }
 }

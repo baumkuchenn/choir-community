@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.eticket')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @section('content')
 <div id="adCarousel" class="carousel slide mb-4" data-bs-ride="carousel">

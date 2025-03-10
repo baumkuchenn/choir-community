@@ -166,7 +166,7 @@
                 <ul class="nav">
                     <li class="nav-item"><a href="{{ route('eticket.index') }}" class="nav-link link-body-emphasis px-2">E-ticketing</a></li>
                     <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">Forum</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">Manajemen Komunitas</a></li>
+                    <li class="nav-item"><a href="{{ route('management.index') }}" class="nav-link link-body-emphasis px-2">Manajemen Komunitas</a></li>
                 </ul>
             </div>
         </nav>

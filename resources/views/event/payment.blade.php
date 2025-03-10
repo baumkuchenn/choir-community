@@ -1,4 +1,4 @@
-@extends('layouts.eticket')
+@extends('layouts.management')
 
 @section('content')
 <div class="container">
@@ -48,20 +48,6 @@
                     <h4 class="fw-bold">Bukti Pembayaran</h4>
                     <img src="{{ asset('storage/' . $purchases->gambar_pembayaran) }}" alt="bukti-pembayaran" class="w-75 d-block mx-auto my-3">
 
-                    @if(!empty($purchases->kode))
-                        <h4 class="fw-bold">Pembayaran Berhasil</h4>
-                        <div class="d-flex align-items-center justify-content-between gap-2">
-                            <div>
-                                <p class="mb-0">Kode Invoice</p>
-                                <p class="fw-bold">{{ $purchases->kode }}</p>
-                            </div>
-                            <form action="{{ route('eticket.invoice', ['id' => $purchases->id]) }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <button class="btn btn-primary">Lihat Invoice</button>
-                            </form>
-                        </div>
-                    @endif
-
                     @if(session('error'))
                         <script>
                             document.addEventListener("DOMContentLoaded", function() {
@@ -74,11 +60,11 @@
         </div>
     </div>
     <div class="row mt-3 w-100 justify-content-center">
-        <div class="col-6 col-lg-5">
-            <a href="{{ route('eticket.myticket') }}" class="btn btn-outline-primary w-100 fw-bold">Cek Status Pembayaran</a>
-        </div>
-        <div class="col-6 col-lg-5">
-            <a href="{{ route('eticket.index') }}" class="btn btn-primary w-100 fw-bold">Kembali ke Beranda</a>
+        <div class="col-12 col-lg-10">
+            <form action="{{ route('events.verification', $purchases->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
+                @csrf
+                <button class="btn btn-primary w-100 fw-bold">Konfirmasi Pembayaran</button>
+            </form>
         </div>
     </div>
 </div>

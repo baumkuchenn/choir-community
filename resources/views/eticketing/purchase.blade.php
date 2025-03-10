@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.eticket')
 
 @section('content')
 <form action="{{ route('eticket.payment', ['id' => $purchases->id]) }}" method="POST" id="form-payment" enctype="multipart/form-data">

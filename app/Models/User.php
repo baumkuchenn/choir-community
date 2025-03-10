@@ -48,4 +48,30 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function choirs()
+    {
+        return $this->belongsToMany(Choir::class, 'members', 'users_id', 'choirs_id')
+            ->withPivot('admin');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'users_id');
+    }
+
+    public function feedback()
+    {
+        return $this->hasOne(Feedback::class, 'users_id');
+    }
+
+    public function donation()
+    {
+        return $this->hasOne(Donation::class, 'users_id');
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class, 'users_id');
+    }
 }

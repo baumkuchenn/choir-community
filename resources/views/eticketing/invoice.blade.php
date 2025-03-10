@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.eticket')
 
 @section('content')
 <div class="container">

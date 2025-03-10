@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.eticket')
 
 @section('content')
 <div class="ps-3 pe-3 d-flex flex-nowrap">

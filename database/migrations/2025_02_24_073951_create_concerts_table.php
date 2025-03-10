@@ -17,8 +17,10 @@ return new class extends Migration
             $table->string('deskripsi', 1000);
             $table->string('seating_plan', 255);
             $table->string('syarat_ketentuan', 1000);
-            $table->string('link_ebooklet', 255);
+            $table->enum('ebooklet', ['YA', 'TIDAK']);
+            $table->string('link_ebooklet', 255)->nullable();
             $table->enum('donasi', ['YA', 'TIDAK']);
+            $table->enum('tipe_kupon', ['KUPON', 'REFERAL', 'KEDUANYA'])->nullable();
             $table->string('no_rekening', 45);
 
             $table->unsignedBigInteger('banks_id');

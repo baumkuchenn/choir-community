@@ -6,8 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Milon\Barcode\DNS1D;
 
 use function Laravel\Prompts\table;
 
@@ -418,110 +416,6 @@ class EticketController extends Controller
                 ->first();
 
             return view('eticketing.feedback', compact('events'));
-        }
-    }
-
-
-    //Pemakaian nanti
-    private function generateInvoiceCode($purchasesId)
-    {
-        // Get current date in yyyyMMdd format
-        $date = now()->format('Ymd');
-
-        $concert = DB::table('purchases')
-            ->join('concerts', 'purchases.concerts_id', 'concerts.id')
-            ->join('events', 'concerts.events_id', 'events.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('purchases.id', $purchasesId)
-            ->where('collabs.penyelenggara', 'YA')
-            ->select('concerts.id as concerts_id', 'collabs.choirs_id as choirs_id')
-            ->first();
-
-        // Get abbreviation of choir name (first 3 letters as uppercase)
-        $choirAbbr = strtoupper(DB::table('choirs')
-            ->where('id', $concert->choirs_id)
-            ->first()->nama_singkat);
-
-        // Get the number of concerts for this choir
-        $concertCount = DB::table('concerts')
-            ->join('events', 'concerts.events_id', 'events.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', $concert->choirs_id)
-            ->where('collabs.penyelenggara', 'YA')
-            ->count(); // Increment for the new concert
-
-        $buyerCount = DB::table('purchases')
-            ->where('concerts_id', $concert->concerts_id)
-            ->where('status', 'SELESAI')
-            ->count(); // Increment for the new concert
-
-        // Format concert count with leading zeros (e.g., 001, 002)
-        $concertNumber = str_pad($concertCount, 3, '0', STR_PAD_LEFT);
-
-        // Format buyer ID with leading zeros (e.g., 001, 002)
-        $buyerNumber = str_pad($buyerCount, 3, '0', STR_PAD_LEFT);
-
-        // Combine into final invoice code
-        return "INV/{$date}/{$choirAbbr}/CON{$concertNumber}/{$buyerNumber}";
-    }
-
-    private function generateBarcodeImage($barcodeCode)
-    {
-        $dns = new DNS1D();
-        $barcodeData = $dns->getBarcodePNG($barcodeCode, 'C128', 2, 50);
-
-        // Convert base64 to binary image data
-        $barcodeImage = base64_decode($barcodeData);
-
-        // Define file path
-        $imagePath = "barcodes/{$barcodeCode}.png";
-
-        // Save the image to storage
-        Storage::disk('public')->put($imagePath, $barcodeImage);
-
-        return $imagePath; // Return the image path
-    }
-
-    public function verifikasi(string $id)
-    {
-        DB::table('purchases')
-            ->where('id', $id)
-            ->update([
-                'status' => 'Selesai',
-            ]);
-
-        $invoiceCode = $this->generateInvoiceCode($id);
-        $invoicesId = DB::table('invoices')->insertGetId([
-            'kode' => $invoiceCode,
-            'purchases_id' => $id,
-        ]);
-
-        $purchaseDetail = DB::table('purchase_details')
-            ->where('purchases_id', $id)
-            ->get();
-
-        $concertId = DB::table('purchases')
-            ->where('id', $id)
-            ->first()->concerts_id;
-
-        foreach ($purchaseDetail as $detail) {
-            $lastTicketNumber = DB::table('tickets')
-                ->where('ticket_types_id', $detail->ticket_types_id)
-                ->max('number') ?? 0;
-
-            for ($i = 0; $i < $detail->jumlah; $i++) {
-                $lastTicketNumber++;
-                $barcodeCode = "TKT{$concertId}{$detail->ticket_types_id}" . str_pad($lastTicketNumber, 4, '0', STR_PAD_LEFT);
-                $barcodeImage = $this->generateBarcodeImage($barcodeCode);
-
-                DB::table('tickets')->insert([
-                    'number' => $lastTicketNumber,
-                    'barcode_code' => $barcodeCode,
-                    'barcode_image' => $barcodeImage,
-                    'invoices_id' => $invoicesId,
-                    'ticket_types_id' => $detail->ticket_types_id,
-                ]);
-            }
         }
     }
 }

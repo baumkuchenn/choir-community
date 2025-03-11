@@ -10,6 +10,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketTypeController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -74,7 +75,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('events', EventController::class);
         Route::post('/events/{id}/payment', [EventController::class, 'payment'])->name('events.payment');
         Route::post('/events/{id}/verification', [EventController::class, 'verifikasi'])->name('events.verification');
-        Route::get('/events/check-in/{id}', [EventController::class, 'checkIn'])->name('events.checkIn');
+        Route::get('/events/check-in/{id}', [EventController::class, 'checkInShow'])->name('events.checkInShow');
+        Route::post('/tickets/check-in/{id}', [TicketController::class, 'checkIn'])->name('tickets.checkIn');
         Route::resource('ticket-types', TicketTypeController::class);
         Route::resource('members', MemberController::class);
         Route::resource('roles', RoleController::class);

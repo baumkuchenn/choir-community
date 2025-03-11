@@ -9,7 +9,7 @@ class Ticket extends Model
 {
     use HasFactory;
     protected $table = 'tickets';
-    protected $fillable = ['number', 'barcode_code', 'barcode_image', 'invoices_id', 'ticket_types_id'];
+    protected $fillable = ['number', 'barcode_code', 'barcode_image', 'invoices_id', 'ticket_types_id', 'check_in', 'waktu_check_in'];
 
     public function invoice()
     {

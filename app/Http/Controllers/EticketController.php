@@ -221,7 +221,7 @@ class EticketController extends Controller
                 ->update([
                     'status' => 'VERIFIKASI',
                     'gambar_pembayaran' => $path,
-                    'waktu_pembayaran' => now()->setTimezone('Asia/Jakarta'),
+                    'waktu_pembayaran' => now(),
                 ]);
         } else {
             $purchases = DB::table('purchases')
@@ -257,7 +257,7 @@ class EticketController extends Controller
             ->join('collabs', 'events.id', '=', 'collabs.events_id')
             ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
             ->where('purchases.users_id', $user->id)
-            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()->setTimezone('Asia/Jakarta')])
+            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()])
             ->whereNotIn('purchases.status', ['BATAL', 'BAYAR'])
             ->select('events.nama', 'events.tanggal_selesai', 'concerts.gambar', 'purchases.*', DB::raw('sum(purchase_details.jumlah) as jumlah_tiket'))
             ->groupBy('purchases.id')
@@ -293,7 +293,7 @@ class EticketController extends Controller
             ->join('collabs', 'events.id', '=', 'collabs.events_id')
             ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
             ->where('purchases.users_id', $user->id)
-            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()->setTimezone('Asia/Jakarta')])
+            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()])
             ->whereNotIn('purchases.status', ['BATAL', 'BAYAR'])
             ->select('events.nama', 'events.tanggal_mulai', 'events.jam_mulai', 'events.lokasi', 'choirs.nama as penyelenggara', 'choirs.logo', 'purchases.*', DB::raw('sum(purchase_details.jumlah) as jumlah_tiket'))
             ->groupBy('purchases.id', 'events.id', 'choirs.id')

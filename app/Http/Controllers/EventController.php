@@ -26,12 +26,12 @@ class EventController extends Controller
     {
         $eventSelanjutnya = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->choirs->first()->id)
-            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()->setTimezone('Asia/Jakarta')])
+            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()])
             ->get();
 
         $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->choirs->first()->id)
-            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()->setTimezone('Asia/Jakarta')])
+            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()])
             ->get();
 
         return view('event.index', compact('eventSelanjutnya', 'eventLalu'));
@@ -107,7 +107,7 @@ class EventController extends Controller
         //
     }
 
-    public function checkIn(string $id)
+    public function checkInShow(string $id)
     {
         $purchase = Purchase::with(['invoice', 'user:id,name'])->findOrFail($id);
         $tickets = Ticket::whereHas('invoice', function ($query) use ($id) {

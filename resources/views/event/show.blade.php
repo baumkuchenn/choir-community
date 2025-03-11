@@ -1,4 +1,5 @@
 @extends('layouts.management')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 @section('content')
 <div class="container">
@@ -44,9 +45,6 @@
                     <div class="col-12">
                         <label for="nama" class="form-label">Nama Kegiatan</label>
                         <input type="text" class="form-control" id="nama" name="nama" placeholder="" value="{{ old('nama', $event->nama) }}" required>
-                        <div class="invalid-feedback">
-                            Tolong isi nama kegiatan anda.
-                        </div>
                     </div>
                 </div>
 
@@ -59,9 +57,6 @@
                             <option value="EKSTERNAL" {{ old('jenis_kegiatan', $event->jenis_kegiatan) == 'EKSTERNAL' ? 'selected' : '' }}>External</option>
                             <option value="KONSER" {{ old('jenis_kegiatan', $event->jenis_kegiatan) == 'KONSER' ? 'selected' : '' }}>Konser</option>
                         </select>
-                        <div class="invalid-feedback">
-                            Tolong pilih jenis kegiatan.
-                        </div>
                     </div>
                 </div>
 
@@ -76,9 +71,6 @@
                             </option>
                             @endforeach
                         </select>
-                        <div class="invalid-feedback">
-                            Tolong pilih sub kegiatan.
-                        </div>
                     </div>
                 </div>
 
@@ -86,16 +78,10 @@
                     <div class="col-6">
                         <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
                         <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" placeholder="" value="{{ old('tanggal_mulai', $event->tanggal_mulai) }}" required>
-                        <div class="invalid-feedback">
-                            Tolong isi tanggal mulai kegiatan anda.
-                        </div>
                     </div>
                     <div class="col-6">
                         <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
                         <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" placeholder="" value="{{ old('tanggal_selesai', $event->tanggal_selesai) }}" required>
-                        <div class="invalid-feedback">
-                            Tolong isi tanggal selesai kegiatan anda.
-                        </div>
                     </div>
                 </div>
 
@@ -103,16 +89,10 @@
                     <div class="col-6">
                         <label for="jam_mulai" class="form-label">Jam Mulai</label>
                         <input type="time" class="form-control" id="jam_mulai" name="jam_mulai" placeholder="" value="{{ old('jam_mulai', $event->jam_mulai) }}" required>
-                        <div class="invalid-feedback">
-                            Tolong isi jam mulai kegiatan anda.
-                        </div>
                     </div>
                     <div class="col-6">
                         <label for="jam_selesai" class="form-label">Jam Selesai</label>
                         <input type="time" class="form-control" id="jam_selesai" name="jam_selesai" placeholder="" value="{{ old('jam_selesai', $event->jam_selesai) }}" required>
-                        <div class="invalid-feedback">
-                            Tolong isi jam selesai kegiatan anda.
-                        </div>
                     </div>
                 </div>
 
@@ -120,16 +100,10 @@
                     <div class="col-6">
                         <label for="tanggal_gladi" class="form-label">Tanggal Gladi</label>
                         <input type="date" class="form-control" id="tanggal_gladi" name="tanggal_gladi" placeholder="" value="{{ old('tanggal_gladi', $event->tanggal_gladi) }}">
-                        <div class="invalid-feedback">
-                            Tolong isi tanggal gladi kegiatan anda.
-                        </div>
                     </div>
                     <div class="col-6">
                         <label for="jam_gladi" class="form-label">Jam Gladi</label>
                         <input type="time" class="form-control" id="jam_gladi" name="jam_gladi" placeholder="" value="{{ old('jam_gladi', $event->jam_gladi) }}">
-                        <div class="invalid-feedback">
-                            Tolong isi jam gladi kegiatan anda.
-                        </div>
                     </div>
                 </div>
 
@@ -137,9 +111,6 @@
                     <div class="col-12">
                         <label for="lokasi" class="form-label">Lokasi</label>
                         <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="" value="{{ old('lokasi', $event->lokasi) }}" required>
-                        <div class="invalid-feedback">
-                            Tolong isi lokasi kegiatan anda.
-                        </div>
                     </div>
                 </div>
             </div>
@@ -155,7 +126,7 @@
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5>Daftar Pembeli Tiket</h5>
-                        <div> {!! $feedbacks->links() !!} </div>
+                        <div> {!! $purchases->links() !!} </div>
                     </div>
                     <table class="table table-bordered shadow text-center">
                         <thead>
@@ -168,42 +139,48 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($purchases as $purchase)
-                            <tr>
-                                @php
-                                    $invoice = $purchase->invoice;
-                                    $tickets = $invoice ? $invoice->tickets : collect();
-                                    $checkedInCount = $tickets->where('check_in', 'YA')->count();
-                                    $totalTickets = $tickets->count();
-                                @endphp
-                                <td>{{ $purchase->user->name }}</td>
-                                <td>{{ $purchase->user->no_handphone }}</td>
-                                <td>{{ \Carbon\Carbon::parse($purchase->waktu_pembayaran)->format('d-m-Y H:i') }}</td>
-                                <td>
-                                    @if($totalTickets > 0)
-                                        @if($checkedInCount > 0)
-                                            Tiket Checked In {{ $checkedInCount }}/{{ $totalTickets }}
-                                        @else
-                                            E-ticket Terkirim ({{ $totalTickets }} tiket)
-                                        @endif
-                                    @elseif($purchase->status === 'VERIFIKASI')
-                                        Verifikasi Pembayaran
-                                    @endif
-                                </td>
-                                <td class="d-flex justify-content-center gap-3">
-                                    @if($totalTickets > 0)
-                                        @if($checkedInCount != $totalTickets)
-                                            <button class="btn btn-primary loadCheckInForm" data-purchase-id="{{ $purchase->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
-                                        @endif
-                                    @elseif($purchase->status === 'VERIFIKASI')
-                                        <form action="{{ route('events.payment', $purchase->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                            @csrf
-                                            <button class="btn btn-primary">Lihat Detail</button>
-                                        </form>
-                                    @endif
-                                </td>
-                            </tr>
-                            @endforeach
+                            @if($purchases->isNotEmpty())
+                                @foreach($purchases as $purchase)
+                                    <tr>
+                                        @php
+                                            $invoice = $purchase->invoice;
+                                            $tickets = $invoice ? $invoice->tickets : collect();
+                                            $checkedInCount = $tickets->where('check_in', 'YA')->count();
+                                            $totalTickets = $tickets->count();
+                                        @endphp
+                                        <td>{{ $purchase->user->name }}</td>
+                                        <td>{{ $purchase->user->no_handphone }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($purchase->waktu_pembayaran)->format('d-m-Y H:i') }}</td>
+                                        <td>
+                                            @if($totalTickets > 0)
+                                                @if($checkedInCount > 0)
+                                                    Tiket Checked In {{ $checkedInCount }}/{{ $totalTickets }}
+                                                @else
+                                                    E-ticket Terkirim ({{ $totalTickets }} tiket)
+                                                @endif
+                                            @elseif($purchase->status === 'VERIFIKASI')
+                                                Verifikasi Pembayaran
+                                            @endif
+                                        </td>
+                                        <td class="d-flex justify-content-center gap-3">
+                                            @if($totalTickets > 0)
+                                                @if($checkedInCount != $totalTickets)
+                                                    <button class="btn btn-primary loadCheckInForm" data-purchase-id="{{ $purchase->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
+                                                @endif
+                                            @elseif($purchase->status === 'VERIFIKASI')
+                                                <form action="{{ route('events.payment', $purchase->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
+                                                    @csrf
+                                                    <button class="btn btn-primary">Lihat Detail</button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="5">Belum ada pembeli</td>
+                                </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -211,7 +188,7 @@
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5>Jenis Tiket</h5>
-                        <div> {!! $feedbacks->links() !!} </div>
+                        <div> {!! $ticketTypes->links() !!} </div>
                     </div>
                     <table class="table table-bordered shadow text-center">
                         <thead>
@@ -223,17 +200,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($ticketTypes as $type)
-                            <tr>
-                                <td>{{ $type->nama }}</td>
-                                <td>Rp{{ number_format($type->harga, 0, ',', '.') }}</td>
-                                <td>{{ $type->terjual }}/{{ $type->jumlah }}</td>
-                                <td class="d-flex justify-content-center gap-3">
-                                    <button class="btn btn-primary loadEditForm" data-id="{{ $type->id }}" data-concert-id="{{ $concert->id }}">Ubah</button>
-                                    <button class="btn btn-outline-danger deleteBtn" data-id="{{ $type->id }}" data-name="tiket {{ $type->nama }}" data-action="{{ route('ticket-types.destroy', $type->id) }}">Hapus</button>
-                                </td>
-                            </tr>
-                            @endforeach
+                            @if($ticketTypes->isNotEmpty())
+                                @foreach($ticketTypes as $type)
+                                <tr>
+                                    <td>{{ $type->nama }}</td>
+                                    <td>Rp{{ number_format($type->harga, 0, ',', '.') }}</td>
+                                    <td>{{ $type->terjual }}/{{ $type->jumlah }}</td>
+                                    <td class="d-flex justify-content-center gap-3">
+                                        <button class="btn btn-primary loadEditForm" data-id="{{ $type->id }}" data-concert-id="{{ $concert->id }}">Ubah</button>
+                                        <button class="btn btn-outline-danger deleteBtn" data-id="{{ $type->id }}" data-name="tiket {{ $type->nama }}" data-action="{{ route('ticket-types.destroy', $type->id) }}">Hapus</button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="4">Belum ada jenis tiket yang dijual</td>
+                                </tr>
+                            @endif
                         </tbody>
                     </table>
                     <button class="btn btn-primary fw-bold" id="loadCreateForm" data-concert-id="{{ $concert->id }}">+ Tambah Jenis</button>
@@ -286,7 +269,7 @@
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <p class="mb-1 fw-medium">Daftar Donatur</p>
-                                <div> {!! $feedbacks->links() !!} </div>
+                                <div> {!! $donations->links() !!} </div>
                             </div>
                             <table class="table table-bordered shadow text-center">
                                 <thead>
@@ -297,13 +280,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($donations as $donation)
-                                    <tr>
-                                        <td>{{ $donation->user->name }}</td>
-                                        <td>{{ $donation->user->no_handphone }}</td>
-                                        <td>Rp{{ number_format($donation->jumlah, 0, ',', '.') }}</td>
-                                    </tr>
-                                    @endforeach
+                                    @if($donations->isNotEmpty())
+                                        @foreach($donations as $donation)
+                                        <tr>
+                                            <td>{{ $donation->user->name }}</td>
+                                            <td>{{ $donation->user->no_handphone }}</td>
+                                            <td>Rp{{ number_format($donation->jumlah, 0, ',', '.') }}</td>
+                                        </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="3">Belum ada donatur</td>
+                                        </tr>
+                                    @endif
                                 </tbody>
                             </table>
                         </div>
@@ -335,16 +324,13 @@
                                 <option value="REFERAL" {{ old('tipe_kupon', $concert->tipe_kupon) == 'REFERAL' ? 'selected' : '' }}>Referal</option>
                                 <option value="KEDUANYA" {{ old('tipe_kupon', $concert->tipe_kupon) == 'KEDUANYA' ? 'selected' : '' }}>Keduanya</option>
                             </select>
-                            <div class="invalid-feedback">
-                                Tolong pilih tipe kupon yang digunakan.
-                            </div>
                         </div>
                     </div>
                     <div class="row mt-1" id="kupon_container" style="display: none;">
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <p class="mb-1 fw-medium">Kode Kupon</p>
-                                <div> {!! $feedbacks->links() !!} </div>
+                                <div> {!! $donations->links() !!} </div>
                             </div>
                             <table class="table table-bordered shadow text-center">
                                 <thead>
@@ -356,21 +342,27 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($donations as $donation)
-                                    <tr>
-                                        <td>{{ $donation->user->name }}</td>
-                                        <td>{{ $donation->user->no_handphone }}</td>
-                                        <td>{{ $donation->jumlah }}</td>
-                                        <td class="d-flex justify-content-center gap-3">
-                                            <a href="{{ route('events.edit', $concert->id) }}" class="btn btn-primary">Ubah</a>
-                                            <form action="{{ route('events.destroy', $concert->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-outline-primary">Hapus</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @endforeach
+                                    @if($donations->isNotEmpty())
+                                        @foreach($donations as $donation)
+                                        <tr>
+                                            <td>{{ $donation->user->name }}</td>
+                                            <td>{{ $donation->user->no_handphone }}</td>
+                                            <td>{{ $donation->jumlah }}</td>
+                                            <td class="d-flex justify-content-center gap-3">
+                                                <a href="{{ route('events.edit', $concert->id) }}" class="btn btn-primary">Ubah</a>
+                                                <form action="{{ route('events.destroy', $concert->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-outline-primary">Hapus</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="4">Belum ada kupon yang dibuat</td>
+                                        </tr>
+                                    @endif
                                 </tbody>
                             </table>
                             <button class="btn btn-primary fw-bold">+ Tambah Kupon</button>
@@ -380,7 +372,7 @@
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <p class="mb-1 fw-medium">Kode Referal</p>
-                                <div> {!! $feedbacks->links() !!} </div>
+                                <div> {!! $donations->links() !!} </div>
                             </div>
                             <table class="table table-bordered shadow text-center">
                                 <thead>
@@ -392,21 +384,27 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($donations as $donation)
-                                    <tr>
-                                        <td>{{ $donation->user->name }}</td>
-                                        <td>{{ $donation->user->no_handphone }}</td>
-                                        <td>{{ $donation->jumlah }}</td>
-                                        <td class="d-flex justify-content-center gap-3">
-                                            <a href="{{ route('events.edit', $concert->id) }}" class="btn btn-primary">Ubah</a>
-                                            <form action="{{ route('events.destroy', $concert->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-outline-primary">Hapus</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @endforeach
+                                    @if($donations->isNotEmpty())
+                                        @foreach($donations as $donation)
+                                        <tr>
+                                            <td>{{ $donation->user->name }}</td>
+                                            <td>{{ $donation->user->no_handphone }}</td>
+                                            <td>{{ $donation->jumlah }}</td>
+                                            <td class="d-flex justify-content-center gap-3">
+                                                <a href="{{ route('events.edit', $concert->id) }}" class="btn btn-primary">Ubah</a>
+                                                <form action="{{ route('events.destroy', $concert->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-outline-primary">Hapus</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="4">Belum ada kode referal yang dibuat</td>
+                                        </tr>
+                                    @endif
                                 </tbody>
                             </table>
                             <button class="btn btn-primary fw-bold">+ Tambah Referal</button>
@@ -447,18 +445,30 @@
                     <h5 class="mb-0">Daftar Feedback</h5>
                     <div> {!! $feedbacks->links() !!} </div>
                 </div>
-                @foreach($feedbacks as $feedback)
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card shadow">
-                            <div class="card-body">
-                                <p>{{ $feedback->isi }}</p>
-                                <p class="mb-0 text-end fw-medium">{{ $feedback->user->name }}</p>
+                @if($feedbacks->isNotEmpty())
+                    @foreach($feedbacks as $feedback)
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card shadow">
+                                    <div class="card-body">
+                                        <p>{{ $feedback->isi }}</p>
+                                        <p class="mb-0 text-end fw-medium">{{ $feedback->user->name }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow">
+                                <div class="card-body">
+                                    <p class="text-center mb-0">Feedback masih kosong</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                @endforeach
+                @endif
             </div>
         </div>
     </div>
@@ -543,19 +553,55 @@
         });
 
 
-        //Check in button
+        //Show check in button
         document.querySelectorAll(".loadCheckInForm").forEach((button) => {
             button.addEventListener("click", function() {
                 let purchaseId = this.dataset.purchaseId;
-                let checkInUrl = `{{ route('events.checkIn', ':id') }}`.replace(':id', purchaseId);
+                let checkInShowUrl = `{{ route('events.checkInShow', ':id') }}`.replace(':id', purchaseId);
 
-                fetch(checkInUrl)
+                fetch(checkInShowUrl)
                     .then(response => response.text())
                     .then(html => {
                         document.getElementById("modalContainer").innerHTML = html;
                         let checkInModal = document.getElementById("checkInModal");
                         if (checkInModal) {
                             new bootstrap.Modal(checkInModal).show();
+                            //Check in button di modalnya
+                            document.querySelectorAll(".btn-check-in").forEach((button) => {
+                                button.addEventListener("click", function () {
+                                    let ticketId = this.dataset.ticketId;
+                                    let buttonElement = this;
+                                    let checkInUrl = `{{ route('tickets.checkIn', ':id') }}`.replace(':id', ticketId);
+
+                                    fetch(checkInUrl, {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "Accept": "application/json",
+                                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                                        },
+                                    })
+                                        .then((response) => response.json())
+                                        .then((data) => {
+                                            if (data.error) {
+                                                alert(data.error);
+                                                return;
+                                            }
+
+                                            // Update UI
+                                            let row = buttonElement.closest("tr");
+                                            row.querySelector("td:nth-child(3)").textContent = "Checked In"; // Update Status
+                                            row.querySelector("td:nth-child(4)").textContent = data.waktu_check_in; // Update Time
+                                            buttonElement.replaceWith(document.createElement("span")); // Remove Button
+                                            row.querySelector("td:last-child span").textContent = "Checked In";
+                                            row.querySelector("td:last-child span").classList.add("text-success");
+                                        })
+                                        .catch((error) => {
+                                            console.error("Check-in error:", error);
+                                            alert("Failed to check in. Please try again.");
+                                        });
+                                });
+                            });
                         } else {
                             console.error("Modal element #checkInModal not found.");
                         }

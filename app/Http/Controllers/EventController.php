@@ -10,6 +10,7 @@ use App\Models\PurchaseDetail;
 use App\Models\Ticket;
 use App\Models\TicketType;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -42,7 +43,11 @@ class EventController extends Controller
      */
     public function create()
     {
-        //
+        $events = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
+            ->where('choirs_id', Auth::user()->choirs->first()->id)
+            ->get();
+
+        return view('event.create', compact('events'));
     }
 
     /**
@@ -50,7 +55,27 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'jenis_kegiatan' => 'required|string',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date',
+            'jam_mulai' => 'required',
+            'jam_mulai' => 'required',
+            'lokasi' => 'required|string|max:255',
+            'peran' => 'required|string',
+            'panitia_eksternal' => 'required|string',
+            'metode_rekrut_panitia' => 'required|string',
+            'metode_rekrut_penyanyi' => 'required|string',
+        ]);
+        $event = Event::create($request->all());
+
+        $userChoirs = Auth::user()->choirs->pluck('id')->toArray();
+        $choirIds = array_unique(array_merge($userChoirs, $request->choirs ?? []));
+        $event->choirs()->attach($choirIds);
+
+        return redirect()->route('events.index')
+            ->with('success', 'Kegiatan baru berhasil dibuat.');
     }
 
     /**
@@ -63,6 +88,20 @@ class EventController extends Controller
             ->where('choirs_id', Auth::user()->choirs->first()->id)
             ->get();
         $concert = $event->concert;
+
+        if (!$concert) {
+            Concert::create([
+                'events_id' => $id,
+            ]);
+        }
+
+        $emptyPaginator = new LengthAwarePaginator([], 0, 5, 1, ['path' => request()->url()]);
+
+        $purchases = $emptyPaginator;
+        $ticketTypes = $emptyPaginator;
+        $donations = $emptyPaginator;
+        $feedbacks = $emptyPaginator;
+
         $purchases = $concert->purchases()
             ->with('user:id,name,no_handphone', 'invoice.tickets:id,invoices_id,check_in')
             ->whereIn('status', ['VERIFIKASI', 'SELESAI'])
@@ -78,7 +117,6 @@ class EventController extends Controller
             ->paginate(5);
         $donations = $concert->donations()->with('user:id,name,no_handphone')->paginate(5);
         $feedbacks = $concert->feedbacks()->with('user:id,name')->paginate(5);
-
 
         return view('event.show', compact('event', 'events', 'concert', 'purchases', 'ticketTypes', 'donations', 'feedbacks'));
     }
@@ -96,7 +134,20 @@ class EventController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'nama' => 'required|string|max:45',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required',
+            'lokasi' => 'required|string|max:255',
+        ]);
+
+        $event = Event::findOrFail($id);
+        $event->update($request->all());
+
+        return redirect()->route('events.show', $id)
+            ->with('success', 'Perubahan detail kegiatan berhasil.');
     }
 
     /**
@@ -104,7 +155,11 @@ class EventController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $event = Event::find($id);
+        $event->delete();
+
+        return redirect()->route('events.index')
+            ->with('success', 'Kegiatan berhasil dihapus.');
     }
 
     public function checkInShow(string $id)

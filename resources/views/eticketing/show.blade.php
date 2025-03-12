@@ -6,7 +6,7 @@
 
     <div class="row mt-3">
         <div class="col-12 col-lg-8">
-            <img src="{{ $concert->gambar }}" style="width: 100%; max-height: 360px;">
+            <img src="{{ asset('storage/'. $concert->gambar) }}" style="width: 100%; max-height: 360px;">
         </div>
         <div class="col-12 col-lg-4">
             <div class="card shadow">
@@ -31,7 +31,7 @@
                     <p class="mt-3">Harga mulai dari <span class="fw-bold">Rp{{ number_format($hargaMulai, 0, ',', '.') }}</span></p>
                     <hr>
                     <div class="mt-2 d-flex align-items-center gap-2">
-                        <img src="{{ $concert->logo }}" style="width: 40px; height: 40px">
+                        <img src="{{ asset('storage/'. $concert->logo) }}" style="width: 40px; height: 40px">
                         <div>
                             <p class="mb-0">Diselenggarakan oleh</p>
                             <p class="mb-0 fw-bold">{{ $concert->penyelenggara }}</p>
@@ -48,7 +48,7 @@
                     <h5 class="fw-bold">Deskripsi</h5>
                     <p class="mt-1">{!! nl2br(e($concert->deskripsi)) !!}</p>
                     <h5 class="fw-bold">Seating Plan</h5>
-                    <img src="{{ $concert->seating_plan }}" class="mt-1 mb-3 w-100">
+                    <img src="{{ asset('storage/'. $concert->seating_plan) }}" class="mt-1 mb-3 w-100">
                     <h5 class="fw-bold">Syarat dan Ketentuan</h5>
                     <p class="mt-1">{!! nl2br(e($concert->syarat_ketentuan)) !!}</p>
                 </div>

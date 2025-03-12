@@ -86,7 +86,7 @@
                 <input type="hidden" name="purchase-menu" value="check-purchase">
                 <a href="" class="mt-2 d-flex align-items-center gap-3 text-decoration-none text-dark"
                     onclick="this.closest('form').submit(); return false;">
-                    <img src="{{ $purchase->gambar }}" style="width: 60px; height: 60px; object-fit: cover;">
+                    <img src="{{ asset('storage/' . $purchase->gambar) }}" style="width: 60px; height: 60px; object-fit: cover;">
                     <div class="">
                         <p class="text-warning mb-0 fw-bold" id="timer"></p>
                         <p class="mb-0">{{ $purchase->nama }}</p>
@@ -195,7 +195,7 @@
                         <a href="/eticket/${item.id}" class="text-decoration-none">
                             <div class="card border-0 text-center">
                                 <div class="card-body">
-                                    <img src="${item.logo}" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="${item.nama}">
+                                    <img src="{{ asset('storage/') }}/${item.logo}" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="${item.nama}">
                                     <h5 class="card-title mt-3">${item.nama}</h5>
                                 </div>
                             </div>
@@ -206,7 +206,7 @@
                     eventCard.innerHTML = `
                         <a href="/eticket/${item.id}" class="text-decoration-none">
                             <div class="card">
-                                <img src="${item.gambar}" class="d-block w-100" alt="${item.nama}">
+                                <img src="{{ asset('storage/') }}/${item.gambar}" class="d-block w-100" alt="${item.nama}">
                                 <div class="card-body">
                                     <h5 class="card-title">${item.nama}</h5>
                                     <p class="card-text mb-0">${item.tanggal_mulai}</p>

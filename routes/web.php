@@ -78,6 +78,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/events/check-in/{id}', [EventController::class, 'checkInShow'])->name('events.checkInShow');
         Route::post('/tickets/check-in/{id}', [TicketController::class, 'checkIn'])->name('tickets.checkIn');
         Route::resource('ticket-types', TicketTypeController::class);
+        Route::put('/concerts/{id}', [ConcertController::class, 'update'])->name('concerts.update');
         Route::resource('members', MemberController::class);
         Route::resource('roles', RoleController::class);
 

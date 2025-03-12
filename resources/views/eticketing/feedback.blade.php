@@ -95,7 +95,7 @@
                 <i class="bi bi-cloud-upload file-drop-icon"></i>
                 <p class="mt-2">Kasih foto pengalamanmu pada konser ini</p>
                 <input type="file" name="gambar-feedback" id="fileInput" class="d-none">
-                <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih</p>
+                <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih. Maksimal ukuran file 2 MB.</p>
             </div>
         </div>
         <div class="row mt-2 p-2">

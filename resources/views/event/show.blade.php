@@ -15,7 +15,7 @@
         <nav class="navbar">
             <div class="d-flex flex-nowrap overflow-auto w-100 hide-scrollbar border-bottom border-black" id="navbarNav">
                 <div class="navbar-nav fs-5 flex-row" role="tablist">
-                    <a class="nav-link active px-3" data-bs-toggle="tab" href="#detail" role="tab" aria-controls="detail" aria-selected="true">Detail</a>
+                    <a class="nav-link active px-3" data-bs-toggle="tab" href="#form-detail" role="tab" aria-controls="detail" aria-selected="true">Detail</a>
                     <a class="nav-link px-3" data-bs-toggle="tab" href="#penyanyi" role="tab" aria-controls="penyanyi" aria-selected="false">Penyanyi</a>
                     <a class="nav-link px-3" data-bs-toggle="tab" href="#panitia" role="tab" aria-controls="panitia" aria-selected="false">Panitia</a>
                     <a class="nav-link px-3" data-bs-toggle="tab" href="#tiket" role="tab" aria-controls="tiket" aria-selected="false">Tiket</a>
@@ -25,78 +25,64 @@
         </nav>
 
         <style>
-            /* Hide scrollbar but allow scrolling */
             .hide-scrollbar {
                 -ms-overflow-style: none;
-                /* Hide scrollbar for IE and Edge */
                 scrollbar-width: none;
-                /* Hide scrollbar for Firefox */
             }
-
             .hide-scrollbar::-webkit-scrollbar {
                 display: none;
-                /* Hide scrollbar for Chrome, Safari, and Opera */
             }
         </style>
 
         <div class="tab-content">
-            <div class="tab-pane fade show active" id="detail" role="tabpanel">
-                <div class="row">
+            <form method="POST" action="{{ route('events.update', $event->id) }}" class="tab-pane fade show active mb-5" id="form-detail" role="tabpanel">
+                @csrf
+                @method('PUT')
+                <div class="row mb-3">
                     <div class="col-12">
                         <label for="nama" class="form-label">Nama Kegiatan</label>
                         <input type="text" class="form-control" id="nama" name="nama" placeholder="" value="{{ old('nama', $event->nama) }}" required>
+                        @error('nama')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-12">
-                        <label for="jenis_kegiatan" class="form-label">Jenis Kegiatan</label>
-                        <select class="form-control" id="jenis_kegiatan" name="jenis_kegiatan" required>
-                            <option value="" disabled selected>Pilih jenis kegiatan</option>
-                            <option value="INTERNAL" {{ old('jenis_kegiatan', $event->jenis_kegiatan) == 'INTERNAL' ? 'selected' : '' }}>Internal</option>
-                            <option value="EKSTERNAL" {{ old('jenis_kegiatan', $event->jenis_kegiatan) == 'EKSTERNAL' ? 'selected' : '' }}>External</option>
-                            <option value="KONSER" {{ old('jenis_kegiatan', $event->jenis_kegiatan) == 'KONSER' ? 'selected' : '' }}>Konser</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <label for="sub_kegiatan" class="form-label">Sub Kegiatan</label>
-                        <select class="form-control" id="sub_kegiatan" name="sub_kegiatan" required>
-                            <option value="" disabled selected>Pilih sub kegiatan</option>
-                            @foreach ($events as $subEvent)
-                            <option value="{{ $subEvent->id }}" {{ old('sub_kegiatan', $event->sub_kegiatan_id) == $subEvent->id ? 'selected' : '' }}>
-                                {{ $subEvent->nama }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-6">
                         <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
                         <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" placeholder="" value="{{ old('tanggal_mulai', $event->tanggal_mulai) }}" required>
+                        @error('tanggal_mulai')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="col-6">
                         <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
                         <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" placeholder="" value="{{ old('tanggal_selesai', $event->tanggal_selesai) }}" required>
+                        @error('tanggal_selesai')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-6">
                         <label for="jam_mulai" class="form-label">Jam Mulai</label>
                         <input type="time" class="form-control" id="jam_mulai" name="jam_mulai" placeholder="" value="{{ old('jam_mulai', $event->jam_mulai) }}" required>
+                        @error('jam_mulai')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="col-6">
                         <label for="jam_selesai" class="form-label">Jam Selesai</label>
                         <input type="time" class="form-control" id="jam_selesai" name="jam_selesai" placeholder="" value="{{ old('jam_selesai', $event->jam_selesai) }}" required>
+                        @error('jam_selesai')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-6">
                         <label for="tanggal_gladi" class="form-label">Tanggal Gladi</label>
                         <input type="date" class="form-control" id="tanggal_gladi" name="tanggal_gladi" placeholder="" value="{{ old('tanggal_gladi', $event->tanggal_gladi) }}">
@@ -107,13 +93,55 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-12">
                         <label for="lokasi" class="form-label">Lokasi</label>
                         <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="" value="{{ old('lokasi', $event->lokasi) }}" required>
+                        @error('lokasi')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
-            </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="form-label">Jadwal Latihan</p>
+                            <div> {!! $donations->links() !!} </div>
+                        </div>
+                        <table class="table table-bordered shadow text-center">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th>Tanggal</th>
+                                    <th>Jam</th>
+                                    <th>Lokasi</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if($donations->isNotEmpty())
+                                    @foreach($donations as $donation)
+                                        <tr>
+                                            <td>{{ $donation->user->name }}</td>
+                                            <td>{{ $donation->user->no_handphone }}</td>
+                                            <td>Rp{{ number_format($donation->jumlah, 0, ',', '.') }}</td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="4">Belum ada jadwal latihan untuk kegiatan ini</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                        <!-- <button class="btn btn-primary fw-bold" id="loadCreateForm" data-id="{{ $event->id }}" data-action="{{ route('ticket-types.create') }}">+ Tambah Latihan</button> -->
+                    </div>
+                </div>
+
+                <div class="fixed-bottom bg-light p-3 border-top text-end">
+                    <button class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+            </form>
             <div class="tab-pane fade" id="penyanyi" role="tabpanel">
                 <h5>Daftar Penyanyi</h5>
                 <p>Isi daftar penyanyi di sini...</p>
@@ -122,7 +150,7 @@
                 <h5>Daftar Panitia</h5>
                 <p>Isi daftar panitia di sini...</p>
             </div>
-            <div class="tab-pane fade" id="tiket" role="tabpanel">
+            <div class="tab-pane fade mb-5" id="tiket" role="tabpanel">
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5>Daftar Pembeli Tiket</h5>
@@ -219,226 +247,296 @@
                             @endif
                         </tbody>
                     </table>
-                    <button class="btn btn-primary fw-bold" id="loadCreateForm" data-concert-id="{{ $concert->id }}">+ Tambah Jenis</button>
+                    <button class="btn btn-primary fw-bold" id="loadCreateForm" data-id="{{ $concert->id }}" data-name="concerts-id" data-action="{{ route('ticket-types.create') }}">+ Tambah Jenis</button>
                 </div>
 
                 <div id="modalContainer"></div>
 
-                <div class="mb-3">
-                    <h5>E-Booklet</h5>
-                    <div class="row">
-                        <div class="col-12 col-md-4">
-                            <p class="mb-0">Menggunakan e-booklet?</p>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="ebooklet" id="ebooklet_yes" value="YA"
-                                    {{ old('ebooklet', $concert->ebooklet) == 'YA' ? 'checked' : '' }}>
-                                <label class="form-check-label" for="ebooklet_yes">Ya</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="ebooklet" id="ebooklet_no" value="TIDAK"
-                                    {{ old('ebooklet', $concert->ebooklet) == 'TIDAK' ? 'checked' : '' }}>
-                                <label class="form-check-label" for="ebooklet_no">Tidak</label>
-                            </div>
+                <form method="POST" action="{{ route('concerts.update', $event->id) }}" class="mb-0" id="form-tiket" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-3">
+                        <h5>Gambar Poster/Banner Konser</h5>
+                        <div class="file-drop-area mt-3" id="dropArea">
+                            <i class="bi bi-cloud-upload file-drop-icon"></i>
+                            <p class="mt-2">
+                                Seret & taruh gambar poster/banner konser di sini atau 
+                                <label for="fileInput" class="text-primary fw-bold" style="cursor: pointer;">cari</label>
+                            </p>
+                            <input type="file" name="gambar" id="fileInput" class="d-none" accept="image/*">
+                            <input type="hidden" name="existing_gambar" id="existingSeatingPlan" value="{{ $concert->gambar ?? '' }}">
+                            <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih. Maksimal ukuran file 2 MB.</p>
                         </div>
-                        <div class="col-12 col-md-8" id="ebooklet_link_container" style="display: none;">
-                            <label for="link_ebooklet" class="form-label">Link e-booklet</label>
-                            <input type="text" class="form-control" id="link_ebooklet" name="link_ebooklet" placeholder=""
-                                value="{{ old('link_ebooklet', $concert->link_ebooklet) }}" required>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="mb-3">
-                    <h5>Donasi</h5>
-                    <div class="row">
-                        <div class="col-12">
-                            <p class="mb-0">Menerima donasi?</p>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="donasi" id="donasi_yes" value="YA"
-                                    {{ old('donasi', $concert->donasi == 'YA') ? 'checked' : '' }}>
-                                <label class="form-check-label" for="donasi_yes">Ya</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="donasi" id="donasi_no" value="TIDAK"
-                                    {{ old('donasi', $concert->donasi == 'TIDAK') ? 'checked' : '' }}>
-                                <label class="form-check-label" for="donasi_no">Tidak</label>
+                        <div class="text-center">
+                            <div class="image-container d-none" id="imageContainer">
+                                <img src="" alt="Concert Banner/Poster Image" id="previewImage" class="img-fluid">
+                                <div class="image-overlay">
+                                    <button type="button" class="btn btn-sm btn-danger delete-btn"><i class="fa-solid fa-trash"></i></button>
+                                    <button type="button" class="btn btn-sm btn-primary edit-btn"><i class="fa-solid fa-pen"></i></button>
+                                </div>
                             </div>
                         </div>
+                        @error('gambar')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="row mt-1" id="donasi_container" style="display: none;">
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <p class="mb-1 fw-medium">Daftar Donatur</p>
-                                <div> {!! $donations->links() !!} </div>
-                            </div>
-                            <table class="table table-bordered shadow text-center">
-                                <thead>
-                                    <tr class="bg-primary">
-                                        <th>Nama</th>
-                                        <th>Nomor Handphone</th>
-                                        <th>Nominal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if($donations->isNotEmpty())
-                                        @foreach($donations as $donation)
-                                        <tr>
-                                            <td>{{ $donation->user->name }}</td>
-                                            <td>{{ $donation->user->no_handphone }}</td>
-                                            <td>Rp{{ number_format($donation->jumlah, 0, ',', '.') }}</td>
-                                        </tr>
-                                        @endforeach
-                                    @else
-                                        <tr>
-                                            <td colspan="3">Belum ada donatur</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="mb-3">
-                    <h5>Kupon</h5>
-                    <div class="row">
-                        <div class="col-12 col-md-4">
-                            <p class="mb-0">Menggunakan kupon?</p>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="kupon" id="kupon_yes" value="YA"
-                                    {{ old('kupon', $concert->kupon == 'YA') ? 'checked' : '' }}>
-                                <label class="form-check-label" for="kupon_yes">Ya</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="kupon" id="kupon_no" value="TIDAK"
-                                    {{ old('kupon', $concert->kupon == 'TIDAK') ? 'checked' : '' }}>
-                                <label class="form-check-label" for="kupon_no">Tidak</label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-8" id="tipe_kupon_container" style="display: none;">
-                            <label for="tipe_kupon" class="form-label">Tipe kupon yang digunakan</label>
-                            <label for="jenis_kegiatan" class="form-label">Jenis Kegiatan</label>
-                            <select class="form-control" id="tipe_kupon" name="tipe_kupon" required>
-                                <option value="" disabled selected>Pilih tipe kupon</option>
-                                <option value="KUPON" {{ old('tipe_kupon', $concert->tipe_kupon) == 'KUPON' ? 'selected' : '' }}>Kupon</option>
-                                <option value="REFERAL" {{ old('tipe_kupon', $concert->tipe_kupon) == 'REFERAL' ? 'selected' : '' }}>Referal</option>
-                                <option value="KEDUANYA" {{ old('tipe_kupon', $concert->tipe_kupon) == 'KEDUANYA' ? 'selected' : '' }}>Keduanya</option>
-                            </select>
-                        </div>
+                    <div class="mb-3">
+                        <h5>Deskripsi Konser</h5>
+                        <textarea name="deskripsi" class="form-control" placeholder="" rows="5" maxlength="1000" id="deskripsi-area" required>{{ old('deskripsi', $concert->deskripsi ?? '') }}</textarea>
+                        <small class="text-muted d-block mt-1" id="deskripsi-counter">0/1000 karakter</small>
+                        @error('deskripsi')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <div class="row mt-1" id="kupon_container" style="display: none;">
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <p class="mb-1 fw-medium">Kode Kupon</p>
-                                <div> {!! $donations->links() !!} </div>
-                            </div>
-                            <table class="table table-bordered shadow text-center">
-                                <thead>
-                                    <tr class="bg-primary">
-                                        <th>Kode</th>
-                                        <th>Nominal</th>
-                                        <th>Terpakai/Jumlah</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if($donations->isNotEmpty())
-                                        @foreach($donations as $donation)
-                                        <tr>
-                                            <td>{{ $donation->user->name }}</td>
-                                            <td>{{ $donation->user->no_handphone }}</td>
-                                            <td>{{ $donation->jumlah }}</td>
-                                            <td class="d-flex justify-content-center gap-3">
-                                                <a href="{{ route('events.edit', $concert->id) }}" class="btn btn-primary">Ubah</a>
-                                                <form action="{{ route('events.destroy', $concert->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-outline-primary">Hapus</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    @else
-                                        <tr>
-                                            <td colspan="4">Belum ada kupon yang dibuat</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                            <button class="btn btn-primary fw-bold">+ Tambah Kupon</button>
-                        </div>
-                    </div>
-                    <div class="row mt-1" id="referal_container" style="display: none;">
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <p class="mb-1 fw-medium">Kode Referal</p>
-                                <div> {!! $donations->links() !!} </div>
-                            </div>
-                            <table class="table table-bordered shadow text-center">
-                                <thead>
-                                    <tr class="bg-primary">
-                                        <th>Kode</th>
-                                        <th>Anggota Terkait</th>
-                                        <th>Terpakai/Jumlah</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if($donations->isNotEmpty())
-                                        @foreach($donations as $donation)
-                                        <tr>
-                                            <td>{{ $donation->user->name }}</td>
-                                            <td>{{ $donation->user->no_handphone }}</td>
-                                            <td>{{ $donation->jumlah }}</td>
-                                            <td class="d-flex justify-content-center gap-3">
-                                                <a href="{{ route('events.edit', $concert->id) }}" class="btn btn-primary">Ubah</a>
-                                                <form action="{{ route('events.destroy', $concert->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-outline-primary">Hapus</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    @else
-                                        <tr>
-                                            <td colspan="4">Belum ada kode referal yang dibuat</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                            <button class="btn btn-primary fw-bold">+ Tambah Referal</button>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="mb-3">
-                    <h5>Seating Plan</h5>
-                    <div class="seating-plan-container d-none" id="imageContainer">
-                        <img src="" alt="Seating Plan Image" id="previewImage" class="img-fluid">
-                        <div class="seating-plan-overlay">
-                            <button type="button" class="btn btn-sm btn-danger delete-btn"><i class="fa-solid fa-trash"></i></button>
-                            <button type="button" class="btn btn-sm btn-primary edit-btn"><i class="fa-solid fa-pen"></i></button>
+                    <div class="mb-3">
+                        <h5>Seating Plan</h5>
+                        <div class="file-drop-area mt-3" id="dropArea">
+                            <i class="bi bi-cloud-upload file-drop-icon"></i>
+                            <p class="mt-2">
+                                Seret & taruh gambar seating plan di sini atau 
+                                <label for="fileInput" class="text-primary fw-bold" style="cursor: pointer;">cari</label>
+                            </p>
+                            <input type="file" name="seating_plan" id="fileInput" class="d-none" accept="image/*">
+                            <input type="hidden" name="existing_seating_plan" id="existingSeatingPlan" value="{{ $concert->seating_plan ?? '' }}">
+                            <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih. Maksimal ukuran file 2 MB.</p>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="image-container d-none" id="imageContainer">
+                                <img src="" alt="Seating Plan Image" id="previewImage" class="img-fluid">
+                                <div class="image-overlay">
+                                    <button type="button" class="btn btn-sm btn-danger delete-btn"><i class="fa-solid fa-trash"></i></button>
+                                    <button type="button" class="btn btn-sm btn-primary edit-btn"><i class="fa-solid fa-pen"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        @error('seating_plan')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <h5>Syarat dan Ketentuan</h5>
+                        <textarea name="syarat_ketentuan" class="form-control" placeholder="" rows="5" maxlength="1000" id="syarat_ketentuan-area" required>{{ old('syarat_ketentuan', $concert->syarat_ketentuan ?? '') }}</textarea>
+                        <small class="text-muted d-block mt-1" id="syarat_ketentuan-counter">0/1000 karakter</small>
+                        @error('syarat_ketentuan')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <h5>E-Booklet</h5>
+                        <div class="row">
+                            <div class="col-12 col-md-4">
+                                <p class="mb-0">Menggunakan e-booklet?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ebooklet" id="ebooklet_yes" value="YA"
+                                        {{ old('ebooklet', $concert->ebooklet) == 'YA' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="ebooklet_yes">Ya</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="ebooklet" id="ebooklet_no" value="TIDAK"
+                                        {{ old('ebooklet', $concert->ebooklet) == 'TIDAK' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="ebooklet_no">Tidak</label>
+                                </div>
+                                @error('ebooklet')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-12 col-md-8" id="ebooklet_link_container" style="display: none;">
+                                <label for="link_ebooklet" class="form-label">Link e-booklet</label>
+                                <input type="text" class="form-control" id="link_ebooklet" name="link_ebooklet" placeholder=""
+                                    value="{{ old('link_ebooklet', $concert->link_ebooklet) }}" required>
+                                @error('link_ebooklet')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
                     </div>
 
-                    <div class="file-drop-area mt-3" id="dropArea">
-                        <i class="bi bi-cloud-upload file-drop-icon"></i>
-                        <p class="mt-2">Kasih foto seating plan pada konser ini</p>
-                        <input type="file" name="gambar" id="fileInput" class="d-none" accept="image/*">
-                        <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih</p>
+                    <div class="mb-3">
+                        <h5>Donasi</h5>
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="mb-0">Menerima donasi?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="donasi" id="donasi_yes" value="YA"
+                                        {{ old('donasi', $concert->donasi == 'YA') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="donasi_yes">Ya</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="donasi" id="donasi_no" value="TIDAK"
+                                        {{ old('donasi', $concert->donasi == 'TIDAK') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="donasi_no">Tidak</label>
+                                </div>
+                                @error('donasi')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="row mt-1" id="donasi_container" style="display: none;">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <p class="mb-1 fw-medium">Daftar Donatur</p>
+                                    <div> {!! $donations->links() !!} </div>
+                                </div>
+                                <table class="table table-bordered shadow text-center">
+                                    <thead>
+                                        <tr class="bg-primary">
+                                            <th>Nama</th>
+                                            <th>Nomor Handphone</th>
+                                            <th>Nominal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if($donations->isNotEmpty())
+                                            @foreach($donations as $donation)
+                                            <tr>
+                                                <td>{{ $donation->user->name }}</td>
+                                                <td>{{ $donation->user->no_handphone }}</td>
+                                                <td>Rp{{ number_format($donation->jumlah, 0, ',', '.') }}</td>
+                                            </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="3">Belum ada donatur</td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="mb-3">
-                    <h5>Deskripsi Konser</h5>
-                    <textarea name="deskripsi" class="form-control" placeholder="" rows="5" maxlength="1000" id="deskripsi-area" required>{{ old('deskripsi', $concert->deskripsi ?? '') }}</textarea>
-                </div>
+                    <div class="mb-3">
+                        <h5>Kupon</h5>
+                        <div class="row">
+                            <div class="col-12 col-md-4">
+                                <p class="mb-0">Menggunakan kupon?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="kupon" id="kupon_yes" value="YA"
+                                        {{ old('kupon', $concert->kupon == 'YA') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="kupon_yes">Ya</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="kupon" id="kupon_no" value="TIDAK"
+                                        {{ old('kupon', $concert->kupon == 'TIDAK') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="kupon_no">Tidak</label>
+                                </div>
+                                @error('kupon')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-12 col-md-8" id="tipe_kupon_container" style="display: none;">
+                                <label for="tipe_kupon" class="form-label">Tipe kupon yang digunakan</label>
+                                <label for="jenis_kegiatan" class="form-label">Jenis Kegiatan</label>
+                                <select class="form-control" id="tipe_kupon" name="tipe_kupon" required>
+                                    <option value="" disabled selected>Pilih tipe kupon</option>
+                                    <option value="KUPON" {{ old('tipe_kupon', $concert->tipe_kupon) == 'KUPON' ? 'selected' : '' }}>Kupon</option>
+                                    <option value="REFERAL" {{ old('tipe_kupon', $concert->tipe_kupon) == 'REFERAL' ? 'selected' : '' }}>Referal</option>
+                                    <option value="KEDUANYA" {{ old('tipe_kupon', $concert->tipe_kupon) == 'KEDUANYA' ? 'selected' : '' }}>Keduanya</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-1" id="kupon_container" style="display: none;">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <p class="mb-1 fw-medium">Kode Kupon</p>
+                                    <div> {!! $donations->links() !!} </div>
+                                </div>
+                                <table class="table table-bordered shadow text-center">
+                                    <thead>
+                                        <tr class="bg-primary">
+                                            <th>Kode</th>
+                                            <th>Nominal</th>
+                                            <th>Terpakai/Jumlah</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if($donations->isNotEmpty())
+                                            @foreach($donations as $donation)
+                                            <tr>
+                                                <td>{{ $donation->user->name }}</td>
+                                                <td>{{ $donation->user->no_handphone }}</td>
+                                                <td>{{ $donation->jumlah }}</td>
+                                                <td class="d-flex justify-content-center gap-3">
+                                                    <a href="{{ route('events.edit', $concert->id) }}" class="btn btn-primary">Ubah</a>
+                                                    <form action="{{ route('events.destroy', $concert->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="btn btn-outline-primary">Hapus</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="4">Belum ada kupon yang dibuat</td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-primary fw-bold">+ Tambah Kupon</button>
+                            </div>
+                        </div>
+                        <div class="row mt-1" id="referal_container" style="display: none;">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <p class="mb-1 fw-medium">Kode Referal</p>
+                                    <div> {!! $donations->links() !!} </div>
+                                </div>
+                                <table class="table table-bordered shadow text-center">
+                                    <thead>
+                                        <tr class="bg-primary">
+                                            <th>Kode</th>
+                                            <th>Anggota Terkait</th>
+                                            <th>Terpakai/Jumlah</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if($donations->isNotEmpty())
+                                            @foreach($donations as $donation)
+                                            <tr>
+                                                <td>{{ $donation->user->name }}</td>
+                                                <td>{{ $donation->user->no_handphone }}</td>
+                                                <td>{{ $donation->jumlah }}</td>
+                                                <td class="d-flex justify-content-center gap-3">
+                                                    <a href="{{ route('events.edit', $concert->id) }}" class="btn btn-primary">Ubah</a>
+                                                    <form action="{{ route('events.destroy', $concert->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="btn btn-outline-primary">Hapus</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="4">Belum ada kode referal yang dibuat</td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-primary fw-bold">+ Tambah Referal</button>
+                            </div>
+                        </div>
+                    </div>
 
-                <div>
-                    <h5>Syarat dan Ketentuan</h5>
-                    <textarea name="syarat_ketentuan" class="form-control" placeholder="" rows="5" maxlength="1000" id="syarat_ketentuan-area" required>{{ old('syarat_ketentuan', $concert->syarat_ketentuan ?? '') }}</textarea>
-                </div>
+                    <div class="fixed-bottom bg-light p-3 border-top text-end">
+                        <button class="btn btn-primary">
+                            @if($concert->status == 'draft')    
+                                Upload ke E-ticketing
+                            @else
+                                Simpan Perubahan
+                            @endif
+                        </button>
+                    </div>
+                </form>
             </div>
             <div class="tab-pane fade" id="feedback" role="tabpanel">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -473,29 +571,6 @@
         </div>
     </div>
 </div>
-
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteConfirmModalLabel">Konfirmasi Hapus</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Apakah Anda yakin ingin menghapus <span id="deleteItemName"></span>?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
-                <form id="deleteForm" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 
 @section('js')
@@ -503,7 +578,6 @@
     document.addEventListener("DOMContentLoaded", function() {
         //Font Bold Navbar
         let navLinks = document.querySelectorAll(".navbar-nav .nav-link");
-
         function updateActiveTab() {
             navLinks.forEach(link => link.classList.remove("fw-bold"));
             let activeTab = document.querySelector(".navbar-nav .nav-link.active");
@@ -511,6 +585,7 @@
                 activeTab.classList.add("fw-bold");
             }
         }
+        
         updateActiveTab();
         navLinks.forEach(link => {
             link.addEventListener("shown.bs.tab", function() {
@@ -521,18 +596,23 @@
 
         //Modal Jenis Tiket
         document.getElementById('loadCreateForm').addEventListener('click', function() {
-            let concertId = this.dataset.concertId;
-            fetch('{{ route("ticket-types.create") }}')
+            let route = this.dataset.action;
+            let name = this.dataset.name;
+            let id = this.dataset.id;
+            fetch(route)
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('modalContainer').innerHTML = html;
-                    document.getElementById('createTicketTypeModal').querySelector('#concerts_id').value = concertId;
-                    new bootstrap.Modal(document.getElementById('createTicketTypeModal')).show();
+                    if(name === 'concerts-id'){
+                        document.getElementById('createModal').querySelector('#concerts_id').value = id;
+                    }
+                    new bootstrap.Modal(document.getElementById('createModal')).show();
                 });
         });
+
         document.querySelectorAll(".loadEditForm").forEach((button) => {
             button.addEventListener("click", function() {
-                let ticketTypeId = this.dataset.id; // Get the ticket type ID from the button
+                let ticketTypeId = this.dataset.id;
                 let concertId = this.dataset.concertId;
                 let editUrl = `{{ route('ticket-types.edit', ':id') }}`.replace(':id', ticketTypeId);
 
@@ -558,7 +638,6 @@
             button.addEventListener("click", function() {
                 let purchaseId = this.dataset.purchaseId;
                 let checkInShowUrl = `{{ route('events.checkInShow', ':id') }}`.replace(':id', purchaseId);
-
                 fetch(checkInShowUrl)
                     .then(response => response.text())
                     .then(html => {
@@ -572,7 +651,6 @@
                                     let ticketId = this.dataset.ticketId;
                                     let buttonElement = this;
                                     let checkInUrl = `{{ route('tickets.checkIn', ':id') }}`.replace(':id', ticketId);
-
                                     fetch(checkInUrl, {
                                         method: "POST",
                                         headers: {
@@ -587,7 +665,6 @@
                                                 alert(data.error);
                                                 return;
                                             }
-
                                             // Update UI
                                             let row = buttonElement.closest("tr");
                                             row.querySelector("td:nth-child(3)").textContent = "Checked In"; // Update Status
@@ -611,27 +688,27 @@
         });
 
 
-        //Button hapus
-        document.querySelectorAll('.deleteBtn').forEach(button => {
-            button.addEventListener('click', function() {
-                let itemId = this.dataset.id;
-                let itemName = this.dataset.name;
-                let itemAction = this.dataset.action;
+        //Counter text area
+        const deksripsiInput = document.getElementById("deskripsi-area");
+        const syaratInput = document.getElementById("syarat_ketentuan-area");
+        const deskripsiCount = document.getElementById("deskripsi-counter");
+        const syaratCount = document.getElementById("syarat_ketentuan-counter");
 
-                // Set modal text dynamically
-                document.getElementById('deleteItemName').textContent = itemName;
+        function updateCounter(inputElement, counterElement) {
+            counterElement.textContent = `${inputElement.value.length}/1000 karakter`;
+        }
 
-                // Set the form action dynamically
-                let deleteForm = document.getElementById('deleteForm');
-                deleteForm.action = itemAction;
+        updateCounter(deksripsiInput, deskripsiCount);
+        updateCounter(syaratInput, syaratCount);
 
-                // Show the modal
-                let modalElement = document.getElementById('deleteConfirmModal');
-                let deleteModal = new bootstrap.Modal(modalElement);
-                deleteModal.show();
-            });
+        deksripsiInput.addEventListener("input", function() {
+            updateCounter(deksripsiInput, deskripsiCount);
         });
 
+        syaratInput.addEventListener("input", function() {
+            updateCounter(syaratInput, syaratCount);
+        });
+        
 
         //Ebooklet container
         let ebookletYes = document.getElementById("ebooklet_yes");
@@ -645,6 +722,7 @@
                 ebookletLinkContainer.style.display = "none";
             }
         }
+
         toggleEbookletInput();
         ebookletYes.addEventListener("change", toggleEbookletInput);
         ebookletNo.addEventListener("change", toggleEbookletInput);
@@ -662,6 +740,7 @@
                 donasiContainer.style.display = "none";
             }
         }
+
         toggleDonasiTable();
         donasiYes.addEventListener("change", toggleDonasiTable);
         donasiNo.addEventListener("change", toggleDonasiTable);
@@ -685,7 +764,7 @@
                 referalContainer.style.display = "none";
             }
         }
-
+        
         function toggleKuponReferalContainers() {
             let selectedValue = tipeKupon.value;
             kuponContainer.style.display = "none";
@@ -701,60 +780,94 @@
         }
         toggleKuponReferalContainers();
         toggleTipeKupon();
+
         kuponYes.addEventListener("change", toggleTipeKupon);
         kuponNo.addEventListener("change", toggleTipeKupon);
         tipeKupon.addEventListener("change", toggleKuponReferalContainers);
 
 
         //Gambar Seating Plan
-        const fileInput = document.getElementById("fileInput");
-        const dropArea = document.getElementById("dropArea");
-        const imageContainer = document.getElementById("imageContainer");
-        const previewImage = document.getElementById("previewImage");
-        const fileNameText = document.getElementById("fileName");
-        const editBtn = document.querySelector(".edit-btn");
-        const deleteBtn = document.querySelector(".delete-btn");
+        document.querySelectorAll(".file-drop-area").forEach((dropArea) => {
+            const fileInput = dropArea.querySelector("input[type='file']");
+            const fileNameDisplay = dropArea.querySelector("#fileName");
+            const imageContainer = dropArea.closest(".mb-3").querySelector(".image-container");
+            const previewImage = imageContainer.querySelector("img");
+            const editBtn = imageContainer.querySelector(".edit-btn");
+            const deleteBtn = imageContainer.querySelector(".delete-btn");
+            const existingImageInput = dropArea.querySelector("input[type='hidden']");
+            
+            // Load existing image
+            let checkImage = existingImageInput.value.trim();
+            if (checkImage && checkImage !== "null") {
+                let existingImage = `{{ asset('storage/') }}/${checkImage}`;
+                previewImage.src = existingImage;
+                imageContainer.classList.remove("d-none");
+                dropArea.classList.add("d-none");
+            }
 
-        // Check if an image is already set (from backend)
-        let existingImage = "{{ $concert->gambar ?? '' }}".trim(); // Ensure it's a string
-        if (existingImage && existingImage !== "null") {
-            previewImage.src = existingImage;
-            imageContainer.classList.remove("d-none");
-            dropArea.classList.add("d-none");
-        }
+            // Click to browse
+            dropArea.addEventListener("click", () => fileInput.click());
 
-        // Handle File Selection
-        fileInput.addEventListener("change", function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    imageContainer.classList.remove("d-none");
-                    dropArea.classList.add("d-none");
-                    fileNameText.textContent = file.name; // Show selected file name
-                };
-                reader.readAsDataURL(file);
+            // Handle file selection
+            fileInput.addEventListener("change", (event) => {
+                updateFileDisplay(event.target.files[0]);
+            });
+
+            // Drag over effect
+            dropArea.addEventListener("dragover", (event) => {
+                event.preventDefault();
+                dropArea.classList.add("dragover");
+            });
+
+            dropArea.addEventListener("dragleave", () => {
+                dropArea.classList.remove("dragover");
+            });
+
+            // Drop file
+            dropArea.addEventListener("drop", (event) => {
+                event.preventDefault();
+                dropArea.classList.remove("dragover");
+                const file = event.dataTransfer.files[0];
+                fileInput.files = event.dataTransfer.files; // Update input
+                updateFileDisplay(file);
+            });
+
+            // Update File Display
+            function updateFileDisplay(file) {
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        imageContainer.classList.remove("d-none");
+                        dropArea.classList.add("d-none");
+                        fileNameDisplay.textContent = file.name;
+                        existingImageInput.value = ""; // Clear existing image
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    fileNameDisplay.textContent = "Belum ada file yang dipilih";
+                }
+            }
+
+            // Edit Button (Re-upload)
+            if (editBtn) {
+                editBtn.addEventListener("click", function () {
+                    fileInput.click();
+                });
+            }
+
+            // Delete Button (Remove Image)
+            if (deleteBtn) {
+                deleteBtn.addEventListener("click", function () {
+                    previewImage.src = "";
+                    imageContainer.classList.add("d-none");
+                    dropArea.classList.remove("d-none");
+                    fileInput.value = "";
+                    fileNameDisplay.textContent = "Belum ada file yang dipilih";
+                    existingImageInput.value = existingImage; // Restore old image value if deleted
+                });
             }
         });
-
-        // Handle Edit Button (Trigger File Input)
-        if (editBtn) {
-            editBtn.addEventListener("click", function() {
-                fileInput.click();
-            });
-        }
-
-        // Handle Delete Button (Reset Image)
-        if (deleteBtn) {
-            deleteBtn.addEventListener("click", function() {
-                previewImage.src = "";
-                imageContainer.classList.add("d-none");
-                dropArea.classList.remove("d-none");
-                fileInput.value = ""; // Reset file input
-                fileNameText.textContent = "Belum ada file yang dipilih";
-            });
-        }
     });
 </script>
 @endsection

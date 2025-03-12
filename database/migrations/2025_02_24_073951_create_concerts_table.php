@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('concerts', function (Blueprint $table) {
             $table->id();
-            $table->string('gambar', 255);
-            $table->string('deskripsi', 1000);
-            $table->string('seating_plan', 255);
-            $table->string('syarat_ketentuan', 1000);
-            $table->enum('ebooklet', ['YA', 'TIDAK']);
+            $table->string('gambar', 255)->nullable();
+            $table->string('deskripsi', 1000)->nullable();
+            $table->string('seating_plan', 255)->nullable();
+            $table->string('syarat_ketentuan', 1000)->nullable();
+            $table->enum('ebooklet', ['ya', 'tidak'])->nullable();
             $table->string('link_ebooklet', 255)->nullable();
-            $table->enum('donasi', ['YA', 'TIDAK']);
-            $table->enum('tipe_kupon', ['KUPON', 'REFERAL', 'KEDUANYA'])->nullable();
-            $table->string('no_rekening', 45);
+            $table->enum('donasi', ['ya', 'tidak'])->nullable();
+            $table->enum('tipe_kupon', ['kupon', 'referal', 'keduanya'])->nullable();
+            $table->string('no_rekening', 45)->nullable();
 
-            $table->unsignedBigInteger('banks_id');
+            $table->unsignedBigInteger('banks_id')->nullable();
             $table->foreign('banks_id')->references('id')->on('banks');
             $table->unsignedBigInteger('events_id');
             $table->foreign('events_id')->references('id')->on('events');

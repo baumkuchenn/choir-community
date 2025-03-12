@@ -14,23 +14,23 @@
                     <div class="card-body">
                         <h4 class="fw-bold">Ringkasan Pembelian</h4>
                         @php
-                        $totalTiket = 0;
-                        $totalHarga = 0;
+                            $totalTiket = 0;
+                            $totalHarga = 0;
                         @endphp
                         @foreach ($tiketDipilih as $tiket)
-                        @php
-                        $subtotal = $tiket['jumlah'] * $tiket['harga'];
-                        $totalTiket += $tiket['jumlah'];
-                        $totalHarga += $subtotal;
-                        @endphp
-                        <div class="mt-2 d-flex align-items-center gap-3">
-                            <i class="fa-solid fa-ticket fa-fw fs-3"></i>
-                            <div>
-                                <p class="mb-0">{{ $tiket['nama'] }}</p>
-                                <p class="mb-0 fw-light">{{ $tiket['jumlah'] }} tiket x Rp{{ number_format($tiket['harga'], 0, ',', '.') }}</p>
+                            @php
+                                $subtotal = $tiket['jumlah'] * $tiket['harga'];
+                                $totalTiket += $tiket['jumlah'];
+                                $totalHarga += $subtotal;
+                            @endphp
+                            <div class="mt-2 d-flex align-items-center gap-3">
+                                <i class="fa-solid fa-ticket fa-fw fs-3"></i>
+                                <div>
+                                    <p class="mb-0">{{ $tiket['nama'] }}</p>
+                                    <p class="mb-0 fw-light">{{ $tiket['jumlah'] }} tiket x Rp{{ number_format($tiket['harga'], 0, ',', '.') }}</p>
+                                </div>
                             </div>
-                        </div>
-                        <hr>
+                            <hr>
                         @endforeach
                         <div class="d-flex align-items-center justify-content-between gap-2">
                             <p class="mb-0">Total <span class="fw-light">({{ $totalTiket }} tiket)</span></p>

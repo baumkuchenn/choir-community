@@ -109,7 +109,7 @@ body {
   -------------------------------------------------- */
 
 /* Seating Plan Image Container */
-.seating-plan-container {
+.image-container {
     position: relative;
     display: inline-block;
     /* max-width: 300px; */
@@ -117,13 +117,13 @@ body {
 }
 
 /* Seating Plan Image */
-.seating-plan-container img {
+.image-container img {
     width: 100%;
     border-radius: 5px;
 }
 
 /* Overlay (shown on hover) */
-.seating-plan-overlay {
+.image-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -139,11 +139,11 @@ body {
 }
 
 /* Show overlay when hovering over the image */
-.seating-plan-container:hover .seating-plan-overlay {
+.image-container:hover .image-overlay {
     opacity: 1;
 }
 
 /* Button Styling */
-.seating-plan-overlay .btn {
+.image-overlay .btn {
     padding: 5px 10px;
 }

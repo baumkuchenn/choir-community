@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->string('nama', 45);
-            $table->enum('jenis_kegiatan', ['INTERNAL', 'EKSTERNAL', 'KONSER']);
+            $table->string('nama', 255);
+            $table->enum('jenis_kegiatan', ['internal', 'eksternal', 'konser']);
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->time('jam_mulai');
@@ -22,10 +22,10 @@ return new class extends Migration
             $table->date('tanggal_gladi')->nullable();
             $table->time('jam_gladi')->nullable();
             $table->string('lokasi', 255);
-            $table->enum('peran', ['PANITIA', 'PENYANYI', 'KEDUANYA']);
-            $table->enum('panitia_eksternal', ['YA', 'TIDAK']);
-            $table->enum('metode_rekrut_panitia', ['PILIH', 'SELEKSI']);
-            $table->enum('metode_rekrut_penyanyi', ['PILIH', 'SELEKSI']);
+            $table->enum('peran', ['panitia', 'penyanyi', 'keduanya']);
+            $table->enum('panitia_eksternal', ['ya', 'tidak']);
+            $table->enum('metode_rekrut_panitia', ['pilih', 'seleksi']);
+            $table->enum('metode_rekrut_penyanyi', ['pilih', 'seleksi']);
 
             $table->unsignedBigInteger('sub_kegiatan_id')->nullable();
             $table->foreign('sub_kegiatan_id')->references('id')->on('events');

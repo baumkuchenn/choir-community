@@ -1,7 +1,7 @@
 @extends('layouts.eticket')
 
 @section('content')
-<form action="{{ route('eticket.payment', ['id' => $purchases->id]) }}" method="POST" id="form-payment" enctype="multipart/form-data">
+<form action="{{ route('eticket.payment', ['id' => $purchase->id]) }}" method="POST" id="form-payment" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="payment-menu" value="payment">
     <div class="container">
@@ -55,7 +55,10 @@
                         <p class="fw-bold mb-1">{{ $concert->no_rekening }}</p>
 
                         <p class="mb-0">Nama Pemilik Rekening</p>
-                        <p class="fw-bold">{{ $concert->pemilik_rekening }}</p>
+                        <p class="fw-bold mb-1">{{ $concert->pemilik_rekening }}</p>
+
+                        <p class="mb-0">Berita Transfer</p>
+                        <p class="fw-bold">{{ $concert->berita_transfer }}</p>
 
                         <div class="card shadow bg-body-secondary border-0 mb-3">
                             <div class="card-body">
@@ -68,15 +71,15 @@
                             <i class="bi bi-cloud-upload file-drop-icon"></i>
                             <p class="mt-2">Seret & taruh bukti pembayaranmu disini atau <label for="fileInput" class="text-primary fw-bold" style="cursor: pointer;">cari</label></p>
                             <input type="file" name="bukti_pembayaran" id="fileInput" class="d-none">
-                            <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih</p>
+                            <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih. Ukuran maksimal 2 MB.</p>
                         </div>
 
                         @if(session('error'))
-                        <script>
-                            document.addEventListener("DOMContentLoaded", function() {
-                                alert("{{ session('error') }}");
-                            });
-                        </script>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    alert("{{ session('error') }}");
+                                });
+                            </script>
                         @endif
                     </div>
                 </div>
@@ -102,7 +105,7 @@
             }
         });
         //Timer
-        let waktuPembelian = new Date("{{ $purchases->waktu_pembelian }}").getTime();
+        let waktuPembelian = new Date("{{ $purchase->waktu_pembelian }}").getTime();
         let expiryTime = waktuPembelian + (24 * 60 * 60 * 1000); // Add 24 hours
 
         function updateTimer() {

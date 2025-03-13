@@ -170,55 +170,106 @@
                 </ul>
             </div>
         </nav>
-        <div class="p-3 mb-4 bg-body border-bottom">
-            <div class="container">
-                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-lg-5">
-                    <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none p-1">
-                        <b> Choir Management </b>
-                    </a>
 
-                    <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-auto flex-grow-1" role="search">
+        <nav class="navbar navbar-expand-lg p-3 mb-4 bg-body border-bottom">
+            <div class="container">
+                <!-- Title -->
+                <a href="/" class="navbar-brand"><b>Choir Management</b></a>
+
+                <div class="d-flex align-items-center ms-auto">
+                    <!-- Search Icon (Hidden on lg, Shown on sm & md) -->
+                    <button class="btn d-lg-none me-2" id="searchButton">
+                        <i class="fa fa-search"></i>
+                    </button>
+
+                    <!-- Hamburger Icon -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <!-- Search Bar (Hidden by Default, Shows on Icon Click) -->
+                <div id="searchBar" class="d-none w-100 position-absolute top-0 start-0 p-3 bg-light shadow">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                        <input type="search" class="form-control" placeholder="Cari konser disini" aria-label="Search">
+                        <button class="btn btn-danger" id="closeSearch"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+
+                <!-- Full Navbar Content (Only Shown on Large Screens) -->
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-auto flex-grow-1 d-none d-lg-block" role="search">
                         <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fa fa-search"></i> <!-- FontAwesome search icon -->
-                            </span>
+                            <span class="input-group-text"><i class="fa fa-search"></i></span>
                             <input type="search" class="form-control" placeholder="Cari konser disini" aria-label="Search">
                         </div>
                     </form>
 
-                    <div class="d-flex flex-wrap align-items-center justify-content-center text-end">
+                    <div class="d-flex align-items-center text-end ms-3">
                         @if (Route::has('login'))
-                        @auth
-                        <a href="{{ route('eticket.myticket') }}" class="btn me-2">
-                            <i class="fas fa-ticket fa-fw"></i>
-                            Tiket Saya
-                        </a>
-                        <div class="flex-shrink-0 dropdown">
-                            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-                                {{ Auth::user()->name }}
-                            </a>
-                            <ul class="dropdown-menu text-small shadow">
-                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profil</a></li>
-                                <li><a class="dropdown-item" href="#">Pengaturan</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}" class="mb-0">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">Keluar</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                        @else
-                        <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">Masuk</a>
-                        <a href="{{ route('register') }}" class="btn btn-primary">Daftar</a>
-                        @endauth
+                            @auth
+                                <a href="{{ route('eticket.myticket') }}" class="btn me-2"><i class="fas fa-ticket fa-fw"></i> Tiket Saya</a>
+                                <div class="dropdown">
+                                    <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+                                        <img src="https://github.com/mdo.png" alt="Profile" width="32" height="32" class="rounded-circle">
+                                        {{ Auth::user()->name }}
+                                    </a>
+                                    <ul class="dropdown-menu text-small shadow">
+                                        <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profil</a></li>
+                                        <li><a class="dropdown-item" href="#">Pengaturan</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form method="POST" action="{{ route('logout') }}" class="mb-0">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item text-danger">Keluar</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">Masuk</a>
+                                <a href="{{ route('register') }}" class="btn btn-primary">Daftar</a>
+                            @endauth
                         @endif
                     </div>
                 </div>
+            </div>
+        </nav>
+
+        <!-- Offcanvas Sidebar for Small Screens -->
+        <div class="offcanvas offcanvas-start" id="mobileMenu">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+                @auth
+                    <div class="text-center">
+                        <img src="https://github.com/mdo.png" alt="Profile" width="50" height="50" class="rounded-circle mb-2">
+                        <p class="mb-3"><b>{{ Auth::user()->name }}</b></p>
+                    </div>
+                    <a href="{{ route('eticket.myticket') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                        <i class="fas fa-ticket fa-fw" style="width: 20px; text-align: center;"></i> Tiket Saya
+                    </a>
+                    <hr>
+                    <a href="{{ route('profile.edit') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                        <i class="fa-solid fa-user" style="width: 20px; text-align: center;"></i> Profil
+                    </a>
+                    <a href="#" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                        <i class="fa-solid fa-gear" style="width: 20px; text-align: center;"></i> Pengaturan
+                    </a>
+                    <hr>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="btn btn-link text-decoration-none text-danger w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                            <i class="fa-solid fa-right-from-bracket" style="width: 20px; text-align: center;"></i> Keluar
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn btn-primary w-100 mb-2">Masuk</a>
+                    <a href="{{ route('register') }}" class="btn btn-outline-primary w-100">Daftar</a>
+                @endauth
             </div>
         </div>
     </header>
@@ -226,6 +277,14 @@
         @yield('content')
     </main>
     <script src="{{asset('dist/js/bootstrap.bundle.min.js')}}"></script>
+    <script>
+        document.getElementById("searchButton").addEventListener("click", function () {
+            document.getElementById("searchBar").classList.remove("d-none");
+        });
+        document.getElementById("closeSearch").addEventListener("click", function () {
+            document.getElementById("searchBar").classList.add("d-none");
+        });
+    </script>
     @yield('js')
 </body>
 

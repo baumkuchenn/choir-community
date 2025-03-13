@@ -138,7 +138,7 @@
                     </div>
                 </div>
 
-                <div class="fixed-bottom bg-light p-3 border-top text-end">
+                <div class="fixed-bottom bg-body-secondary p-3 border-top text-end">
                     <button class="btn btn-primary">Simpan Perubahan</button>
                 </div>
             </form>
@@ -152,12 +152,11 @@
             </div>
             <div class="tab-pane fade mb-5" id="tiket" role="tabpanel">
                 <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
                         <h5>Daftar Pembeli Tiket</h5>
-                        <div> {!! $purchases->links() !!} </div>
                     </div>
-                    <table class="table table-bordered shadow text-center">
-                        <thead>
+                    <table id="purchaseTable" class="table table-bordered shadow text-center">
+                        <thead class="text-center">
                             <tr class="bg-primary">
                                 <th>Nama</th>
                                 <th>Nomor Handphone</th>
@@ -186,7 +185,7 @@
                                                 @else
                                                     E-ticket Terkirim ({{ $totalTickets }} tiket)
                                                 @endif
-                                            @elseif($purchase->status === 'VERIFIKASI')
+                                            @elseif($purchase->status === 'verifikasi')
                                                 Verifikasi Pembayaran
                                             @endif
                                         </td>
@@ -195,7 +194,7 @@
                                                 @if($checkedInCount != $totalTickets)
                                                     <button class="btn btn-primary loadCheckInForm" data-purchase-id="{{ $purchase->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
                                                 @endif
-                                            @elseif($purchase->status === 'VERIFIKASI')
+                                            @elseif($purchase->status === 'verifikasi')
                                                 <form action="{{ route('events.payment', $purchase->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
                                                     @csrf
                                                     <button class="btn btn-primary">Lihat Detail</button>
@@ -214,7 +213,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
                         <h5>Jenis Tiket</h5>
                         <div> {!! $ticketTypes->links() !!} </div>
                     </div>
@@ -265,7 +264,7 @@
                             </p>
                             <input type="file" name="gambar" id="fileInput" class="d-none" accept="image/*">
                             <input type="hidden" name="existing_gambar" id="existingSeatingPlan" value="{{ $concert->gambar ?? '' }}">
-                            <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih. Maksimal ukuran file 2 MB.</p>
+                            <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih. Maksimal ukuran file 2 MB. Rekomendasi gambar memiliki rasio aspek 16:9</p>
                         </div>
 
                         <div class="text-center">
@@ -301,7 +300,7 @@
                             </p>
                             <input type="file" name="seating_plan" id="fileInput" class="d-none" accept="image/*">
                             <input type="hidden" name="existing_seating_plan" id="existingSeatingPlan" value="{{ $concert->seating_plan ?? '' }}">
-                            <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih. Maksimal ukuran file 2 MB.</p>
+                            <p id="fileName" class="mt-2 text-muted">Belum ada file yang dipilih. Maksimal ukuran file 2 MB. Rekomendasi gambar memiliki rasio aspek 16:9</p>
                         </div>
 
                         <div class="text-center">
@@ -328,18 +327,62 @@
                     </div>
 
                     <div class="mb-3">
+                        <h5>Informasi Pembayaran</h5>
+                        <div class="mb-3">
+                            <label for="banks_id" class="form-label">Nama Bank</label>
+                            <select class="form-control" id="banks_id" name="banks_id" required>
+                                <option value="" disabled selected>Pilih Bank</option>
+                                @foreach ($banks as $bank)
+                                    <option value="{{ $bank->id }}" 
+                                        {{ old('banks_id', $concert->banks_id) == $bank->id ? 'selected' : '' }}>
+                                        {{ $bank->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('banks_id')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="no_rekening" class="form-label">Nomor Rekening</label>
+                            <input type="text" class="form-control" id="no_rekening" name="no_rekening" placeholder="" value="{{ old('no_rekening', $concert->no_rekening) }}" required>
+                            @error('no_rekening')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        
+
+                        <div class="mb-3">
+                            <label for="pemilik_rekening" class="form-label">Nama Pemilik Rekening</label>
+                            <input type="text" class="form-control" id="pemilik_rekening" name="pemilik_rekening" placeholder="" value="{{ old('pemilik_rekening', $concert->pemilik_rekening) }}" required>
+                            @error('pemilik_rekening')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="berita_transfer" class="form-label">Keterangan Berita Transfer</label>
+                            <input type="text" class="form-control" id="berita_transfer" name="berita_transfer" placeholder="" value="{{ old('berita_transfer', $concert->berita_transfer) }}" required>
+                            @error('berita_transfer')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
                         <h5>E-Booklet</h5>
                         <div class="row">
                             <div class="col-12 col-md-4">
                                 <p class="mb-0">Menggunakan e-booklet?</p>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ebooklet" id="ebooklet_yes" value="YA"
-                                        {{ old('ebooklet', $concert->ebooklet) == 'YA' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="ebooklet" id="ebooklet_yes" value="ya"
+                                        {{ old('ebooklet', $concert->ebooklet) == 'ya' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="ebooklet_yes">Ya</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="ebooklet" id="ebooklet_no" value="TIDAK"
-                                        {{ old('ebooklet', $concert->ebooklet) == 'TIDAK' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="ebooklet" id="ebooklet_no" value="tidak"
+                                        {{ old('ebooklet', $concert->ebooklet) == 'tidak' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="ebooklet_no">Tidak</label>
                                 </div>
                                 @error('ebooklet')
@@ -349,7 +392,7 @@
                             <div class="col-12 col-md-8" id="ebooklet_link_container" style="display: none;">
                                 <label for="link_ebooklet" class="form-label">Link e-booklet</label>
                                 <input type="text" class="form-control" id="link_ebooklet" name="link_ebooklet" placeholder=""
-                                    value="{{ old('link_ebooklet', $concert->link_ebooklet) }}" required>
+                                    value="{{ old('link_ebooklet', $concert->link_ebooklet) }}">
                                 @error('link_ebooklet')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -363,13 +406,13 @@
                             <div class="col-12">
                                 <p class="mb-0">Menerima donasi?</p>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="donasi" id="donasi_yes" value="YA"
-                                        {{ old('donasi', $concert->donasi == 'YA') ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="donasi" id="donasi_yes" value="ya"
+                                        {{ old('donasi', $concert->donasi == 'ya') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="donasi_yes">Ya</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="donasi" id="donasi_no" value="TIDAK"
-                                        {{ old('donasi', $concert->donasi == 'TIDAK') ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="donasi" id="donasi_no" value="tidak"
+                                        {{ old('donasi', $concert->donasi == 'tidak') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="donasi_no">Tidak</label>
                                 </div>
                                 @error('donasi')
@@ -418,12 +461,12 @@
                                 <p class="mb-0">Menggunakan kupon?</p>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="kupon" id="kupon_yes" value="YA"
-                                        {{ old('kupon', $concert->kupon == 'YA') ? 'checked' : '' }}>
+                                        {{ old('kupon', $concert->kupon == 'ya') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="kupon_yes">Ya</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="kupon" id="kupon_no" value="TIDAK"
-                                        {{ old('kupon', $concert->kupon == 'TIDAK') ? 'checked' : '' }}>
+                                        {{ old('kupon', $concert->kupon == 'tidak') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="kupon_no">Tidak</label>
                                 </div>
                                 @error('kupon')
@@ -432,12 +475,11 @@
                             </div>
                             <div class="col-12 col-md-8" id="tipe_kupon_container" style="display: none;">
                                 <label for="tipe_kupon" class="form-label">Tipe kupon yang digunakan</label>
-                                <label for="jenis_kegiatan" class="form-label">Jenis Kegiatan</label>
-                                <select class="form-control" id="tipe_kupon" name="tipe_kupon" required>
+                                <select class="form-control" id="tipe_kupon" name="tipe_kupon">
                                     <option value="" disabled selected>Pilih tipe kupon</option>
-                                    <option value="KUPON" {{ old('tipe_kupon', $concert->tipe_kupon) == 'KUPON' ? 'selected' : '' }}>Kupon</option>
-                                    <option value="REFERAL" {{ old('tipe_kupon', $concert->tipe_kupon) == 'REFERAL' ? 'selected' : '' }}>Referal</option>
-                                    <option value="KEDUANYA" {{ old('tipe_kupon', $concert->tipe_kupon) == 'KEDUANYA' ? 'selected' : '' }}>Keduanya</option>
+                                    <option value="kupon" {{ old('tipe_kupon', $concert->tipe_kupon) == 'kupon' ? 'selected' : '' }}>Kupon</option>
+                                    <option value="referal" {{ old('tipe_kupon', $concert->tipe_kupon) == 'referal' ? 'selected' : '' }}>Referal</option>
+                                    <option value="keduanya" {{ old('tipe_kupon', $concert->tipe_kupon) == 'keduanya' ? 'selected' : '' }}>Keduanya</option>
                                 </select>
                             </div>
                         </div>
@@ -527,7 +569,7 @@
                         </div>
                     </div>
 
-                    <div class="fixed-bottom bg-light p-3 border-top text-end">
+                    <div class="fixed-bottom bg-body-secondary p-3 border-top text-end">
                         <button class="btn btn-primary">
                             @if($concert->status == 'draft')    
                                 Upload ke E-ticketing
@@ -633,6 +675,34 @@
         });
 
 
+        //Data table pembeli tiket untuk search bar
+        $('#purchaseTable').DataTable({
+            "paging": true,         // Enable pagination
+            "searching": true,      // Enable search box
+            "ordering": false,       // Enable column sorting
+            "info": false,           // Show info text
+            "lengthMenu": [10, 25, 50, 100], // Control how many entries to show
+            "language": {
+                "search": "Cari: ", // Customize search box placeholder
+                "lengthMenu": "Tampilkan _MENU_ tiket per halaman",
+                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                "infoEmpty": "Tidak ada data tersedia",
+                "infoFiltered": "(disaring dari _MAX_ total data)",
+                "paginate": {
+                    "first": "Awal",
+                    "last": "Akhir",
+                    "next": "Berikutnya",
+                    "previous": "Sebelumnya"
+                }
+            },
+            "columnDefs": [
+                { "className": "text-center", "targets": "_all" } // Centers all columns
+            ]
+        });
+        $('.dataTables_length').addClass('mb-2');
+        $('.dataTables_filter').addClass('mb-2');
+
+
         //Show check in button
         document.querySelectorAll(".loadCheckInForm").forEach((button) => {
             button.addEventListener("click", function() {
@@ -714,12 +784,15 @@
         let ebookletYes = document.getElementById("ebooklet_yes");
         let ebookletNo = document.getElementById("ebooklet_no");
         let ebookletLinkContainer = document.getElementById("ebooklet_link_container");
+        let ebookletInput = document.getElementById("link_ebooklet");
 
         function toggleEbookletInput() {
             if (ebookletYes.checked) {
                 ebookletLinkContainer.style.display = "block";
+                ebookletInput.setAttribute("required", "required");
             } else {
                 ebookletLinkContainer.style.display = "none";
+                ebookletInput.removeAttribute("required");
             }
         }
 
@@ -757,9 +830,11 @@
         function toggleTipeKupon() {
             if (kuponYes.checked) {
                 tipeKuponContainer.style.display = "block";
+                tipeKupon.setAttribute("required", "required");
                 toggleKuponReferalContainers();
             } else {
                 tipeKuponContainer.style.display = "none";
+                tipeKupon.removeAttribute("required");
                 kuponContainer.style.display = "none";
                 referalContainer.style.display = "none";
             }

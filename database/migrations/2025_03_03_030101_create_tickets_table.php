@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('number');
             $table->string('barcode_code', 45);
             $table->string('barcode_number', 255);
-            $table->enum('check_in', ['YA', 'TIDAK'])->default('TIDAK');
+            $table->enum('check_in', ['ya', 'tidak'])->default('tidak');
             $table->timestamp('waktu_check_in')->nullable();
 
             $table->unsignedBigInteger('invoices_id');

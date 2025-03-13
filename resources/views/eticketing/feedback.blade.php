@@ -5,34 +5,34 @@
     <a href="{{ $backUrl ?? route('eticket.myticket') }}" class="btn btn-outline-primary">Kembali</a>
     <div class="row mt-3">
         <div class="col-12 col-lg-8">
-            <img src="{{ $events->gambar }}" style="width: 100%; max-height: 360px;">
+            <img src="{{ asset('storage/' . $concert->gambar) }}" style="width: 100%; max-height: 360px;">
         </div>
         <div class="col-12 col-lg-4">
             <div class="card shadow">
                 <div class="card-body">
-                    <h4 class="fw-bold">{{ $events->nama }}</h4>
+                    <h4 class="fw-bold">{{ $event->nama }}</h4>
                     <div class="mt-4">
                         <div class="d-flex align-items-center gap-2">
                             <i class="fa-solid fa-calendar-days fa-fw fs-5"></i>
-                            <p class="mb-0">{{ \Carbon\Carbon::parse($events->tanggal_mulai)->translatedFormat('d F Y') }}</p>
+                            <p class="mb-0">{{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d F Y') }}</p>
                         </div>
 
                         <div class="mt-2 d-flex align-items-center gap-2">
                             <i class="fa-solid fa-clock fa-fw fs-5"></i>
-                            <p class="mb-0">Open Gate: {{ \Carbon\Carbon::parse($events->jam_mulai)->format('H:i') }} WIB</p>
+                            <p class="mb-0">Open Gate: {{ \Carbon\Carbon::parse($event->jam_mulai)->format('H:i') }} WIB</p>
                         </div>
 
                         <div class="mt-2 d-flex gap-2">
                             <i class="fa-solid fa-location-dot fa-fw fs-5"></i>
-                            <p class="mb-0">{{ $events->lokasi }}</p>
+                            <p class="mb-0">{{ $event->lokasi }}</p>
                         </div>
                     </div>
                     <hr>
                     <div class="mt-2 d-flex align-items-center gap-2">
-                        <img src="{{ $events->logo }}" style="width: 40px; height: 40px">
+                        <img src="{{ asset('storage/' . $event->logo) }}" style="width: 40px; height: 40px">
                         <div>
                             <p class="mb-0">Diselenggarakan oleh</p>
-                            <p class="mb-0 fw-bold">{{ $events->penyelenggara }}</p>
+                            <p class="mb-0 fw-bold">{{ $event->penyelenggara }}</p>
                         </div>
                     </div>
                 </div>
@@ -40,52 +40,52 @@
         </div>
     </div>
 
-    <form action="{{ route('eticket.feedback', ['id' => $events->id]) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('eticket.feedback', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="feedback-menu" value="save-feedback">
-        @if($events->donasi === 'TIDAK')
-        <input type="hidden" name="donasi" value="YA">
-        <div class="row mt-3 p-2">
-            <h4 class="fw-bold p-0">Kirim donasi untuk membantu kegiatan ini</h4>
-            <div class="card shadow">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                                <h4 class="mb-0 fw-bold">Transfer Bank {{ $events->nama_singkatan }}</h4>
-                                <img src="{{ $events->logo }}" style="width: 25px; height: 25px;">
-                            </div>
-
-                            <p class="mb-0">Nomor Rekening</p>
-                            <p class="fw-bold mb-1">{{ $events->no_rekening }}</p>
-
-                            <p class="mb-0">Nama Pemilik Rekening</p>
-                            <p class="fw-bold">{{ $events->pemilik_rekening }}</p>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <p class="fw-light mb-0">Isi kotak berikut jika ingin melakukan donasi</p>
-                            <div>
-                                <label for="nama" class="form-label">Nama Lengkap</label>
-                                <input type="text" class="form-control" id="nama" name="nama" placeholder="" value="{{ old('nama') }}">
-                                <div class="invalid-feedback">
-                                    Tolong isi nama lengkap anda.
+        @if($concert->donasi === 'tidak')
+            <input type="hidden" name="donasi" value="ya">
+            <div class="row mt-3 p-2">
+                <h4 class="fw-bold p-0">Kirim donasi untuk membantu kegiatan ini</h4>
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+                                    <h4 class="mb-0 fw-bold">Transfer Bank {{ $concert->bank->nama_singkatan }}</h4>
+                                    <img src="{{ $concert->bank->logo }}" style="width: 25px; height: 25px;">
                                 </div>
+
+                                <p class="mb-0">Nomor Rekening</p>
+                                <p class="fw-bold mb-1">{{ $concert->no_rekening }}</p>
+
+                                <p class="mb-0">Nama Pemilik Rekening</p>
+                                <p class="fw-bold">{{ $concert->pemilik_rekening }}</p>
                             </div>
-                            <div class="mt-1">
-                                <label for="jumlah" class="form-label">Nominal</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Rp</span>
-                                    <input type="number" class="form-control" id="jumlah" name="jumlah" placeholder="" value="{{ old('jumlah') }}">
+                            <div class="col-12 col-md-6">
+                                <p class="fw-light mb-0">Isi kotak berikut jika ingin melakukan donasi</p>
+                                <div>
+                                    <label for="nama" class="form-label">Nama Lengkap</label>
+                                    <input type="text" class="form-control" id="nama" name="nama" placeholder="" value="{{ old('nama') }}">
+                                    <div class="invalid-feedback">
+                                        Tolong isi nama lengkap anda.
+                                    </div>
                                 </div>
-                                <div class="invalid-feedback">
-                                    Tolong isi nominal transfer anda.
+                                <div class="mt-1">
+                                    <label for="jumlah" class="form-label">Nominal</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp</span>
+                                        <input type="number" class="form-control" id="jumlah" name="jumlah" placeholder="" value="{{ old('jumlah') }}">
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Tolong isi nominal transfer anda.
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         @endif
         <div class="row mt-3 p-2">
             <h4 class="fw-bold p-0">Bagaimana pendapatmu terkait konser ini?</h4>

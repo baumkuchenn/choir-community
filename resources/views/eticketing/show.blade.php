@@ -6,35 +6,35 @@
 
     <div class="row mt-3">
         <div class="col-12 col-lg-8">
-            <img src="{{ asset('storage/'. $concert->gambar) }}" style="width: 100%; max-height: 360px;">
+            <img src="{{ asset('storage/'. $event->concert->gambar) }}" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
         </div>
         <div class="col-12 col-lg-4">
             <div class="card shadow">
                 <div class="card-body">
-                    <h4 class="fw-bold">{{ $concert->nama }}</h4>
+                    <h4 class="fw-bold">{{ $event->nama }}</h4>
                     <div class="mt-4">
                         <div class="d-flex align-items-center gap-2">
                             <i class="fa-solid fa-calendar-days fa-fw fs-5"></i>
-                            <p class="mb-0">{{ \Carbon\Carbon::parse($concert->tanggal_mulai)->translatedFormat('d F Y') }}</p>
+                            <p class="mb-0">{{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d F Y') }}</p>
                         </div>
 
                         <div class="mt-2 d-flex align-items-center gap-2">
                             <i class="fa-solid fa-clock fa-fw fs-5"></i>
-                            <p class="mb-0">Open Gate: {{ \Carbon\Carbon::parse($concert->jam_mulai)->format('H:i') }} WIB</p>
+                            <p class="mb-0">Open Gate: {{ \Carbon\Carbon::parse($event->jam_mulai)->format('H:i') }} WIB</p>
                         </div>
 
                         <div class="mt-2 d-flex gap-2">
                             <i class="fa-solid fa-location-dot fa-fw fs-5"></i>
-                            <p class="mb-0">{{ $concert->lokasi }}</p>
+                            <p class="mb-0">{{ $event->lokasi }}</p>
                         </div>
                     </div>
                     <p class="mt-3">Harga mulai dari <span class="fw-bold">Rp{{ number_format($hargaMulai, 0, ',', '.') }}</span></p>
                     <hr>
                     <div class="mt-2 d-flex align-items-center gap-2">
-                        <img src="{{ asset('storage/'. $concert->logo) }}" style="width: 40px; height: 40px">
+                        <img src="{{ asset('storage/'. $event->logo) }}" style="width: 40px; height: 40px">
                         <div>
                             <p class="mb-0">Diselenggarakan oleh</p>
-                            <p class="mb-0 fw-bold">{{ $concert->penyelenggara }}</p>
+                            <p class="mb-0 fw-bold">{{ $event->penyelenggara }}</p>
                         </div>
                     </div>
                 </div>
@@ -46,11 +46,11 @@
             <div class="card shadow">
                 <div class="card-body">
                     <h5 class="fw-bold">Deskripsi</h5>
-                    <p class="mt-1">{!! nl2br(e($concert->deskripsi)) !!}</p>
+                    <p class="mt-1">{!! nl2br(e($event->concert->deskripsi)) !!}</p>
                     <h5 class="fw-bold">Seating Plan</h5>
-                    <img src="{{ asset('storage/'. $concert->seating_plan) }}" class="mt-1 mb-3 w-100">
+                    <img src="{{ asset('storage/'. $event->concert->seating_plan) }}" class="mt-1 mb-3" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
                     <h5 class="fw-bold">Syarat dan Ketentuan</h5>
-                    <p class="mt-1">{!! nl2br(e($concert->syarat_ketentuan)) !!}</p>
+                    <p class="mt-1">{!! nl2br(e($event->concert->syarat_ketentuan)) !!}</p>
                 </div>
             </div>
         </div>
@@ -78,7 +78,7 @@
                         <h6>Total <span id="total-tickets">0</span> tiket</h6>
                         <h6 class="fw-bold">Rp<span id="total-price">0</span></h6>
                     </div>
-                    <form action="{{ route('eticket.order', ['id' => $concert->id]) }}" id="form-beli" method="POST">
+                    <form action="{{ route('eticket.order', ['id' => $event->concert->id]) }}" id="form-beli" method="POST">
                         @csrf
                         <input type="hidden" name="tickets" id="selected-tickets">
                         <button type="submit" onclick="event.preventDefault(); beliTiket();" class="btn btn-primary w-100 fs-6 fw-bold">Beli Tiket</button>

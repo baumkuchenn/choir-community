@@ -77,50 +77,54 @@
 
 @if($purchases && $purchases->isNotEmpty())
 <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
-    <div class="card shadow">
+    <div class="card shadow" style="width: 300px; max-width: 100%;">
         <div class="card-body">
             <h5 class="fw-bold">Daftar Pembelian Tertunda</h5>
             @foreach($purchases as $purchase)
-            <form action="{{ route('eticket.purchase', ['id' => $purchase->id]) }}" method="POST" class="d-inline">
-                @csrf
-                <input type="hidden" name="purchase-menu" value="check-purchase">
-                <a href="" class="mt-2 d-flex align-items-center gap-3 text-decoration-none text-dark"
+                <form action="{{ route('eticket.purchase', ['id' => $purchase->id]) }}" method="POST" class="d-inline">
+                    @csrf
+                    <input type="hidden" name="purchase-menu" value="check-purchase">
+                    <a href="#" class="mt-2 d-flex align-items-center gap-3 text-decoration-none text-dark"
                     onclick="this.closest('form').submit(); return false;">
-                    <img src="{{ asset('storage/' . $purchase->gambar) }}" style="width: 60px; height: 60px; object-fit: cover;">
-                    <div class="">
-                        <p class="text-warning mb-0 fw-bold" id="timer"></p>
-                        <p class="mb-0">{{ $purchase->nama }}</p>
-                        <p class="mb-0 fw-light">
-                            <i class="fa-solid fa-ticket fa-fw fs-6"></i>
-                            {{ $purchase->jumlah_tiket }} tiket
-                            <span class="fw-bold">Rp{{ number_format($purchase->total_tagihan, 0, ',', '.') }}</span>
-                        </p>
-                    </div>
-                </a>
-            </form>
-            <script>
-                let waktuPembelian = new Date("{{ $purchase->waktu_pembelian }}").getTime();
-                let expiryTime = waktuPembelian + (24 * 60 * 60 * 1000); // Add 24 hours
+                        <img src="{{ asset('storage/' . $purchase->concert->gambar) }}" 
+                            class="flex-shrink-0 rounded"
+                            style="width: 60px; height: 60px; object-fit: cover;">
+                        <div class="w-100">
+                            <p class="text-warning mb-0 fw-bold" id="timer"></p>
+                            <p class="mb-0 text-truncate d-inline-block w-100" style="max-width: 200px;">
+                                {{ $purchase->concert->event->nama }}
+                            </p>
+                            <p class="mb-0 fw-light">
+                                <i class="fa-solid fa-ticket fa-fw fs-6"></i>
+                                {{ $purchase->jumlah_tiket }} tiket
+                                <span class="fw-bold">Rp{{ number_format($purchase->total_tagihan, 0, ',', '.') }}</span>
+                            </p>
+                        </div>
+                    </a>
+                </form>
+                <script>
+                    let waktuPembelian = new Date("{{ $purchase->waktu_pembelian }}").getTime();
+                    let expiryTime = waktuPembelian + (24 * 60 * 60 * 1000); // Add 24 hours
 
-                function updateTimer() {
-                    let now = new Date().getTime();
-                    let remaining = expiryTime - now;
+                    function updateTimer() {
+                        let now = new Date().getTime();
+                        let remaining = expiryTime - now;
 
-                    if (remaining <= 0) {
-                        document.getElementById("countdown").innerHTML = "<strong>Pembayaran telah kadaluarsa!</strong>";
-                        return;
+                        if (remaining <= 0) {
+                            document.getElementById("countdown").innerHTML = "<strong>Pembayaran telah kadaluarsa!</strong>";
+                            return;
+                        }
+
+                        let hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
+                        let minutes = Math.floor((remaining / (1000 * 60)) % 60);
+                        let seconds = Math.floor((remaining / 1000) % 60);
+
+                        document.getElementById("timer").innerText = `${hours}:${minutes}:${seconds}`;
                     }
 
-                    let hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
-                    let minutes = Math.floor((remaining / (1000 * 60)) % 60);
-                    let seconds = Math.floor((remaining / 1000) % 60);
-
-                    document.getElementById("timer").innerText = `${hours}:${minutes}:${seconds}`;
-                }
-
-                setInterval(updateTimer, 1000);
-                updateTimer();
-            </script>
+                    setInterval(updateTimer, 1000);
+                    updateTimer();
+                </script>
             @endforeach
         </div>
     </div>
@@ -204,14 +208,14 @@
                 } else {
                     eventCard.classList.add("col-lg-3", "col-6", "col-md-4");
                     eventCard.innerHTML = `
-                        <a href="/eticket/${item.id}" class="text-decoration-none">
-                            <div class="card">
-                                <img src="{{ asset('storage/') }}/${item.gambar}" class="d-block w-100" alt="${item.nama}">
-                                <div class="card-body">
-                                    <h5 class="card-title">${item.nama}</h5>
+                        <a href="/eticket/${item.concert.id}" class="text-decoration-none">
+                            <div class="card h-100">
+                                <img src="{{ asset('storage/') }}/${item.concert.gambar}" class="card-img-top img-fluid" alt="${item.nama}" style="aspect-ratio: 16/9; object-fit: cover;">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-truncate">${item.nama}</h5>
                                     <p class="card-text mb-0">${item.tanggal_mulai}</p>
                                     <p class="card-text"><b>Rp${item.hargaMulai}</b></p>
-                                    <h6 class="card-title border-top pt-2">${item.penyelenggara}</h6>
+                                    <h6 class="card-title border-top pt-2 text-truncate">${item.choir.nama}</h6>
                                 </div>
                             </div>
                         </a>

@@ -7,7 +7,7 @@
     <div id="print-invoice">
         <div class="row mt-3">
             <div class="col-12 col-lg-8">
-                <img src="{{ $events->gambar }}" style="width: 100%; max-height: 360px;">
+                <img src="{{ asset('storage/' . $concerts->gambar) }}" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
             </div>
             <div class="col-12 col-lg-4">
                 <div class="card shadow">
@@ -31,7 +31,7 @@
                         </div>
                         <hr>
                         <div class="mt-2 d-flex align-items-center gap-2">
-                            <img src="{{ $events->logo }}" style="width: 40px; height: 40px">
+                            <img src="{{ asset('storage/' . $events->logo) }}" style="width: 40px; height: 40px">
                             <div>
                                 <p class="mb-0">Diselenggarakan oleh</p>
                                 <p class="mb-0 fw-bold">{{ $events->penyelenggara }}</p>
@@ -58,22 +58,22 @@
                     <div class="row">
                         <div class="col-6">
                             <p class="mb-0">Tanggal Pembelian</p>
-                            <p class="fw-bold">{{ $events->waktu_pembelian }} WIB</p>
+                            <p class="fw-bold">{{ $purchase->waktu_pembelian }} WIB</p>
                         </div>
                         <div class="col-6">
                             <p class="mb-0">Tiket Dibeli</p>
                             @foreach($purchaseDetail as $detail)
-                            <p class="fw-bold">{{ $detail->nama }} {{ $detail->jumlah_dibeli }} tiket</p>
+                                <p class="fw-bold">{{ $detail->nama }} {{ $detail->pivot->jumlah }} tiket</p>
                             @endforeach
                         </div>
                     </div>
-                    @if(!empty($events->link_ebooklet))
-                    <div class="row">
-                        <div class="col-6">
-                            <p class="mb-0">Link e-booklet</p>
-                            <a class="fw-bold">{{ $events->link_ebooklet }}</a>
+                    @if(!empty($concerts->link_ebooklet))
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="mb-0">Link e-booklet</p>
+                                <a class="fw-bold">{{ $concerts->link_ebooklet }}</a>
+                            </div>
                         </div>
-                    </div>
                     @endif
                 </div>
             </div>
@@ -81,20 +81,20 @@
         <div class="row mt-3">
             <div class="d-flex align-items-center justify-content-between pe-0 ps-0">
                 @foreach($tickets as $ticket)
-                <div class="card shadow col-6 col-md-4 col-lg-3">
-                    <div class="card-body text-center">
-                        <p class="mb-0 fw-bold">{{ $ticket->nama }} #{{ $ticket->number }}</p>
-                        <hr>
-                        <img src="{{ asset('storage/' . $ticket->barcode_image) }}" alt="Barcode" style="width: 100%;">
-                        <p>{{ $ticket->barcode_code }}</p>
+                    <div class="card shadow col-6 col-md-4 col-lg-3">
+                        <div class="card-body text-center">
+                            <p class="mb-0 fw-bold">{{ $ticket->nama }} #{{ $ticket->number }}</p>
+                            <hr>
+                            <img src="{{ asset('storage/' . $ticket->barcode_image) }}" alt="Barcode" style="width: 100%;">
+                            <p>{{ $ticket->barcode_code }}</p>
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>
         <div class="row mt-3">
             <h4 class="fw-bold">Syarat & Ketentuan</h4>
-            <p>{!! nl2br(e($events->syarat_ketentuan)) !!}</p>
+            <p>{!! nl2br(e($concerts->syarat_ketentuan)) !!}</p>
         </div>
     </div>
 </div>

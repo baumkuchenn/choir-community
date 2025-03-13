@@ -22,6 +22,8 @@ return new class extends Migration
             $table->enum('donasi', ['ya', 'tidak'])->nullable();
             $table->enum('tipe_kupon', ['kupon', 'referal', 'keduanya'])->nullable();
             $table->string('no_rekening', 45)->nullable();
+            $table->string('pemilik_rekening', 150)->nullable();
+            $table->string('berita_transfer', 255)->nullable();
 
             $table->unsignedBigInteger('banks_id')->nullable();
             $table->foreign('banks_id')->references('id')->on('banks');

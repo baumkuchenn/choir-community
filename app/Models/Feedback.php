@@ -9,6 +9,7 @@ class Feedback extends Model
 {
     use HasFactory;
     protected $table = 'feedbacks';
+    protected $fillable = ['isi', 'gambar', 'concerts_id', 'users_id'];
     
     public function concert()
     {

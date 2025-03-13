@@ -14,14 +14,19 @@ class ConcertController extends Controller
             'deskripsi' => 'required|string|max:1000',
             'seating_plan' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'syarat_ketentuan' => 'required|string|max:1000',
+            'banks_id' => 'required',
+            'no_rekening' => 'required|string|max:45',
+            'pemilik_rekening' => 'required|string|max:150',
+            'berita_transfer' => 'required|string|max:255',
             'ebooklet' => 'required',
-            'link_ebooklet' => 'string|max:255',
+            'link_ebooklet' => 'nullable|string|max:255',
             'donasi' => 'required',
             'kupon' => 'required',
         ]);
 
-        $concert = Concert::where('events_id', $id)->firstOrNew(['events_id' => $id]);
-
+        $concert = Concert::where('events_id', $id)->firstOrFail();
+        $previousStatus = $concert->status;
+        
         if ($request->hasFile('seating_plan')) {
             $image = $request->file('seating_plan');
             $filename = 'eventId_' . $id . '.jpg';
@@ -42,10 +47,16 @@ class ConcertController extends Controller
             $concert->gambar = $request->existing_gambar;
         }
 
-        $concert->fill($request->except(['seating_plan', 'existing_seating_plan', 'gambar', 'existing_gambar']));
-        $concert->save();
+        $concert->update($request->except(['seating_plan', 'existing_seating_plan', 'gambar', 'existing_gambar']));
 
-        return redirect()->route('events.show', $id)
-            ->with('success', $concert->wasRecentlyCreated ? 'Konser berhasil diupload ke menu e-ticketing.' : 'Data konser berhasil diperbarui.');
+        if ($concert->status === 'draft') {
+            $concert->update(['status' => 'published']);
+        }
+
+        $message = ($previousStatus === 'draft' && $concert->status === 'published')
+            ? 'Konser berhasil diupload ke menu e-ticketing.'
+            : 'Data konser berhasil diperbarui.';
+
+        return redirect()->route('events.show', $id)->with('success', $message);
     }
 }

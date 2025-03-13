@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bank;
 use App\Models\Concert;
 use App\Models\Event;
 use App\Models\Invoice;
@@ -88,7 +89,6 @@ class EventController extends Controller
             ->where('choirs_id', Auth::user()->choirs->first()->id)
             ->get();
         $concert = $event->concert;
-
         if (!$concert) {
             Concert::create([
                 'events_id' => $id,
@@ -117,8 +117,9 @@ class EventController extends Controller
             ->paginate(5);
         $donations = $concert->donations()->with('user:id,name,no_handphone')->paginate(5);
         $feedbacks = $concert->feedbacks()->with('user:id,name')->paginate(5);
+        $banks = Bank::all();
 
-        return view('event.show', compact('event', 'events', 'concert', 'purchases', 'ticketTypes', 'donations', 'feedbacks'));
+        return view('event.show', compact('event', 'events', 'concert', 'banks','purchases', 'ticketTypes', 'donations', 'feedbacks'));
     }
 
     /**

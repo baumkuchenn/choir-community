@@ -8,6 +8,7 @@
     <title>Choir Management</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link href="{{asset('dist/css/bootstrap.min.css')}}" rel="stylesheet">
 
     <style>
@@ -105,18 +106,24 @@
                 </ul>
             </div>
         </nav>
-        <div class="p-3 mb-4 bg-body border-bottom">
+        <nav class="navbar navbar-expand-lg p-3 mb-4 bg-body border-bottom">
             <div class="container">
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-lg-5">
-                    <a href="{{ route('management.index') }}" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none p-1">
-                        <b> Choir Management </b>
-                    </a>
+                <!-- Title -->
+                <a href="{{ route('management.index') }}" class="navbar-brand"><b>Choir Management</b></a>
 
-                    <div class="d-flex flex-wrap align-items-center text-end">
+                <div class="d-flex align-items-center ms-auto">
+                    <!-- Hamburger Icon -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <!-- Full Navbar Content (Large Screens) -->
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <div class="d-flex flex-wrap align-items-center text-end ms-auto">
                         <div class="flex-shrink-0 dropdown">
-                            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle me-2 pe-2" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-list-check"></i>
-                                Manajemen
+                            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle me-2 pe-2" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-list-check"></i> Manajemen
                             </a>
                             <ul class="dropdown-menu text-small shadow">
                                 <li><a class="dropdown-item" href="{{ route('events.index') }}">Manajemen Kegiatan</a></li>
@@ -125,24 +132,20 @@
                             </ul>
                         </div>
                         <a href="{{ route('management.calendar') }}" class="btn me-2">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            Kalender
+                            <i class="fa-solid fa-calendar-days"></i> Kalender
                         </a>
                         <a href="{{ route('management.notification') }}" class="btn me-2">
-                            <i class="fa-solid fa-bell"></i>
-                            Notifikasi
+                            <i class="fa-solid fa-bell"></i> Notifikasi
                         </a>
                         <div class="flex-shrink-0 dropdown">
-                            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+                                <img src="https://github.com/mdo.png" alt="Profile" width="32" height="32" class="rounded-circle">
                                 {{ Auth::user()->name }}
                             </a>
                             <ul class="dropdown-menu text-small shadow">
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profil</a></li>
                                 <li><a class="dropdown-item" href="#">Pengaturan</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
+                                <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}" class="mb-0">
                                         @csrf
@@ -153,6 +156,50 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </nav>
+
+        <!-- Offcanvas Sidebar for Small Screens -->
+        <div class="offcanvas offcanvas-start" id="mobileMenu">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="text-center">
+                    <img src="https://github.com/mdo.png" alt="Profile" width="50" height="50" class="rounded-circle mb-2">
+                    <p class="mb-3"><b>{{ Auth::user()->name }}</b></p>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2 dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-list-check" style="width: 20px; text-align: center;"></i> Manajemen
+                    </button>
+                    <ul class="dropdown-menu text-small shadow w-100">
+                        <li><a class="dropdown-item" href="{{ route('events.index') }}">Manajemen Kegiatan</a></li>
+                        <li><a class="dropdown-item" href="{{ route('members.index') }}">Manajemen Anggota</a></li>
+                        <li><a class="dropdown-item" href="{{ route('roles.index') }}">Manajemen Roles</a></li>
+                    </ul>
+                </div>
+                <a href="{{ route('management.calendar') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                    <i class="fa-solid fa-calendar-days" style="width: 20px; text-align: center;"></i> Kalender
+                </a>
+                <a href="{{ route('management.notification') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                    <i class="fa-solid fa-bell" style="width: 20px; text-align: center;"></i> Notifikasi
+                </a>
+                <hr>
+                <a href="{{ route('profile.edit') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                    <i class="fa-solid fa-user" style="width: 20px; text-align: center;"></i> Profil
+                </a>
+                <a href="#" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                    <i class="fa-solid fa-gear" style="width: 20px; text-align: center;"></i> Pengaturan
+                </a>
+                <hr>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-link text-decoration-none text-danger w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                        <i class="fa-solid fa-right-from-bracket" style="width: 20px; text-align: center;"></i> Keluar
+                    </button>
+                </form>
             </div>
         </div>
     </header>
@@ -182,7 +229,9 @@
         </div>
     </main>
     <script src="{{asset('dist/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     @yield('js')
     <script>
         //Button hapus

@@ -2,6 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Choir;
+use App\Models\Concert;
+use App\Models\Donation;
+use App\Models\Event;
+use App\Models\Feedback;
+use App\Models\Purchase;
+use App\Models\PurchaseDetail;
+use App\Models\TicketType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,51 +24,65 @@ class EticketController extends Controller
      */
     public function index()
     {
-        $konserDekat = DB::table('events')
-            ->join('concerts', 'concerts.events_id', '=', 'events.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
-            ->select('events.*', 'choirs.nama as penyelenggara', 'concerts.id as konser_id', 'concerts.gambar')
-            ->orderBy('events.tanggal_mulai', 'asc')
-            ->get();
+        $konserDekat = Event::with(['concert', 'choirs'])
+            ->whereHas('concert', function ($query) {
+                $query->where('status', 'published')
+                    ->whereHas('ticketTypes', function ($ticketQuery) {
+                        $ticketQuery->where('pembelian_terakhir', '>', Carbon::now());
+                    });
+            })
+            ->whereHas('choirs', function ($query) {
+                $query->where('penyelenggara', 'ya');
+            })
+            ->orderBy('tanggal_mulai', 'asc')
+            ->get()
+            ->map(function ($event) {
+                $event->choir = $event->choirs->first();
+                unset($event->choirs);
+                return $event;
+            });
+
+        // Append "hargaMulai" to each concert
         foreach ($konserDekat as $konser) {
-            $hargaMulai = DB::table('ticket_types')
-                ->where('concerts_id', $konser->konser_id)
-                ->min('harga');
+            $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)->min('harga');
             $konser->hargaMulai = number_format($hargaMulai, 0, ',', '.');
         }
 
-        $recomEvents = DB::table('events')
-            ->join('concerts', 'concerts.events_id', '=', 'events.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
-            ->select('events.*', 'choirs.nama as penyelenggara', 'concerts.id as konser_id', 'concerts.gambar')
-            ->get();
+        $recomEvents = Event::with(['concert', 'choirs'])
+            ->whereHas('concert', function ($query) {
+                $query->where('status', 'published')
+                    ->whereHas('ticketTypes', function ($ticketQuery) {
+                        $ticketQuery->where('pembelian_terakhir', '>', Carbon::now());
+                    });
+            })
+            ->whereHas('choirs', function ($query) {
+                $query->where('penyelenggara', 'ya');
+            })
+            ->get()
+            ->map(function ($event) {
+                $event->choir = $event->choirs->first();
+                unset($event->choirs);
+                return $event;
+            });
+
         foreach ($recomEvents as $konser) {
-            $hargaMulai = DB::table('ticket_types')
-                ->where('concerts_id', $konser->konser_id)
-                ->min('harga');
+            $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)->min('harga');
             $konser->hargaMulai = number_format($hargaMulai, 0, ',', '.');
         }
 
-        $penyelenggara = DB::table('events')
-            ->join('concerts', 'concerts.events_id', '=', 'events.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
-            ->select('choirs.id', 'choirs.nama', 'choirs.logo')
+        $penyelenggara = Choir::select('choirs.id', 'choirs.nama', 'choirs.logo')
+            ->whereHas('events.concert', function ($query) {
+                $query->where('status', 'published');
+            })
             ->get();
 
         $purchases = null;
         if (Auth::check()) {
             $user = Auth::user();
-            $purchases = DB::table('purchases')
-                ->join('concerts', 'purchases.concerts_id', 'concerts.id')
-                ->join('events', 'concerts.events_id', 'events.id')
-                ->join('purchase_details', 'purchase_details.purchases_id', 'purchases.id')
-                ->where('purchases.users_id', $user->id)
-                ->where('purchases.status', 'BAYAR')
-                ->select('events.nama', 'concerts.gambar', 'purchases.*', DB::raw('sum(purchase_details.jumlah) as jumlah_tiket'))
-                ->groupBy('purchases.id')
+            $purchases = Purchase::with(['concert.event'])
+                ->where('users_id', $user->id)
+                ->where('status', 'BAYAR')
+                ->withCount('ticketTypes as jumlah_tiket')
                 ->get();
         }
 
@@ -88,20 +110,19 @@ class EticketController extends Controller
      */
     public function show(string $id)
     {
-        $concert = DB::table('events')
-            ->join('concerts', 'concerts.events_id', '=', 'events.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
-            ->select('events.nama', 'events.tanggal_mulai', 'events.jam_mulai', 'events.lokasi', 'choirs.nama as penyelenggara', 'choirs.logo', 'concerts.*')
-            ->where('events.id', $id)
-            ->first();
+        $concert = Concert::with('event.choirs', 'ticketTypes')
+            ->where('id', $id)
+            ->firstOrFail();
 
-        $tickets = DB::table('ticket_types')
-            ->where('concerts_id', $concert->id)
-            ->get();
+        $event = $concert->event;
+
+        $event->penyelenggara = $event->choirs->first()->nama;
+        $event->logo = $event->choirs->first()->logo;
+
+        $tickets = $concert->ticketTypes;
         $hargaMulai = $tickets->min('harga');
 
-        return view('eticketing.show', compact('concert', 'tickets', 'hargaMulai'))
+        return view('eticketing.show', compact('event', 'tickets', 'hargaMulai'))
             ->with('backUrl', url()->previous());
     }
 
@@ -137,15 +158,16 @@ class EticketController extends Controller
             return redirect()->back()->with('error', 'Pilih minimal satu tiket untuk melanjutkan.');
         }
 
-        $concert = DB::table('events')
-            ->join('concerts', 'concerts.events_id', '=', 'events.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
-            ->select('events.nama', 'events.tanggal_mulai', 'events.jam_mulai', 'events.lokasi', 'choirs.nama as penyelenggara', 'choirs.logo', 'concerts.*')
-            ->where('events.id', $id)
-            ->first();
+        $concert = Concert::with('event.choirs', 'ticketTypes')
+            ->where('id', $id)
+            ->firstOrFail();
 
-        return view('eticketing.order', compact('concert', 'tiketDipilih'));
+        $event = $concert->event;
+
+        $event->penyelenggara = $event->choirs->first()->nama;
+        $event->logo = $event->choirs->first()->logo;
+
+        return view('eticketing.order', compact('event', 'tiketDipilih'));
     }
 
     public function purchase(Request $request, string $id)
@@ -153,61 +175,58 @@ class EticketController extends Controller
         $user = Auth::user();
 
         if ($request->input('purchase-menu') === 'purchase') {
-            $tiketDipilih = $request->input('tickets', []);
-            $tiketDipilih = array_map(fn($t) => json_decode($t, true), $tiketDipilih);
-            $totalHarga = array_sum(array_map(fn($t) => $t['jumlah'] * $t['harga'], $tiketDipilih));
+            $tiketDipilih = collect($request->input('tickets', []))->map(fn($t) => json_decode($t, true));
 
-            $purchasesId = DB::table('purchases')->insertGetId([
-                'status' => 'BAYAR',
+            $totalHarga = $tiketDipilih->sum(fn($t) => $t['jumlah'] * $t['harga']);
+
+            $purchase = Purchase::create([
+                'status' => 'bayar',
                 'total_tagihan' => $totalHarga,
                 'users_id' => $user->id,
                 'concerts_id' => $id,
             ]);
 
             foreach ($tiketDipilih as $tiket) {
-                DB::table('purchase_details')->insert([
-                    'purchases_id' => $purchasesId,
+                PurchaseDetail::create([
+                    'purchases_id' => $purchase->id,
                     'ticket_types_id' => $tiket['id'],
                     'jumlah' => $tiket['jumlah'],
                 ]);
             }
-
-            $purchases = DB::table('purchases')->where('id', $purchasesId)->first();
         } else {
-            $purchases = DB::table('purchases')->where('id', $id)->first();
-            $tiketDipilih = DB::table('ticket_types')
-                ->join('purchase_details', 'purchase_details.ticket_types_id', 'ticket_types.id')
-                ->where('purchase_details.purchases_id', $id)
+            $purchase = Purchase::findOrFail($id);
+
+            $tiketDipilih = $purchase->ticketTypes()
                 ->get()
-                ->map(function ($item) {
-                    return [
-                        'id' => (string) $item->id,  // Convert to string if needed
-                        'nama' => (string) $item->nama,
-                        'harga' => (string) $item->harga,
-                        'jumlah' => (int) $item->jumlah, // Ensure jumlah is integer
-                    ];
-                })
+                ->map(fn($detail) => [
+                    'id' => (string) $detail->id,
+                    'nama' => (string) $detail->nama,
+                    'harga' => (string) $detail->harga,
+                    'jumlah' => (int) $detail->pivot->jumlah,
+                ])
                 ->toArray();
+
+            $concertId = $purchase->concerts_id;
         }
-        $expiredAt = Carbon::parse($purchases->waktu_pembelian)->addHours(24);
+
+        // Expiration check
+        $expiredAt = Carbon::parse($purchase->waktu_pembelian)->addHours(24);
         $isExpired = now()->greaterThan($expiredAt);
-        if ($isExpired && $purchases->status === 'BAYAR') {
-            DB::table('purchases')->where('id', $purchases->id)->update(['status' => 'BATAL']);
+
+        if ($isExpired && $purchase->status === 'bayar') {
+            $purchase->update(['status' => 'batal']);
         }
 
-        $concert = DB::table('events')
-            ->join('concerts', 'concerts.events_id', '=', 'events.id')
-            ->join('banks', 'concerts.banks_id', '=', 'banks.id')
-            ->select('events.nama', 'concerts.*', 'banks.nama_singkatan', 'banks.logo')
-            ->where('concerts.id', $id)
-            ->first();
+        $concert = Concert::with(['event', 'bank'])
+            ->where('id', $concertId ?? $id)
+            ->firstOrFail();
 
-        return view('eticketing.purchase', compact('tiketDipilih', 'concert', 'purchases'));
+        return view('eticketing.purchase', compact('tiketDipilih', 'concert', 'purchase'));
     }
 
     public function payment(Request $request, string $id)
     {
-        if (request()->input('payment-menu') === 'payment') {
+        if ($request->input('payment-menu') === 'payment') {
             $request->validate([
                 'bukti_pembayaran' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             ]);
@@ -216,32 +235,30 @@ class EticketController extends Controller
             $filename = time() . '_purchaseId_' . $id . '.jpg';
             $path = $image->storeAs('bukti_pembayaran', $filename, 'public');
 
-            DB::table('purchases')
-                ->where('id', $id)
-                ->update([
-                    'status' => 'VERIFIKASI',
-                    'gambar_pembayaran' => $path,
-                    'waktu_pembayaran' => now(),
-                ]);
-        } else {
-            $purchases = DB::table('purchases')
-                ->leftJoin('invoices', 'invoices.purchases_id', 'purchases.id')
-                ->where('purchases.id', $id)
-                ->select('purchases.*', 'invoices.kode')
-                ->first();
+            Purchase::where('id', $id)->update([
+                'status' => 'verifikasi',
+                'gambar_pembayaran' => $path,
+                'waktu_pembayaran' => now(),
+            ]);
         }
-        $tiketDibeli = DB::table('ticket_types')
-            ->join('purchase_details', 'purchase_details.ticket_types_id', 'ticket_types.id')
-            ->where('purchase_details.purchases_id', $id)
+
+        $purchases = Purchase::with('invoice:id,purchases_id,kode')
+            ->where('id', $id)
+            ->first();
+
+        $tiketDibeli = TicketType::whereHas('purchases', function ($query) use ($id) {
+            $query->where('purchases.id', $id);
+        })
+            ->with(['purchases' => function ($query) use ($id) {
+                $query->where('purchases.id', $id);
+            }])
             ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => (string) $item->id,  // Convert to string if needed
-                    'nama' => (string) $item->nama,
-                    'harga' => (string) $item->harga,
-                    'jumlah' => (int) $item->jumlah, // Ensure jumlah is integer
-                ];
-            })
+            ->map(fn($item) => [
+                'id' => (string) $item->id,
+                'nama' => (string) $item->nama,
+                'harga' => (string) $item->harga,
+                'jumlah' => (int) $item->purchases->first()->pivot->jumlah,
+            ])
             ->toArray();
 
         return view('eticketing.payment-proof', compact('tiketDibeli', 'purchases'));
@@ -250,134 +267,110 @@ class EticketController extends Controller
     public function myticket()
     {
         $user = Auth::user();
-        $konserBerlangsung = DB::table('purchases')
-            ->join('concerts', 'purchases.concerts_id', 'concerts.id')
-            ->join('events', 'concerts.events_id', 'events.id')
-            ->join('purchase_details', 'purchase_details.purchases_id', 'purchases.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
-            ->where('purchases.users_id', $user->id)
-            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()])
-            ->whereNotIn('purchases.status', ['BATAL', 'BAYAR'])
-            ->select('events.nama', 'events.tanggal_selesai', 'concerts.gambar', 'purchases.*', DB::raw('sum(purchase_details.jumlah) as jumlah_tiket'))
-            ->groupBy('purchases.id')
-            ->get();
 
-        foreach ($konserBerlangsung as $konser) {
-            $konser->check_in = 'TIDAK';
-            $tickets = DB::table('tickets')
-                ->join('invoices', 'tickets.invoices_id', 'invoices.id')
-                ->join('ticket_types', 'tickets.ticket_types_id', 'ticket_types.id')
-                ->where('invoices.purchases_id', $konser->id)
-                ->get();
-            foreach ($tickets as $ticket) {
-                if ($ticket->check_in == 'YA') {
-                    $konser->check_in = 'YA';
-                }
-            }
+        $purchaseBerlangsung = Purchase::with([
+            'concert.event.choirs',
+            'ticketTypes',
+            'invoice.tickets',
+            'concert.feedbacks'
+        ])
+            ->where('users_id', $user->id)
+            ->whereHas('concert.event', function ($query) {
+                $query->whereRaw("TIMESTAMP(tanggal_selesai, jam_selesai) > ?", [now()]);
+            })
+            ->whereHas('concert.event.choirs', function ($query) {
+                $query->where('penyelenggara', 'ya');
+            })
+            ->whereNotIn('status', ['BATAL', 'BAYAR'])
+            ->get()
+            ->map(function ($purchase) {
+                $purchase->penyelenggara = $purchase->concert->event->choirs->first()->nama;
+                $purchase->logo = $purchase->concert->event->choirs->first()->logo;
+                $purchase->jumlah_tiket = $purchase->ticketTypes->pluck('pivot.jumlah')->sum();
+                $purchase->check_in = $purchase->invoice?->tickets?->where('check_in', 'ya')->isNotEmpty() ? 'ya' : 'tidak';
+                $purchase->feedbacks = $purchase->concert->feedback ? 'sudah' : 'belum';
 
-            $konser->feedbacks = 'BELUM';
-            $feedbacks = DB::table('feedbacks')
-                ->where('concerts_id', $konser->id)
-                ->where('users_id', $user->id)
-                ->first();
-            if ($feedbacks) {
-                $konser->feedbacks = 'SUDAH';
-            }
-        }
+                return $purchase;
+            });
 
-        $konserLalu = DB::table('purchases')
-            ->join('concerts', 'purchases.concerts_id', 'concerts.id')
-            ->join('events', 'concerts.events_id', 'events.id')
-            ->join('purchase_details', 'purchase_details.purchases_id', 'purchases.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
-            ->where('purchases.users_id', $user->id)
-            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()])
-            ->whereNotIn('purchases.status', ['BATAL', 'BAYAR'])
-            ->select('events.nama', 'events.tanggal_mulai', 'events.jam_mulai', 'events.lokasi', 'choirs.nama as penyelenggara', 'choirs.logo', 'purchases.*', DB::raw('sum(purchase_details.jumlah) as jumlah_tiket'))
-            ->groupBy('purchases.id', 'events.id', 'choirs.id')
-            ->get();
+        $purchaseLalu = Purchase::with([
+            'concert.event.choirs',
+            'ticketTypes',
+            'invoice.tickets',
+            'concert.feedbacks'
+        ])
+            ->where('users_id', $user->id)
+            ->whereHas('concert.event', function ($query) {
+                $query->whereRaw("TIMESTAMP(tanggal_selesai, jam_selesai) < ?", [now()]);
+            })
+            ->whereHas('concert.event.choirs', function ($query) {
+                $query->where('penyelenggara', 'ya');
+            })
+            ->whereNotIn('status', ['BATAL', 'BAYAR'])
+            ->get()
+            ->map(function ($purchase) {
+                $purchase->penyelenggara = $purchase->concert->event->choirs->first()->nama;
+                $purchase->logo = $purchase->concert->event->choirs->first()->logo;
+                $purchase->jumlah_tiket = $purchase->ticketTypes->pluck('pivot.jumlah')->sum();
+                $purchase->check_in = $purchase->invoice?->tickets?->where('check_in', 'ya')->isNotEmpty() ? 'ya' : 'tidak';
+                $purchase->feedbacks = $purchase->concert->feedback ? 'sudah' : 'belum';
 
-        foreach ($konserLalu as $konser) {
-            $konser->check_in = 'TIDAK';
-            $tickets = DB::table('tickets')
-                ->join('invoices', 'tickets.invoices_id', 'invoices.id')
-                ->join('ticket_types', 'tickets.ticket_types_id', 'ticket_types.id')
-                ->where('invoices.purchases_id', $konser->id)
-                ->get();
-            foreach ($tickets as $ticket) {
-                if ($ticket->check_in == 'YA') {
-                    $konser->check_in = 'YA';
-                }
-            }
-
-            $konser->feedbacks = 'BELUM';
-            $feedbacks = DB::table('feedbacks')
-                ->where('concerts_id', $konser->id)
-                ->where('users_id', $user->id)
-                ->first();
-            if ($feedbacks) {
-                $konser->feedbacks = 'SUDAH';
-            }
-        }
-
-        return view('eticketing.myticket', compact('konserBerlangsung', 'konserLalu'));
+                return $purchase;
+            });
+        // dd($purchaseBerlangsung);
+        return view('eticketing.myticket', compact('purchaseBerlangsung', 'purchaseLalu'));
     }
 
     public function invoice(string $id)
     {
         $user = Auth::user()->name;
 
-        $events = DB::table('events')
-            ->join('concerts', 'concerts.events_id', 'events.id')
-            ->join('purchases', 'purchases.concerts_id', 'concerts.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
-            ->where('purchases.id', $id)
-            ->select('events.nama', 'events.tanggal_mulai', 'events.jam_mulai', 'events.lokasi', 'concerts.gambar', 'concerts.link_ebooklet', 'concerts.syarat_ketentuan', 'choirs.nama as penyelenggara', 'choirs.logo', 'purchases.*')
-            ->first();
+        $purchase = Purchase::with([
+            'concert.event.choirs',
+            'invoice.tickets.ticket_type',
+            'ticketTypes'
+        ])
+            ->whereHas('concert.event.choirs', function ($query) {
+                $query->where('penyelenggara', 'ya');
+            })
+            ->findOrFail($id);
 
-        $invoices = DB::table('invoices')
-            ->where('invoices.purchases_id', $id)
-            ->first();
+        $concerts = $purchase->concert;
+        $events = $purchase->concert->event;
+        $events->penyelenggara = $events->choirs->first()->nama;
+        $events->logo = $events->choirs->first()->logo;
 
-        $purchaseDetail = DB::table('purchase_details')
-            ->join('ticket_types', 'purchase_details.ticket_types_id', 'ticket_types.id')
-            ->where('purchase_details.purchases_id', $id)
-            ->select('purchase_details.*', 'purchase_details.jumlah as jumlah_dibeli', 'ticket_types.*')
-            ->get();
+        $invoices = $purchase->invoice;
+        $tickets = $purchase->invoice->tickets;
+        $purchaseDetail = $purchase->ticketTypes;
 
-        $tickets = DB::table('tickets')
-            ->join('ticket_types', 'tickets.ticket_types_id', 'ticket_types.id')
-            ->where('tickets.invoices_id', $invoices->id)
-            ->get();
-
-        return view('eticketing.invoice', compact('user', 'events', 'invoices', 'tickets', 'purchaseDetail'));
+        return view('eticketing.invoice', compact('user', 'purchase', 'concerts', 'events', 'invoices', 'tickets', 'purchaseDetail'));
     }
 
     public function feedback(Request $request, string $id)
     {
-        if (request()->input('feedback-menu') === 'save-feedback') {
+        if ($request->input('feedback-menu') === 'save-feedback') {
             $user = Auth::user();
+
+            // Validate Feedback Input
             $request->validate([
                 'feedback' => 'required|string|max:1000',
                 'gambar-feedback' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
-            $concertId = DB::table('purchases')
-                ->where('id', $id)
-                ->select('concerts_id')
-                ->first()->concerts_id;
+            // Get Concert ID using Eloquent
+            $purchase = Purchase::findOrFail($id);
+            $concertId = $purchase->concerts_id;
 
-            if (request()->input('donasi') === 'YA') {
+            // Handle Donation
+            if ($request->input('donasi') === 'ya') {
                 $request->validate([
                     'nama' => 'nullable|string|max:255',
                     'nominal' => 'nullable|numeric',
                 ]);
 
-                if (request()->filled('nama') && request()->filled('jumlah')) {
-                    DB::table('donations')->insert([
+                if ($request->filled('nama') && $request->filled('jumlah')) {
+                    Donation::create([
                         'nama' => $request->input('nama'),
                         'jumlah' => $request->input('jumlah'),
                         'concerts_id' => $concertId,
@@ -386,36 +379,42 @@ class EticketController extends Controller
                 }
             }
 
-            $data = [
+            // Prepare Feedback Data
+            $feedbackData = [
                 'isi' => $request->input('feedback'),
                 'concerts_id' => $concertId,
                 'users_id' => $user->id,
             ];
 
+            // Handle Image Upload
             if ($request->hasFile('gambar-feedback')) {
                 $image = $request->file('gambar-feedback');
-                $filename = 'feedback_purchaseId_' . $id . '.jpg';
+                $filename = 'feedback_purchaseId_' . $id . '.' . $image->extension();
                 $path = $image->storeAs('feedback', $filename, 'public');
-                $data['gambar'] = $path;
+                $feedbackData['gambar'] = $path;
             }
-            DB::table('feedbacks')->insert($data);
+
+            // Save Feedback
+            Feedback::create($feedbackData);
 
             return redirect()->route('eticket.myticket')->with([
                 'status' => 'success',
                 'message' => 'Feedback berhasil dikirim!'
             ]);
         } else {
-            $events = DB::table('events')
-                ->join('concerts', 'concerts.events_id', 'events.id')
-                ->join('banks', 'concerts.banks_id', 'banks_id')
-                ->join('purchases', 'purchases.concerts_id', 'concerts.id')
-                ->join('collabs', 'events.id', '=', 'collabs.events_id')
-                ->join('choirs', 'choirs.id', '=', 'collabs.choirs_id')
-                ->where('purchases.id', $id)
-                ->select('events.nama', 'events.tanggal_mulai', 'events.jam_mulai', 'events.lokasi', 'concerts.gambar', 'concerts.donasi', 'concerts.no_rekening', 'concerts.pemilik_rekening', 'banks.nama_singkatan', 'banks.logo', 'choirs.nama as penyelenggara', 'choirs.logo', 'purchases.*')
-                ->first();
+            // Retrieve Event Details with Eloquent Relationships
+            $purchase = Purchase::with([
+                'concert.event.choirs',
+                'concert.bank',
+            ])
+                ->findOrFail($id);
 
-            return view('eticketing.feedback', compact('events'));
+            $concert = $purchase->concert;
+            $event = $purchase->concert->event;
+            $event->penyelenggara = $event->choirs->first()->nama;
+            $event->logo = $event->choirs->first()->logo;
+
+            return view('eticketing.feedback', compact('purchase', 'event', 'concert'));
         }
     }
 }

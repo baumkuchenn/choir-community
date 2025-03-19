@@ -12,8 +12,7 @@ class Choir extends Model
 
     public function members()
     {
-        return $this->belongsToMany(User::class, 'members', 'choirs_id', 'users_id')
-            ->withPivot('admin');
+        return $this->hasMany(Member::class, 'choirs_id');
     }
 
     public function events()

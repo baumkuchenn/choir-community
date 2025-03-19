@@ -27,12 +27,12 @@ class EventController extends Controller
     public function index()
     {
         $eventSelanjutnya = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->choirs->first()->id)
+            ->where('choirs_id', Auth::user()->members->first()->id)
             ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()])
             ->get();
 
         $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->choirs->first()->id)
+            ->where('choirs_id', Auth::user()->members->first()->id)
             ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()])
             ->get();
 
@@ -45,7 +45,7 @@ class EventController extends Controller
     public function create()
     {
         $events = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->choirs->first()->id)
+            ->where('choirs_id', Auth::user()->members->first()->id)
             ->get();
 
         return view('event.create', compact('events'));
@@ -71,7 +71,7 @@ class EventController extends Controller
         ]);
         $event = Event::create($request->all());
 
-        $userChoirs = Auth::user()->choirs->pluck('id')->toArray();
+        $userChoirs = Auth::user()->members->pluck('id')->toArray();
         $choirIds = array_unique(array_merge($userChoirs, $request->choirs ?? []));
         $event->choirs()->attach($choirIds);
 
@@ -86,7 +86,7 @@ class EventController extends Controller
     {
         $event = Event::with('concert')->find($id);
         $events = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->choirs->first()->id)
+            ->where('choirs_id', Auth::user()->members->first()->id)
             ->get();
         $concert = $event->concert;
         if (!$concert) {
@@ -104,14 +104,14 @@ class EventController extends Controller
 
         $purchases = $concert->purchases()
             ->with('user:id,name,no_handphone', 'invoice.tickets:id,invoices_id,check_in')
-            ->whereIn('status', ['VERIFIKASI', 'SELESAI'])
-            ->orderByRaw("FIELD(status, 'VERIFIKASI', 'SELESAI')")
+            ->whereIn('status', ['verifikasi', 'selesai'])
+            ->orderByRaw("FIELD(status, 'verifikasi', 'selesai')")
             ->orderBy('waktu_pembayaran', 'desc')
             ->paginate(5);
 
         $ticketTypes = $concert->ticketTypes()
             ->withCount(['purchases as terjual' => function ($query) {
-                $query->whereIn('status', ['VERIFIKASI', 'SELESAI'])
+                $query->whereIn('status', ['verifikasi', 'selesai'])
                     ->select(DB::raw("COALESCE(SUM(jumlah), 0)"));
             }])
             ->paginate(5);
@@ -213,7 +213,7 @@ class EventController extends Controller
         $event = $concert->event;
 
         // Find the choir where 'penyelenggara' = 'YA'
-        $choir = $event->choirs->where('pivot.penyelenggara', 'YA')->first();
+        $choir = $event->choirs->where('pivot.penyelenggara', 'ya')->first();
 
         // Get abbreviation of choir name (first 3 letters as uppercase)
         $choirAbbr = strtoupper(substr($choir->nama_singkat, 0, 3));
@@ -221,12 +221,12 @@ class EventController extends Controller
         // Get the number of concerts for this choir
         $concertCount = Concert::whereHas('event.choirs', function ($query) use ($choir) {
             $query->where('choirs.id', $choir->id)
-                ->where('collabs.penyelenggara', 'YA'); // Filtering in many-to-many
+                ->where('collabs.penyelenggara', 'ya'); // Filtering in many-to-many
         })->count();
 
         // Get the number of completed purchases for this concert
         $buyerCount = Purchase::where('concerts_id', $concert->id)
-            ->where('status', 'SELESAI')
+            ->where('status', 'selesai')
             ->count();
 
         // Format numbers with leading zeros
@@ -259,7 +259,7 @@ class EventController extends Controller
     {
         // Update the purchase status to 'SELESAI'
         $purchase = Purchase::findOrFail($id);
-        $purchase->update(['status' => 'SELESAI']);
+        $purchase->update(['status' => 'selesai']);
 
         // Generate and save the invoice
         $invoiceCode = $this->generateInvoiceCode($id);

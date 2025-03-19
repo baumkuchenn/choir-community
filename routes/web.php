@@ -72,6 +72,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Rute Manajemen
     Route::prefix('management')->group(function () {
         Route::resource('/', ManagementController::class)->names('management');
+        
+        //Manajemen Event
         Route::resource('events', EventController::class);
         Route::post('/events/{id}/payment', [EventController::class, 'payment'])->name('events.payment');
         Route::post('/events/{id}/verification', [EventController::class, 'verifikasi'])->name('events.verification');
@@ -79,7 +81,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/tickets/check-in/{id}', [TicketController::class, 'checkIn'])->name('tickets.checkIn');
         Route::resource('ticket-types', TicketTypeController::class);
         Route::put('/concerts/{id}', [ConcertController::class, 'update'])->name('concerts.update');
+
+        //Manajemen Anggota
+        Route::get('/members/setting', [MemberController::class, 'setting'])->name('members.setting');
         Route::resource('members', MemberController::class);
+
+        //Manajemen Roles
         Route::resource('roles', RoleController::class);
 
         Route::get('/calendar', [ManagementController::class, 'calendar'])->name('management.calendar');

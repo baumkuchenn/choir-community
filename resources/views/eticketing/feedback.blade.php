@@ -43,7 +43,7 @@
     <form action="{{ route('eticket.feedback', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="feedback-menu" value="save-feedback">
-        @if($concert->donasi === 'tidak')
+        @if($concert->donasi === 'ya')
             <input type="hidden" name="donasi" value="ya">
             <div class="row mt-3 p-2">
                 <h4 class="fw-bold p-0">Kirim donasi untuk membantu kegiatan ini</h4>

@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('members', function (Blueprint $table) {
+        Schema::create('divisions', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama');
+            
             $table->unsignedBigInteger('choirs_id');
             $table->foreign('choirs_id')->references('id')->on('choirs');
-            $table->unsignedBigInteger('users_id');
-            $table->foreign('users_id')->references('id')->on('users');
-            $table->primary(['choirs_id', 'users_id']);
 
-            $table->enum('admin', ['YA', 'TIDAK'])->default('TIDAK');
             $table->enum('isactive', [0, 1])->default(1);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('members');
+        Schema::dropIfExists('divisions');
     }
 };

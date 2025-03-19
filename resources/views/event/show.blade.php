@@ -172,7 +172,7 @@
                                         @php
                                             $invoice = $purchase->invoice;
                                             $tickets = $invoice ? $invoice->tickets : collect();
-                                            $checkedInCount = $tickets->where('check_in', 'YA')->count();
+                                            $checkedInCount = $tickets->where('check_in', 'ya')->count();
                                             $totalTickets = $tickets->count();
                                         @endphp
                                         <td>{{ $purchase->user->name }}</td>
@@ -460,12 +460,12 @@
                             <div class="col-12 col-md-4">
                                 <p class="mb-0">Menggunakan kupon?</p>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="kupon" id="kupon_yes" value="YA"
+                                    <input class="form-check-input" type="radio" name="kupon" id="kupon_yes" value="ya"
                                         {{ old('kupon', $concert->kupon == 'ya') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="kupon_yes">Ya</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="kupon" id="kupon_no" value="TIDAK"
+                                    <input class="form-check-input" type="radio" name="kupon" id="kupon_no" value="tidak"
                                         {{ old('kupon', $concert->kupon == 'tidak') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="kupon_no">Tidak</label>
                                 </div>
@@ -844,11 +844,11 @@
             let selectedValue = tipeKupon.value;
             kuponContainer.style.display = "none";
             referalContainer.style.display = "none";
-            if (selectedValue === "KUPON") {
+            if (selectedValue === "kupon") {
                 kuponContainer.style.display = "block";
-            } else if (selectedValue === "REFERAL") {
+            } else if (selectedValue === "referal") {
                 referalContainer.style.display = "block";
-            } else if (selectedValue === "KEDUANYA") {
+            } else if (selectedValue === "keduanya") {
                 kuponContainer.style.display = "block";
                 referalContainer.style.display = "block";
             }

@@ -49,10 +49,9 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function choirs()
+    public function members()
     {
-        return $this->belongsToMany(Choir::class, 'members', 'users_id', 'choirs_id')
-            ->withPivot('admin');
+        return $this->hasMany(Member::class, 'users_id');
     }
 
     public function notifications()

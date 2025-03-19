@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('purchases', function (Blueprint $table) {
+        Schema::create('members', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('waktu_pembelian')->useCurrent();
-            $table->string('gambar_pembayaran', 255)->nullable();
-            $table->timestamp('waktu_pembayaran')->nullable();
-            $table->enum('status', ['bayar', 'verifikasi', 'selesai', 'batal']);
-            $table->integer('total_tagihan');
-
+            $table->unsignedBigInteger('choirs_id');
+            $table->foreign('choirs_id')->references('id')->on('choirs');
             $table->unsignedBigInteger('users_id');
             $table->foreign('users_id')->references('id')->on('users');
-            $table->unsignedBigInteger('concerts_id');
-            $table->foreign('concerts_id')->references('id')->on('concerts');
 
+            $table->enum('suara', ['S', 'A', 'T', 'B'])->nullable();
+
+            $table->unsignedBigInteger('positions_id')->nullable();
+            $table->foreign('positions_id')->references('id')->on('positions');
+
+            $table->enum('admin', ['ya', 'tidak'])->default('tidak');
             $table->enum('isactive', [0, 1])->default(1);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('purchases');
+        Schema::dropIfExists('members');
     }
 };

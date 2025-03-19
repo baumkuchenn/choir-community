@@ -46,7 +46,7 @@
                                 @if ($purchase->status == 'verifikasi')
                                     <span class="bg-info fw-bold p-1">Verifikasi Pembayaran</span>
                                 @elseif ($purchase->status == 'selesai')
-                                    <span>Pembayaran Berhasil</span>
+                                    <span class="bg-info fw-bold p-1">Pembayaran Berhasil</span>
                                 @endif
                             </p>
                             <hr>

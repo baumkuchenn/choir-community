@@ -196,7 +196,7 @@
                 if (itemsType === "penyelenggara") {
                     eventCard.classList.add("col-lg-2", "col-6", "col-md-4");
                     eventCard.innerHTML = `
-                        <a href="/eticket/${item.id}" class="text-decoration-none">
+                        <a href="" class="text-decoration-none">
                             <div class="card border-0 text-center">
                                 <div class="card-body">
                                     <img src="{{ asset('storage/') }}/${item.logo}" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="${item.nama}">

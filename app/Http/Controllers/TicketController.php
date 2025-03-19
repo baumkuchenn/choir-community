@@ -10,12 +10,12 @@ class TicketController extends Controller
     public function checkIn(string $id)
     {
         $ticket = Ticket::findOrFail($id);
-        if ($ticket->check_in === 'YA') {
+        if ($ticket->check_in === 'ya') {
             return response()->json(['error' => 'Ticket already checked in'], 400);
         }
 
         $ticket->update([
-            'check_in' => 'YA',
+            'check_in' => 'ya',
             'waktu_check_in' => now(),
         ]);
 

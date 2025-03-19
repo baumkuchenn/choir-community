@@ -116,8 +116,8 @@
                 <div class="col-12">
                     <label for="kegiatan_berulang" class="form-label">Kegiatan Berulang</label>
                     <select class="form-control" id="kegiatan_berulang" name="kegiatan_berulang" required>
-                        <!-- <option value="YA" {{ old('kegiatan_berulang') == 'YA' ? 'selected' : '' }}>Ya</option> -->
-                        <option value="TIDAK" {{ old('kegiatan_berulang', 'TIDAK') == 'TIDAK' ? 'selected' : '' }}>Tidak</option>
+                        <!-- <option value="ya" {{ old('kegiatan_berulang') == 'ya' ? 'selected' : '' }}>Ya</option> -->
+                        <option value="tidak" {{ old('kegiatan_berulang', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
                     </select>
                     @error('kegiatan_berulang')
                         <div class="text-danger">{{ $message }}</div>
@@ -129,8 +129,8 @@
                 <div class="col-12">
                     <label for="kegiatan_kolaborasi" class="form-label">Kegiatan Kolaborasi</label>
                     <select class="form-control" id="kegiatan_kolaborasi" name="kegiatan_kolaborasi" required>
-                        <!-- <option value="YA" {{ old('kegiatan_kolaborasi') == 'YA' ? 'selected' : '' }}>Ya</option> -->
-                        <option value="TIDAK" {{ old('kegiatan_kolaborasi', 'TIDAK') == 'TIDAK' ? 'selected' : '' }}>Tidak</option>
+                        <!-- <option value="ya" {{ old('kegiatan_kolaborasi') == 'ya' ? 'selected' : '' }}>Ya</option> -->
+                        <option value="tidak" {{ old('kegiatan_kolaborasi', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
                     </select>
                     @error('kegiatan_kolaborasi')
                         <div class="text-danger">{{ $message }}</div>
@@ -142,9 +142,9 @@
                 <div class="col-12">
                     <label for="peran" class="form-label">Peran dalam Kegiatan</label>
                     <select class="form-control" id="peran" name="peran" required>
-                        <option value="PENYANYI" {{ old('peran', 'PENYANYI') == 'PENYANYI' ? 'selected' : '' }}>Penyanyi</option>
-                        <option value="PANITIA" {{ old('peran') == 'PANITIA' ? 'selected' : '' }}>Panitia</option>
-                        <option value="KEDUANYA" {{ old('peran') == 'KEDUANYA' ? 'selected' : '' }}>Penyanyi dan Panitia</option>
+                        <option value="penyanyi" {{ old('peran', 'penyanyi') == 'penyanyi' ? 'selected' : '' }}>Penyanyi</option>
+                        <option value="panitia" {{ old('peran') == 'panitia' ? 'selected' : '' }}>Panitia</option>
+                        <option value="keduanya" {{ old('peran') == 'keduanya' ? 'selected' : '' }}>Penyanyi dan Panitia</option>
                     </select>
                     @error('peran')
                         <div class="text-danger">{{ $message }}</div>
@@ -156,8 +156,8 @@
                 <div class="col-12">
                     <label for="panitia_eksternal" class="form-label">Kegiatan Menggunakan Panitia Eksternal</label>
                     <select class="form-control" id="panitia_eksternal" name="panitia_eksternal" required>
-                        <option value="YA" {{ old('panitia_eksternal') == 'YA' ? 'selected' : '' }}>Ya</option>
-                        <option value="TIDAK" {{ old('panitia_eksternal', 'TIDAK') == 'TIDAK' ? 'selected' : '' }}>Tidak</option>
+                        <option value="ya" {{ old('panitia_eksternal') == 'ya' ? 'selected' : '' }}>Ya</option>
+                        <option value="tidak" {{ old('panitia_eksternal', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
                     </select>
                     @error('panitia_eksternal')
                         <div class="text-danger">{{ $message }}</div>

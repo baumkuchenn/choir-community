@@ -9,7 +9,7 @@ class Purchase extends Model
 {
     use HasFactory;
     protected $table = 'purchases';
-    protected $fillable = ['status'];
+    protected $fillable = ['status', 'total_tagihan', 'users_id', 'concerts_id'];
 
     public function concert()
     {

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Member;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MemberController extends Controller
 {
@@ -11,15 +13,27 @@ class MemberController extends Controller
      */
     public function index()
     {
-        //
+        $penyanyi = Member::where('choirs_id', Auth::user()->members->first()->id)
+            ->where('admin', 'tidak')
+            ->get();
+        $pengurus = Member::where('choirs_id', Auth::user()->members->first()->id)
+            ->where('admin', 'tidak')
+            ->whereNotNull('positions_id')
+            ->get();
+        return view('member.index', compact('pengurus', 'penyanyi'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function setting()
+    {
+        $penyanyi = Member::where('choirs_id', Auth::user()->members->first()->id)
+            ->where('admin', 'tidak')
+            ->get();
+        return view('member.setting', compact('penyanyi'));
+    }
+
     public function create()
     {
-        //
+        dd('a');
     }
 
     /**

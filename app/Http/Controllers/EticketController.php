@@ -81,7 +81,7 @@ class EticketController extends Controller
             $user = Auth::user();
             $purchases = Purchase::with(['concert.event'])
                 ->where('users_id', $user->id)
-                ->where('status', 'BAYAR')
+                ->where('status', 'bayar')
                 ->withCount('ticketTypes as jumlah_tiket')
                 ->get();
         }
@@ -122,7 +122,7 @@ class EticketController extends Controller
         $tickets = $concert->ticketTypes;
         $hargaMulai = $tickets->min('harga');
 
-        return view('eticketing.show', compact('event', 'tickets', 'hargaMulai'))
+        return view('eticketing.show', compact('concert', 'event', 'tickets', 'hargaMulai'))
             ->with('backUrl', url()->previous());
     }
 
@@ -281,7 +281,7 @@ class EticketController extends Controller
             ->whereHas('concert.event.choirs', function ($query) {
                 $query->where('penyelenggara', 'ya');
             })
-            ->whereNotIn('status', ['BATAL', 'BAYAR'])
+            ->whereNotIn('status', ['batal', 'bayar'])
             ->get()
             ->map(function ($purchase) {
                 $purchase->penyelenggara = $purchase->concert->event->choirs->first()->nama;
@@ -306,7 +306,7 @@ class EticketController extends Controller
             ->whereHas('concert.event.choirs', function ($query) {
                 $query->where('penyelenggara', 'ya');
             })
-            ->whereNotIn('status', ['BATAL', 'BAYAR'])
+            ->whereNotIn('status', ['batal', 'bayar'])
             ->get()
             ->map(function ($purchase) {
                 $purchase->penyelenggara = $purchase->concert->event->choirs->first()->nama;

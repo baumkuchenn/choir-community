@@ -30,9 +30,8 @@ return new class extends Migration
             $table->unsignedBigInteger('sub_kegiatan_id')->nullable();
             $table->foreign('sub_kegiatan_id')->references('id')->on('events');
 
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

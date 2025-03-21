@@ -1,13 +1,16 @@
 <?php
 
 use App\Http\Controllers\Auth\PersonalInfoController as AuthPersonalInfoController;
+use App\Http\Controllers\ButirPenilaianController;
 use App\Http\Controllers\ChoirController;
 use App\Http\Controllers\ConcertController;
+use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EticketController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PersonalInfoController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TicketController;
@@ -84,10 +87,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         //Manajemen Anggota
         Route::get('/members/setting', [MemberController::class, 'setting'])->name('members.setting');
+        Route::get('/members/search', [MemberController::class, 'search'])->name('members.search');
         Route::resource('members', MemberController::class);
+        Route::resource('butir-penilaian', ButirPenilaianController::class);
 
         //Manajemen Roles
         Route::resource('roles', RoleController::class);
+        Route::resource('divisions', DivisionController::class);
+        Route::resource('positions', PositionController::class);
 
         Route::get('/calendar', [ManagementController::class, 'calendar'])->name('management.calendar');
         Route::post('/notification', [ManagementController::class, 'notification'])->name('management.notification');

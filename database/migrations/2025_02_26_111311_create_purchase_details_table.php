@@ -19,9 +19,8 @@ return new class extends Migration
             $table->primary(['purchases_id', 'ticket_types_id']);
 
             $table->integer('jumlah');
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

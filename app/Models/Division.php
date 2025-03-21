@@ -6,24 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Member extends Model
+class Division extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table = 'members';
-    protected $fillable = ['choirs_id', 'users_id', 'admin'];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'users_id');
-    }
+    protected $fillable = ['nama', 'nama_singkat', 'choirs_id'];
 
     public function choir()
     {
         return $this->belongsTo(Choir::class, 'choirs_id');
     }
 
-    public function position()
+    public function positions()
     {
-        return $this->belongsTo(Position::class, 'positions_id');
+        return $this->hasMany(Position::class, 'divisions_id');
     }
 }

@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('butir_penilaians', function (Blueprint $table) {
             $table->id();
+            $table->string('nama');
+            $table->integer('bobot_nilai');
+            $table->unsignedBigInteger('choirs_id');
+            $table->foreign('choirs_id')->references('id')->on('choirs');
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }

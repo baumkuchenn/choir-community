@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Division;
+use App\Models\Position;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RoleController extends Controller
 {
@@ -11,16 +14,18 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+        $divisi = Division::where('choirs_id', Auth::user()->members->first()->id)
+            ->with('positions')
+            ->get();
+        
+        $jabatan = $divisi->flatMap->positions;
+        return view('role.index', compact('divisi', 'jabatan'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        //
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.

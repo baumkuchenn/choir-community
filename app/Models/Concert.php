@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Concert extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $table = 'concerts';
     protected $fillable = ['gambar', 'deskripsi', 'seating_plan', 'syarat_ketentuan', 'ebooklet', 'link_ebooklet', 'donasi', 'kupon', 'tipe_kupon', 'no_rekening', 'pemilik_rekening', 'berita_transfer', 'banks_id', 'events_id', 'status'];
 

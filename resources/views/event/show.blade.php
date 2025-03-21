@@ -235,7 +235,7 @@
                                     <td>{{ $type->terjual }}/{{ $type->jumlah }}</td>
                                     <td class="d-flex justify-content-center gap-3">
                                         <button class="btn btn-primary loadEditForm" data-id="{{ $type->id }}" data-concert-id="{{ $concert->id }}">Ubah</button>
-                                        <button class="btn btn-outline-danger deleteBtn" data-id="{{ $type->id }}" data-name="tiket {{ $type->nama }}" data-action="{{ route('ticket-types.destroy', $type->id) }}">Hapus</button>
+                                        <button class="btn btn-outline-danger deleteBtn" data-name="tiket {{ $type->nama }}" data-action="{{ route('ticket-types.destroy', $type->id) }}">Hapus</button>
                                     </td>
                                 </tr>
                                 @endforeach

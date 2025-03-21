@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('number');
             $table->string('barcode_code', 45);
-            $table->string('barcode_number', 255);
+            $table->string('barcode_image', 255);
             $table->enum('check_in', ['ya', 'tidak'])->default('tidak');
             $table->timestamp('waktu_check_in')->nullable();
 
@@ -24,9 +24,8 @@ return new class extends Migration
             $table->unsignedBigInteger('ticket_types_id');
             $table->foreign('ticket_types_id')->references('id')->on('ticket_types');
 
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

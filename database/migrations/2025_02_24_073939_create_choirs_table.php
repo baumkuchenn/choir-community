@@ -21,13 +21,10 @@ return new class extends Migration
             $table->string('kota', 45);
             $table->string('alamat', 255);
             $table->string('deskripsi', 1000);
+            $table->enum('jenis_rekrutmen', ['open', 'seleksi'])->default('seleksi');
 
-            $table->unsignedBigInteger('users_id');
-            $table->foreign('users_id')->references('id')->on('users');
-
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

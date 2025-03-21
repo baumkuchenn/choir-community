@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
     <link href="{{asset('dist/css/bootstrap.min.css')}}" rel="stylesheet">
 
     <style>
@@ -232,12 +233,12 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     @yield('js')
     <script>
         //Button hapus
         document.querySelectorAll('.deleteBtn').forEach(button => {
             button.addEventListener('click', function() {
-                let itemId = this.dataset.id;
                 let itemName = this.dataset.name;
                 let itemAction = this.dataset.action;
                 document.getElementById('deleteItemName').textContent = itemName;

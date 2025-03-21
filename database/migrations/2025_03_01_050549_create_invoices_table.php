@@ -17,9 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('purchases_id');
             $table->foreign('purchases_id')->references('id')->on('purchases');
 
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

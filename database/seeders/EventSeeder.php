@@ -80,28 +80,51 @@ class EventSeeder extends Seeder
                 'metode_rekrut_panitia' => 'Pilih',
                 'metode_rekrut_penyanyi' => 'Pilih',
             ],
+            [
+                'nama' => 'Recital Concert goes to Andrea O. Veneracion International Choral Festival 2025',
+                'tipe' => 'konser',
+                'tanggal_mulai'   => Carbon::parse('2025-03-01'),
+                'tanggal_selesai' => Carbon::parse('2025-03-01'),
+                'jam_mulai'       => Carbon::parse('17:00:00')->format('H:i:s'),
+                'jam_selesai'     => Carbon::parse('21:00:00')->format('H:i:s'),
+                'lokasi'          => 'Auditorium Universitas Kristen Petra, Surabaya',
+                'peran'           => 'Keduanya',
+                'panitia_eksternal' => 'Tidak',
+                'metode_rekrut_panitia' => 'Pilih',
+                'metode_rekrut_penyanyi' => 'Pilih',
+            ],
         ]);
 
         DB::table('collabs')->insert([
             [
                 'choirs_id'            => 1,
                 'events_id'            => 1,
+                'penyelenggara'        => 'ya',
+            ],
+            [
+                'choirs_id'            => 1,
+                'events_id'            => 6,
+                'penyelenggara'        => 'ya',
             ],
             [
                 'choirs_id'            => 2,
                 'events_id'            => 2,
+                'penyelenggara'        => 'ya',
             ],
             [
                 'choirs_id'            => 7,
                 'events_id'            => 3,
+                'penyelenggara'        => 'ya',
             ],
             [
                 'choirs_id'            => 3,
                 'events_id'            => 4,
+                'penyelenggara'        => 'ya',
             ],
             [
                 'choirs_id'            => 4,
                 'events_id'            => 5,
+                'penyelenggara'        => 'ya',
             ],
         ]);
     }

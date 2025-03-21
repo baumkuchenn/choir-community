@@ -14,13 +14,17 @@ return new class extends Migration
         Schema::create('positions', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->enum('akses_event', [0, 1])->default(0);
+            $table->enum('akses_member', [0, 1])->default(0);
+            $table->enum('akses_roles', [0, 1])->default(0);
+            $table->enum('akses_eticket', [0, 1])->default(0);
+            $table->enum('akses_forum', [0, 1])->default(0);
 
             $table->unsignedBigInteger('divisions_id');
             $table->foreign('divisions_id')->references('id')->on('divisions');
 
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

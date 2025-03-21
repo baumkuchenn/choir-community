@@ -17,9 +17,8 @@ return new class extends Migration
             $table->string('nama_singkatan', 10);
             $table->string('logo', 255);
 
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

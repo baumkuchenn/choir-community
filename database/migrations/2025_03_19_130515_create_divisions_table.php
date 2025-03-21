@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('divisions', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->string('nama_singkat', 45);
             
             $table->unsignedBigInteger('choirs_id');
             $table->foreign('choirs_id')->references('id')->on('choirs');
 
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

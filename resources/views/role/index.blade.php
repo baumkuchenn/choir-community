@@ -7,64 +7,94 @@
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    @elseif(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
-        <a href="{{ $backUrl ?? route('members.index') }}" class="btn btn-outline-primary">Kembali</a>
-        <h2 class="mb-3 fw-bold text-center">Daftar Anggota Komunitas</h2>
-        <h5 class="mb-3 fw-bold">Pengaturan</h5>
-        
-        <form action="{{ route('members.update', $choir->id) }}" method="POST" class="row mb-3">
-            @csrf
-            @method('PUT')
-            <div class="col-12 mb-3">
-                <label for="nama" class="form-label">Metode Perekrutan Anggota</label>
-                <select name="jenis_rekrutmen" class="form-control">
-                    <option value="open" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'open' ? 'selected' : '' }}>Terbuka</option>
-                    <option value="seleksi" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'seleksi' ? 'selected' : '' }}>Seleksi</option>
-                </select>
-            </div>
-            <div class="col-2">
-                <button class="btn btn-primary">Simpan</button>
-            </div>
-        </form>
+        <h2 class="mb-3 fw-bold text-center">Daftar Jabatan Pengurus Komunitas</h2>
 
         <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center">
-                <h5>Butir Penilaian Seleksi</h5>
+                <h5>Divisi Pengurus</h5>
             </div>
             <table class="table table-bordered shadow text-center dataTable">
                 <thead class="text-center">
                     <tr class="bg-primary">
+                        <th>Nama Singkatan</th>
                         <th>Nama</th>
-                        <th>Bobot Nilai (%)</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if($butirPenilaian->isNotEmpty())
-                        @foreach($butirPenilaian as $item)
+                    @if($divisi->isNotEmpty())
+                        @foreach($divisi as $item)
                             <tr>
+                                <td>{{ $item->nama_singkat }}</td>
                                 <td>{{ $item->nama }}</td>
-                                <td>{{ $item->bobot_nilai }}</td>
                                 <td class="d-flex justify-content-center gap-3">
-                                    <button class="btn btn-primary loadEditForm" data-action="{{ route('butir-penilaian.edit', $item->id) }}">Ubah</button>
-                                    <button class="btn btn-outline-danger deleteBtn" data-name="jabatan {{ $item->nama }}" data-action="{{ route('butir-penilaian.destroy', $item->id) }}">Hapus</button>
+                                    <button class="btn btn-primary loadEditForm" data-action="{{ route('divisions.edit', $item->id) }}">Ubah</button>
+                                    <button class="btn btn-outline-danger deleteBtn" data-name="divisi {{ $item->nama }}" data-action="{{ route('divisions.destroy', $item->id) }}">Hapus</button>
                                 </td>
                             </tr>
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="3">Belum ada butir penilaian seleksi anggota baru</td>
+                            <td colspan="3">Belum ada divisi pengurus komunitas</td>
                         </tr>
                     @endif
                 </tbody>
             </table>
-            <button class="btn btn-primary loadCreateForm fw-bold" data-action="{{ route('butir-penilaian.create') }}">+ Tambah Butir Penilaian</button>
+            <button class="btn btn-primary loadCreateForm fw-bold" data-action="{{ route('divisions.create') }}">+ Tambah Divisi</button>
+        </div>
+
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>Jabatan Pengurus</h5>
+            </div>
+            <table class="table table-bordered shadow text-center dataTable">
+                <thead class="text-center">
+                    <tr class="bg-primary">
+                        <th>Nama</th>
+                        <th>Divisi</th>
+                        <th>Akses</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if($jabatan->isNotEmpty())
+                        @foreach($jabatan as $item)
+                            <tr>
+                                <td>{{ $item->nama }}</td>
+                                <td>{{ $item->division->nama }}</td>
+                                <td>
+                                    @php
+                                        $akses = [
+                                            'akses_member' => 'Manajemen Anggota',
+                                            'akses_roles' => 'Manajemen Jabatan',
+                                            'akses_event' => 'Manajemen Kegiatan',
+                                            'akses_eticket' => 'E-ticketing',
+                                            'akses_forum' => 'Forum',
+                                        ];
+                                    @endphp
+
+                                    @foreach($akses as $key => $label)
+                                        @if($item->$key) 
+                                            <span class="badge bg-secondary">{{ $label }}</span>
+                                        @endif
+                                    @endforeach
+                                </td>
+                                <td class="d-flex justify-content-center gap-3">
+                                    <button class="btn btn-primary loadEditForm" data-action="{{ route('positions.edit', $item->id) }}">Ubah</button>
+                                    <button class="btn btn-outline-danger deleteBtn" data-name="jabatan {{ $item->nama }}" data-action="{{ route('positions.destroy', $item->id) }}">Hapus</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="4">Belum ada jabatan per divisi pengurus</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+            <button class="btn btn-primary loadCreateForm fw-bold" data-action="{{ route('positions.create') }}">+ Tambah Jabatan</button>
         </div>
 
         <div id="modalContainer"></div>
@@ -90,6 +120,7 @@
         document.querySelectorAll(".loadEditForm").forEach((button) => {
             button.addEventListener("click", function() {
                 let route = this.dataset.action;
+
                 fetch(route)
                     .then(response => response.text())
                     .then(html => {

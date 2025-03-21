@@ -24,9 +24,8 @@ return new class extends Migration
             $table->foreign('positions_id')->references('id')->on('positions');
 
             $table->enum('admin', ['ya', 'tidak'])->default('tidak');
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

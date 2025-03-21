@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('ebooklet', ['ya', 'tidak'])->nullable();
             $table->string('link_ebooklet', 255)->nullable();
             $table->enum('donasi', ['ya', 'tidak'])->nullable();
+            $table->enum('kupon', ['ya', 'tidak'])->nullable();
             $table->enum('tipe_kupon', ['kupon', 'referal', 'keduanya'])->nullable();
             $table->string('no_rekening', 45)->nullable();
             $table->string('pemilik_rekening', 150)->nullable();
@@ -29,10 +30,10 @@ return new class extends Migration
             $table->foreign('banks_id')->references('id')->on('banks');
             $table->unsignedBigInteger('events_id');
             $table->foreign('events_id')->references('id')->on('events');
+            $table->enum('status', ['draft', 'published'])->nullable();
 
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

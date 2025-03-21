@@ -18,10 +18,9 @@ return new class extends Migration
             $table->unsignedBigInteger('events_id');
             $table->foreign('events_id')->references('id')->on('events');
 
-            $table->enum('penyelenggara', ['ya', 'tidak'])->default(1);
-            $table->enum('isactive', [0, 1])->default(1);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->enum('penyelenggara', ['ya', 'tidak'])->default('ya');
+            $table->softDeletes();
+            $table->timestamps();
             $table->primary(['choirs_id', 'events_id']);
         });
     }

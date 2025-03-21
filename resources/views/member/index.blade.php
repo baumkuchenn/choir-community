@@ -10,7 +10,13 @@
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
         <h2 class="mb-3 fw-bold text-center">Daftar Anggota Komunitas</h2>
-        <a href="{{ route('members.create') }}" class="btn btn-primary mb-3 fw-bold" >+ Buka Seleksi</a>
+        <a href="{{ route('members.create') }}" class="btn btn-primary mb-3 fw-bold" >
+            @if($choir->jenis_rekrutmen == 'seleksi')
+                + Buka Seleksi
+            @else
+                + Tambah Anggota Baru
+            @endif
+        </a>
         <a href="{{ route('members.setting') }}" class="btn btn-outline-primary mb-3 fw-bold" >Pengaturan</a>
 
         <div class="mb-3">

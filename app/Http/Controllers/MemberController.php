@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ButirPenilaian;
+use App\Models\Choir;
 use App\Models\Member;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,20 +23,40 @@ class MemberController extends Controller
             ->where('admin', 'tidak')
             ->whereNotNull('positions_id')
             ->get();
-        return view('member.index', compact('pengurus', 'penyanyi'));
+        $choir = Choir::find(Auth::user()->members->first()->id);
+        return view('member.index', compact('pengurus', 'penyanyi', 'choir'));
     }
 
     public function setting()
     {
-        $penyanyi = Member::where('choirs_id', Auth::user()->members->first()->id)
-            ->where('admin', 'tidak')
-            ->get();
-        return view('member.setting', compact('penyanyi'));
+        $choir = Choir::find(Auth::user()->members->first()->id);
+        $butirPenilaian = ButirPenilaian::where('choirs_id', $choir->id)->get();
+        return view('member.setting', compact('choir', 'butirPenilaian'));
     }
 
     public function create()
     {
-        dd('a');
+        $choir = Choir::find(Auth::user()->members->first()->id);
+        if ($choir->jenis_rekrutmen == 'seleksi') {
+            return view('member.seleksi.index', compact('choir'));
+        } else {
+            return view('member.create');
+        }
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $users = User::where('name', 'LIKE', "%{$search}%")
+            ->whereDoesntHave('members', function ($query) {
+                $query->where('admin', 'ya');
+            })
+            ->limit(10)
+            ->get(['id', 'name']);
+
+        return response()->json($users->map(function ($user) {
+            return ['id' => $user->id, 'text' => $user->name];
+        }));
     }
 
     /**
@@ -65,7 +88,12 @@ class MemberController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $choir = Choir::find($id)
+            ->update([
+                'jenis_rekrutmen' => $request->jenis_rekrutmen,
+            ]);
+
+        return redirect()->back()->with('success', 'Metode rekrutmen berhasil diperbarui!');
     }
 
     /**

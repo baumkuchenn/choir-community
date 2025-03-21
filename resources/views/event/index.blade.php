@@ -41,12 +41,12 @@
                                 </div>
                                 <div class="col-md-5 text-end d-none d-md-block">
                                     <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                    <button class="btn btn-outline-danger deleteBtn" data-id="{{ $event->id }}" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                    <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
                                 </div>
                             </div>
                             <div class="col-12 text-end d-block d-md-none">
                                 <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                <button class="btn btn-outline-danger deleteBtn" data-id="{{ $event->id }}" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
                             </div>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
             <p class="text-center">Komunitas ini belum memiliki kegiatan.</p>
         @else
             @foreach ($eventLalu as $event)
-                <div class="card shadow border-0">
+                <div class="card shadow border-0 mb-3">
                     <div class="card-body">
                         <div class="d-flex flex-column gap-3">
                             <div class="d-flex justify-content-between align-items-center">
@@ -83,12 +83,12 @@
                                 </div>
                                 <div class="col-md-5 text-end d-none d-md-block">
                                     <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                    <button class="btn btn-outline-danger deleteBtn" data-id="{{ $event->id }}" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                    <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
                                 </div>
                             </div>
                             <div class="col-12 text-end d-block d-md-none">
                                 <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                <button class="btn btn-outline-danger deleteBtn" data-id="{{ $event->id }}" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
                             </div>
                         </div>
                     </div>

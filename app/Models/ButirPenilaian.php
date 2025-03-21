@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Bank extends Model
+class ButirPenilaian extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table = 'banks';
+    protected $fillable = ['nama', 'bobot_nilai', 'choirs_id'];
 
-    public function concert()
+    public function choir()
     {
-        return $this->hasOne(Concert::class, 'banks_id');
+        return $this->belongsTo(Choir::class, 'choirs_id');
     }
 }

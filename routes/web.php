@@ -13,6 +13,7 @@ use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SeleksiController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketTypeController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -90,6 +91,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/members/search', [MemberController::class, 'search'])->name('members.search');
         Route::resource('members', MemberController::class);
         Route::resource('butir-penilaian', ButirPenilaianController::class);
+        Route::resource('seleksi', SeleksiController::class);
 
         //Manajemen Roles
         Route::resource('roles', RoleController::class);

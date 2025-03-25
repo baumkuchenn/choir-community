@@ -38,7 +38,7 @@ class MemberController extends Controller
     {
         $choir = Choir::find(Auth::user()->members->first()->id);
         if ($choir->jenis_rekrutmen == 'seleksi') {
-            return view('member.seleksi.index', compact('choir'));
+            return redirect()->route('seleksi.index');
         } else {
             return view('member.create');
         }

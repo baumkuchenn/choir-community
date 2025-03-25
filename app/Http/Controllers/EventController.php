@@ -62,7 +62,7 @@ class EventController extends Controller
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date',
             'jam_mulai' => 'required',
-            'jam_mulai' => 'required',
+            'jam_selesai' => 'required',
             'lokasi' => 'required|string|max:255',
             'peran' => 'required|string',
             'panitia_eksternal' => 'required|string',

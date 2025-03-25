@@ -10,4 +10,9 @@ class Seleksi extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = ['tanggal_mulai', 'tanggal_selesai', 'jam_mulai', 'jam_selesai', 'lokasi', 'choirs_id'];
+
+    public function pendaftarSeleksis()
+    {
+        return $this->hasMany(PendaftarSeleksi::class, 'seleksis_id');
+    }
 }

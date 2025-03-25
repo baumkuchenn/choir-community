@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PendaftarSeleksi;
 use App\Models\Seleksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -50,7 +51,9 @@ class SeleksiController extends Controller
      */
     public function show(string $id)
     {
-        dd($id);
+        $seleksi = Seleksi::find($id);
+        $pendaftar = PendaftarSeleksi::with('user')->where('seleksis_id', $id)->get();
+        return view('member.seleksi.show', compact('seleksi', 'pendaftar'));
     }
 
     /**

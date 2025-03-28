@@ -1,4 +1,8 @@
-@extends('layouts.management')
+@php
+    $layout = Auth::check() && Auth::user()->members()->exists() ? 'layouts.management' : 'layouts.header-only';
+@endphp
+
+@extends($layout)
 
 @section('content')
 <div class="container d-flex justify-content-center">

@@ -16,11 +16,14 @@ class PendaftarSeleksi extends Model
         return $this->belongsTo(User::class, 'users_id');
     }
 
-    /**
-     * Relationship with Seleksi model
-     */
     public function seleksi()
     {
         return $this->belongsTo(Seleksi::class, 'seleksis_id');
+    }
+
+    public function nilais()
+    {
+        return $this->belongsToMany(ButirPenilaian::class, 'pendaftar_nilais', 'pendaftars_id', 'butirs_id')
+            ->withPivot('nilai');
     }
 }

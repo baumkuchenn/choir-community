@@ -28,6 +28,8 @@ class ProfileUpdateRequest extends FormRequest
             'tanggal_lahir' => 'required|date',
             'jenis_kelamin' => 'required|in:L,P',
             'no_handphone' => 'required|string|max:15',
+            'kota' => 'required|string|max:45',
+            'alamat' => 'required|string',
         ];
     }
 }

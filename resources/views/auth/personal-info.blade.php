@@ -25,6 +25,24 @@
                     @enderror
                 </div>
 
+                <!-- Asal kota -->
+                <div class="mb-3">
+                    <label for="kota" class="form-label">Asal Kota</label>
+                    <input type="text" class="form-control" id="kota" name="kota" placeholder="" value="{{ old('kota', $user->kota) }}" required autofocus>
+                    @error('kota')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Alamat -->
+                <div class="mb-3">
+                    <label for="alamat" class="form-label">Alamat</label>
+                    <input type="text" class="form-control" id="alamat" name="alamat" placeholder="" value="{{ old('alamat', $user->alamat) }}" required autofocus>
+                    @error('alamat')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <!-- Tanggal Lahir -->
                 <div class="mb-3">
                     <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
@@ -37,7 +55,7 @@
                 <!-- Jenis Kelamin -->
                 <div class="mb-3">
                     <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-                    <select id="jenis_kelamin" name="jenis_kelamin" class="form-control" required>
+                    <select id="jenis_kelamin" name="jenis_kelamin" class="form-select" required>
                         <option value="L" {{ old('jenis_kelamin', $user->jenis_kelamin ?? '') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                         <option value="P" {{ old('jenis_kelamin', $user->jenis_kelamin ?? '') == 'P' ? 'selected' : '' }}>Perempuan</option>
                     </select>

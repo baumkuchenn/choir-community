@@ -76,6 +76,22 @@
                     </div>
 
                     <div class="col-12">
+                        <label for="kota" class="form-label">Asal Kota</label>
+                        <input type="text" class="form-control" id="kota" name="kota" placeholder="" value="{{ old('kota', $user->kota) }}">
+                        <div class="invalid-feedback">
+                            Tolong isi asal kota anda yang valid.
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="alamat" class="form-label">Alamat</label>
+                        <input type="text" class="form-control" id="alamat" name="alamat" placeholder="" value="{{ old('alamat', $user->alamat) }}">
+                        <div class="invalid-feedback">
+                            Tolong isi alamat anda yang valid.
+                        </div>
+                    </div>
+
+                    <div class="col-12">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}" placeholder="contoh@mail.com">
                         <div class="invalid-feedback">

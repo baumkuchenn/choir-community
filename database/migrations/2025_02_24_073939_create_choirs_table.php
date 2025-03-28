@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('profil', 255);
             $table->enum('tipe', ['SSAATTBB', 'SSAA', 'TTBB']);
             $table->string('kota', 45);
-            $table->string('alamat', 255);
+            $table->text('alamat');
             $table->string('deskripsi', 1000);
             $table->enum('jenis_rekrutmen', ['open', 'seleksi'])->default('seleksi');
 

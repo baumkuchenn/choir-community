@@ -23,7 +23,7 @@
             @method('PUT')
             <div class="col-12 mb-3">
                 <label for="nama" class="form-label">Metode Perekrutan Anggota</label>
-                <select name="jenis_rekrutmen" class="form-control">
+                <select name="jenis_rekrutmen" class="form-select">
                     <option value="open" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'open' ? 'selected' : '' }}>Terbuka</option>
                     <option value="seleksi" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'seleksi' ? 'selected' : '' }}>Seleksi</option>
                 </select>
@@ -37,7 +37,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5>Butir Penilaian Seleksi</h5>
             </div>
-            <table class="table table-bordered shadow text-center dataTable">
+            <table id="butirTable" class="table table-bordered shadow text-center">
                 <thead class="text-center">
                     <tr class="bg-primary">
                         <th>Nama</th>
@@ -46,22 +46,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if($butirPenilaian->isNotEmpty())
-                        @foreach($butirPenilaian as $item)
-                            <tr>
-                                <td>{{ $item->nama }}</td>
-                                <td>{{ $item->bobot_nilai }}</td>
-                                <td class="d-flex justify-content-center gap-3">
-                                    <button class="btn btn-primary loadEditForm" data-action="{{ route('butir-penilaian.edit', $item->id) }}">Ubah</button>
-                                    <button class="btn btn-outline-danger deleteBtn" data-name="jabatan {{ $item->nama }}" data-action="{{ route('butir-penilaian.destroy', $item->id) }}">Hapus</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @else
+                    @foreach($butirPenilaian as $item)
                         <tr>
-                            <td colspan="3">Belum ada butir penilaian seleksi anggota baru</td>
+                            <td>{{ $item->nama }}</td>
+                            <td>{{ $item->bobot_nilai }}</td>
+                            <td class="d-flex justify-content-center gap-3">
+                                <button class="btn btn-primary loadEditForm" data-action="{{ route('butir-penilaian.edit', $item->id) }}">Ubah</button>
+                                <button class="btn btn-outline-danger deleteBtn" data-name="jabatan {{ $item->nama }}" data-action="{{ route('butir-penilaian.destroy', $item->id) }}">Hapus</button>
+                            </td>
                         </tr>
-                    @endif
+                    @endforeach
                 </tbody>
             </table>
             <button class="btn btn-primary loadCreateForm fw-bold" data-action="{{ route('butir-penilaian.create') }}">+ Tambah Butir Penilaian</button>
@@ -101,31 +95,11 @@
         });
 
         //Data table untuk search bar
-        $('.dataTable').DataTable({
-                "paging": true,         
-                "searching": true,      
-                "ordering": false,      
-                "info": false,          
-                "lengthMenu": [5, 10, 25, 50], 
-                "language": {
-                    "search": "Cari: ",
-                    "lengthMenu": "Tampilkan _MENU_ item",
-                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                    "infoEmpty": "Tidak ada data tersedia",
-                    "infoFiltered": "(disaring dari _MAX_ total data)",
-                    "paginate": {
-                        "first": "Awal",
-                        "last": "Akhir",
-                        "next": "Berikutnya",
-                        "previous": "Sebelumnya"
-                    }
-                },
-                "columnDefs": [
-                    { "className": "text-center", "targets": "_all" } // Centers all columns
-                ]
-            });
-        $('.dataTables_length').addClass('mb-2');
-        $('.dataTables_filter').addClass('mb-2');
+        $('#butirTable').DataTable({
+            "language": {
+                "emptyTable": "Belum ada butir penilaian seleksi anggota baru"
+            }
+        });
         
     });
 </script>

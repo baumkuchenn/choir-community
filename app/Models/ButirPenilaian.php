@@ -15,4 +15,10 @@ class ButirPenilaian extends Model
     {
         return $this->belongsTo(Choir::class, 'choirs_id');
     }
+
+    public function pendaftars()
+    {
+        return $this->belongsToMany(PendaftarSeleksi::class, 'pendaftar_nilais', 'butirs_id', 'pendaftars_id')
+            ->withPivot('nilai');
+    }
 }

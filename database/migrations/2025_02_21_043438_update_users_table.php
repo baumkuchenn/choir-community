@@ -15,6 +15,8 @@ return new class extends Migration
             $table->date('tanggal_lahir')->nullable();
             $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
             $table->string('no_handphone', 15)->nullable();
+            $table->string('kota', 45)->nullable();
+            $table->text('alamat')->nullable();
         });
     }
 

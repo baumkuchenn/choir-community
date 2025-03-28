@@ -50,6 +50,16 @@
                     @enderror
                 </div>
             </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label for="pendaftaran_terakhir" class="form-label">Tanggal Pendaftaran Terakhir</label>
+                    <input type="date" class="form-control" id="pendaftaran_terakhir" name="pendaftaran_terakhir" placeholder="" value="{{ old('pendaftaran_terakhir') }}" required>
+                    @error('pendaftaran_terakhir')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
             <button class="btn btn-primary w-100 fw-bold mt-2">Simpan Seleksi Baru</button>
         </form>
     </div>

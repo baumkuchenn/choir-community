@@ -32,4 +32,9 @@ class Choir extends Model
     {
         return $this->hasMany(ButirPenilaian::class, 'choirs_id');
     }
+
+    public function seleksis()
+    {
+        return $this->hasMany(Seleksi::class, 'choirs_id');
+    }
 }

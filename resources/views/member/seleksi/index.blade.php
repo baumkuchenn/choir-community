@@ -19,14 +19,21 @@
             <p class="text-center">Komunitas ini belum pernah mengadakan seleksi anggota baru.</p>
         @else
             @foreach ($seleksiDepan as $item)
-                <div class="card shadow border-0">
+                <div class="card shadow border-0 mb-3">
                     <div class="card-body">
                         <div class="d-flex flex-column gap-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="col-md-7">
                                     <div class="d-flex align-items-center gap-2">
                                         <i class="fa-solid fa-calendar-days fa-fw fs-5"></i>
-                                        <p class="mb-0">{{ \Carbon\Carbon::parse($item->tanggal_mulai)->translatedFormat('d F Y') }} - {{ \Carbon\Carbon::parse($item->tanggal_selesai)->translatedFormat('d F Y') }}</p>
+                                        <p class="mb-0">
+                                            @if ($item->tanggal_mulai != $item->tanggal_selesai)
+                                                {{ \Carbon\Carbon::parse($item->tanggal_mulai)->translatedFormat('d') }} - 
+                                                {{ \Carbon\Carbon::parse($item->tanggal_selesai)->translatedFormat('d F Y') }}
+                                            @else
+                                                {{ \Carbon\Carbon::parse($item->tanggal_mulai)->translatedFormat('d F Y') }}
+                                            @endif
+                                        </p>
                                     </div>
                                     <div class="mt-2 d-flex align-items-center gap-2">
                                         <i class="fa-solid fa-clock fa-fw fs-5"></i>
@@ -58,7 +65,7 @@
             <p class="text-center">Komunitas ini belum pernah mengadakan seleksi anggota baru.</p>
         @else
             @foreach ($seleksiLalu as $item)
-                <div class="card shadow border-0">
+                <div class="card shadow border-0 mb-3">
                     <div class="card-body">
                         <div class="d-flex flex-column gap-3">
                             <div class="d-flex justify-content-between align-items-center">

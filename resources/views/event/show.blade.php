@@ -10,7 +10,15 @@
     </div>
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
-        <h2 class="mb-3 fw-bold text-center">Detail Kegiatan Komunitas</h2>
+        <h2 class="mb-3 fw-bold text-center">Detail Kegiatan {{ $event->nama }}</h2>
+        <h5 class="fw-medium text-center">Tanggal 
+            @if ($event->tanggal_mulai != $event->tanggal_selesai)
+                {{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d') }} - 
+                {{ \Carbon\Carbon::parse($event->tanggal_selesai)->translatedFormat('d F Y') }}
+            @else
+                {{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d F Y') }}
+            @endif 
+        </h5>
         <a href="{{ $backUrl ?? route('events.index') }}" class="btn btn-outline-primary">Kembali</a>
         <nav class="navbar">
             <div class="d-flex flex-nowrap overflow-auto w-100 hide-scrollbar border-bottom border-black" id="navbarNav">
@@ -166,48 +174,42 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if($purchases->isNotEmpty())
-                                @foreach($purchases as $purchase)
-                                    <tr>
-                                        @php
-                                            $invoice = $purchase->invoice;
-                                            $tickets = $invoice ? $invoice->tickets : collect();
-                                            $checkedInCount = $tickets->where('check_in', 'ya')->count();
-                                            $totalTickets = $tickets->count();
-                                        @endphp
-                                        <td>{{ $purchase->user->name }}</td>
-                                        <td>{{ $purchase->user->no_handphone }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($purchase->waktu_pembayaran)->format('d-m-Y H:i') }}</td>
-                                        <td>
-                                            @if($totalTickets > 0)
-                                                @if($checkedInCount > 0)
-                                                    Tiket Checked In {{ $checkedInCount }}/{{ $totalTickets }}
-                                                @else
-                                                    E-ticket Terkirim ({{ $totalTickets }} tiket)
-                                                @endif
-                                            @elseif($purchase->status === 'verifikasi')
-                                                Verifikasi Pembayaran
-                                            @endif
-                                        </td>
-                                        <td class="d-flex justify-content-center gap-3">
-                                            @if($totalTickets > 0)
-                                                @if($checkedInCount != $totalTickets)
-                                                    <button class="btn btn-primary loadCheckInForm" data-purchase-id="{{ $purchase->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
-                                                @endif
-                                            @elseif($purchase->status === 'verifikasi')
-                                                <form action="{{ route('events.payment', $purchase->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                                    @csrf
-                                                    <button class="btn btn-primary">Lihat Detail</button>
-                                                </form>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
+                            @foreach($purchases as $purchase)
                                 <tr>
-                                    <td colspan="5">Belum ada pembeli</td>
+                                    @php
+                                        $invoice = $purchase->invoice;
+                                        $tickets = $invoice ? $invoice->tickets : collect();
+                                        $checkedInCount = $tickets->where('check_in', 'ya')->count();
+                                        $totalTickets = $tickets->count();
+                                    @endphp
+                                    <td>{{ $purchase->user->name }}</td>
+                                    <td>{{ $purchase->user->no_handphone }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($purchase->waktu_pembayaran)->format('d-m-Y H:i') }}</td>
+                                    <td>
+                                        @if($totalTickets > 0)
+                                            @if($checkedInCount > 0)
+                                                Tiket Checked In {{ $checkedInCount }}/{{ $totalTickets }}
+                                            @else
+                                                E-ticket Terkirim ({{ $totalTickets }} tiket)
+                                            @endif
+                                        @elseif($purchase->status === 'verifikasi')
+                                            Verifikasi Pembayaran
+                                        @endif
+                                    </td>
+                                    <td class="d-flex justify-content-center gap-3">
+                                        @if($totalTickets > 0)
+                                            @if($checkedInCount != $totalTickets && (now()->toDateString() >= $event->tanggal_mulai && now()->toDateString() <= $event->tanggal_selesai))
+                                                <button class="btn btn-primary loadCheckInForm" data-purchase-id="{{ $purchase->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
+                                            @endif
+                                        @elseif($purchase->status === 'verifikasi')
+                                            <form action="{{ route('events.payment', $purchase->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
+                                                @csrf
+                                                <button class="btn btn-primary">Lihat Detail</button>
+                                            </form>
+                                        @endif
+                                    </td>
                                 </tr>
-                            @endif
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -330,7 +332,7 @@
                         <h5>Informasi Pembayaran</h5>
                         <div class="mb-3">
                             <label for="banks_id" class="form-label">Nama Bank</label>
-                            <select class="form-control" id="banks_id" name="banks_id" required>
+                            <select class="form-select" id="banks_id" name="banks_id" required>
                                 <option value="" disabled selected>Pilih Bank</option>
                                 @foreach ($banks as $bank)
                                     <option value="{{ $bank->id }}" 
@@ -475,7 +477,7 @@
                             </div>
                             <div class="col-12 col-md-8" id="tipe_kupon_container" style="display: none;">
                                 <label for="tipe_kupon" class="form-label">Tipe kupon yang digunakan</label>
-                                <select class="form-control" id="tipe_kupon" name="tipe_kupon">
+                                <select class="form-select" id="tipe_kupon" name="tipe_kupon">
                                     <option value="" disabled selected>Pilih tipe kupon</option>
                                     <option value="kupon" {{ old('tipe_kupon', $concert->tipe_kupon) == 'kupon' ? 'selected' : '' }}>Kupon</option>
                                     <option value="referal" {{ old('tipe_kupon', $concert->tipe_kupon) == 'referal' ? 'selected' : '' }}>Referal</option>
@@ -677,30 +679,10 @@
 
         //Data table pembeli tiket untuk search bar
         $('#purchaseTable').DataTable({
-            "paging": true,         // Enable pagination
-            "searching": true,      // Enable search box
-            "ordering": false,       // Enable column sorting
-            "info": false,           // Show info text
-            "lengthMenu": [10, 25, 50, 100], // Control how many entries to show
             "language": {
-                "search": "Cari: ", // Customize search box placeholder
-                "lengthMenu": "Tampilkan _MENU_ tiket per halaman",
-                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                "infoEmpty": "Tidak ada data tersedia",
-                "infoFiltered": "(disaring dari _MAX_ total data)",
-                "paginate": {
-                    "first": "Awal",
-                    "last": "Akhir",
-                    "next": "Berikutnya",
-                    "previous": "Sebelumnya"
-                }
-            },
-            "columnDefs": [
-                { "className": "text-center", "targets": "_all" } // Centers all columns
-            ]
+                "emptyTable": "Belum ada pembeli"
+            }
         });
-        $('.dataTables_length').addClass('mb-2');
-        $('.dataTables_filter').addClass('mb-2');
 
 
         //Show check in button

@@ -76,34 +76,43 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Rute Manajemen
     Route::prefix('management')->group(function () {
         Route::resource('/', ManagementController::class)->names('management');
-        
-        //Manajemen Event
-        Route::resource('events', EventController::class);
-        Route::post('/events/{id}/payment', [EventController::class, 'payment'])->name('events.payment');
-        Route::post('/events/{id}/verification', [EventController::class, 'verifikasi'])->name('events.verification');
-        Route::get('/events/check-in/{id}', [EventController::class, 'checkInShow'])->name('events.checkInShow');
-        Route::post('/tickets/check-in/{id}', [TicketController::class, 'checkIn'])->name('tickets.checkIn');
-        Route::resource('ticket-types', TicketTypeController::class);
-        Route::put('/concerts/{id}', [ConcertController::class, 'update'])->name('concerts.update');
-
-        //Manajemen Anggota
-        Route::get('/members/setting', [MemberController::class, 'setting'])->name('members.setting');
-        Route::get('/members/search', [MemberController::class, 'search'])->name('members.search');
-        Route::resource('members', MemberController::class);
-        Route::resource('butir-penilaian', ButirPenilaianController::class);
-        Route::resource('seleksi', SeleksiController::class);
-
-        //Manajemen Roles
-        Route::resource('roles', RoleController::class);
-        Route::resource('divisions', DivisionController::class);
-        Route::resource('positions', PositionController::class);
-
-        Route::get('/calendar', [ManagementController::class, 'calendar'])->name('management.calendar');
-        Route::post('/notification', [ManagementController::class, 'notification'])->name('management.notification');
 
         //Daftar atau buat choir
+        Route::get('choir/join', [ChoirController::class, 'join'])->name('choir.join');
+        Route::post('choir/join/{id}', [ChoirController::class, 'register'])->name('choir.register');
+        Route::get('choir/join/detail/{id}', [ChoirController::class, 'detail'])->name('choir.detail');
+        Route::get('choir/search', [ChoirController::class, 'search'])->name('choir.search');
         Route::resource('choir', ChoirController::class);
-        Route::post('choir/join', [ChoirController::class, 'join'])->name('choir.join');
+
+        Route::middleware(['auth', 'choir.member'])->group(function () {
+            //Manajemen Event
+            Route::resource('events', EventController::class);
+            Route::post('/events/{id}/payment', [EventController::class, 'payment'])->name('events.payment');
+            Route::post('/events/{id}/verification', [EventController::class, 'verifikasi'])->name('events.verification');
+            Route::get('/events/check-in/{id}', [EventController::class, 'checkInShow'])->name('events.checkInShow');
+            Route::post('/tickets/check-in/{id}', [TicketController::class, 'checkIn'])->name('tickets.checkIn');
+            Route::resource('ticket-types', TicketTypeController::class);
+            Route::put('/concerts/{id}', [ConcertController::class, 'update'])->name('concerts.update');
+
+            //Manajemen Anggota
+            Route::get('/members/setting', [MemberController::class, 'setting'])->name('members.setting');
+            Route::get('/members/search', [MemberController::class, 'search'])->name('members.search');
+            Route::resource('members', MemberController::class);
+            Route::resource('butir-penilaian', ButirPenilaianController::class);
+            Route::post('/seleksi/tambah-pendaftar', [SeleksiController::class, 'tambahPendaftar'])->name('seleksi.tambah-pendaftar');
+            Route::get('/seleksi/{seleksi}/wawancara/{user}', [SeleksiController::class, 'wawancara'])->name('seleksi.wawancara');
+            Route::post('/seleksi/wawancara/check-in', [SeleksiController::class, 'checkIn'])->name('seleksi.checkin-pendaftar');
+            Route::put('/seleksi/wawancara/', [SeleksiController::class, 'simpanPendaftar'])->name('seleksi.simpan-pendaftar');
+            Route::resource('seleksi', SeleksiController::class);
+
+            //Manajemen Roles
+            Route::resource('roles', RoleController::class);
+            Route::resource('divisions', DivisionController::class);
+            Route::resource('positions', PositionController::class);
+
+            Route::get('/calendar', [ManagementController::class, 'calendar'])->name('management.calendar');
+            Route::post('/notification', [ManagementController::class, 'notification'])->name('management.notification');
+        });
     });
 });
 

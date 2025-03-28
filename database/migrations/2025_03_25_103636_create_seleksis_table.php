@@ -18,6 +18,7 @@ return new class extends Migration
             $table->time('jam_mulai');
             $table->time('jam_selesai');
             $table->string('lokasi');
+            $table->date('pendaftaran_terakhir');
 
             $table->unsignedBigInteger('choirs_id');
             $table->foreign('choirs_id')->references('id')->on('choirs');

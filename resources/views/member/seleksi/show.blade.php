@@ -9,7 +9,15 @@
     </div>
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
-        <h2 class="mb-3 fw-bold text-center">Detail Seleksi Anggota Baru Komunitas</h2>
+        <h3 class="mb-3 fw-bold text-center">Detail Seleksi Anggota Baru Komunitas</h3>
+        <h5 class="fw-medium text-center">
+            @if ($seleksi->tanggal_mulai != $seleksi->tanggal_selesai)
+                {{ \Carbon\Carbon::parse($seleksi->tanggal_mulai)->translatedFormat('d') }} - 
+                {{ \Carbon\Carbon::parse($seleksi->tanggal_selesai)->translatedFormat('d F Y') }}
+            @else
+                {{ \Carbon\Carbon::parse($seleksi->tanggal_mulai)->translatedFormat('d F Y') }}
+            @endif
+        </h5>
         <a href="{{ $backUrl ?? route('seleksi.index') }}" class="btn btn-outline-primary">Kembali</a>
         <nav class="navbar">
             <div class="d-flex flex-nowrap overflow-auto w-100 hide-scrollbar border-bottom border-black" id="navbarNav">
@@ -79,6 +87,16 @@
                     </div>
                 </div>
 
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="pendaftaran_terakhir" class="form-label">Tanggal Pendaftaran Terakhir</label>
+                        <input type="date" class="form-control" id="pendaftaran_terakhir" name="pendaftaran_terakhir" placeholder="" value="{{ old('pendaftaran_terakhir', $seleksi->pendaftaran_terakhir) }}" required>
+                        @error('pendaftaran_terakhir')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 <div class="fixed-bottom bg-body-secondary p-3 border-top text-end">
                     <button class="btn btn-primary">Simpan Perubahan</button>
                 </div>
@@ -86,6 +104,9 @@
             <div class="tab-pane fade" id="pendaftar" role="tabpanel">
                 <div class="mb-3">
                     <h5>Daftar Seleksi Penyanyi Baru</h5>
+                    <button type="button" class="btn btn-primary mb-3 fw-bold" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                        + Tambah Anggota Baru
+                    </button>
                     <table id="pendaftarTable" class="table table-bordered shadow text-center">
                         <thead class="text-center">
                             <tr class="bg-primary">
@@ -97,26 +118,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if($pendaftar->isNotEmpty())
-                                @foreach($pendaftar as $item)
-                                    <tr>
-                                        <td>{{ $pendaftar->user->name }}</td>
-                                        <td>{{ $pendaftar->user->no_handphone }}</td>
-                                        <td>{{ $pendaftar->user->email }}</td>
-                                        <td>{{ $pendaftar->user->jenis_kelamin }}</td>
-                                        <td>
-                                            <form action="{{ route('events.payment', $pendaftar->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                                @csrf
-                                                <button class="btn btn-primary">Lihat Detail</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
+                            @foreach($pendaftar as $item)
                                 <tr>
-                                    <td colspan="5">Belum ada pendaftar</td>
+                                    <td>{{ $item->user->name }}</td>
+                                    <td>{{ $item->user->no_handphone }}</td>
+                                    <td>{{ $item->user->email }}</td>
+                                    <td>{{ $item->user->jenis_kelamin }}</td>
+                                    <td>
+                                        <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
+                                    </td>
                                 </tr>
-                            @endif
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -124,37 +136,48 @@
             <div class="tab-pane fade" id="hasil" role="tabpanel">
                 <div class="mb-3">
                     <h5>Hasil Seleksi Penyanyi Baru</h5>
-                    <table id="pendaftarTable" class="table table-bordered shadow text-center">
+                    <table id="hasilTable" class="table table-bordered shadow text-center">
                         <thead class="text-center">
                             <tr class="bg-primary">
                                 <th>Nama Lengkap</th>
                                 <th>Nomor Handphone</th>
-                                <th>Email</th>
-                                <th>Jenis Kelamin</th>
+                                <th>Suara</th>
+                                <th>Nilai</th>
+                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if($pendaftar->isNotEmpty())
-                                @foreach($pendaftar as $item)
-                                    <tr>
-                                        <td>{{ $pendaftar->user->name }}</td>
-                                        <td>{{ $pendaftar->user->no_handphone }}</td>
-                                        <td>{{ $pendaftar->user->email }}</td>
-                                        <td>{{ $pendaftar->user->jenis_kelamin }}</td>
-                                        <td>
-                                            <form action="{{ route('events.payment', $pendaftar->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                                @csrf
-                                                <button class="btn btn-primary">Lihat Detail</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
+                            @foreach($hasil as $item)
                                 <tr>
-                                    <td colspan="5">Belum ada pendaftar</td>
+                                    <td>{{ $item->user->name }}</td>
+                                    <td>{{ $item->user->no_handphone }}</td>
+                                    <td>
+                                        @if($item->kategori_suara == 'sopran_1')
+                                            Sopran 1
+                                        @elseif($item->kategori_suara == 'sopran_2')
+                                            Sopran 2
+                                        @elseif($item->kategori_suara == 'alto_1')
+                                            Alto 1
+                                        @elseif($item->kategori_suara == 'alto_2')
+                                            Alto 2
+                                        @elseif($item->kategori_suara == 'tenor_1')
+                                            Tenor 1
+                                        @elseif($item->kategori_suara == 'tenor_2')
+                                            Tenor 2
+                                        @elseif($item->kategori_suara == 'bass_1')
+                                            Bass 1
+                                        @elseif($item->kategori_suara == 'bass_2')
+                                            Bass 2
+                                        @endif
+                                    </td>
+                                    <td>{{ $item->nilais->sum('pivot.nilai') }}</td>
+                                    <td>{{ $item->lolos }}</td>
+                                    <td>
+                                        <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
+                                    </td>
                                 </tr>
-                            @endif
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -162,6 +185,7 @@
         </div>
     </div>
 </div>
+@include('member.seleksi.modal.form-create')
 @endsection
 
 @section('js')
@@ -182,6 +206,43 @@
             link.addEventListener("shown.bs.tab", function() {
                 updateActiveTab();
             });
+        });
+
+        //Modal tambah pendaftar
+        $('#addMemberModal').on('shown.bs.modal', function () {
+            $('#user_id').select2({
+                placeholder: 'Cari Pengguna...',
+                dropdownParent: $('#addMemberModal'),
+                ajax: {
+                    url: '{{ route("members.search") }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data
+                        };
+                    }
+                }
+            });
+        });
+
+        //Datatable pendaftar dan hasil
+        $(document).ready(function() {
+            $('#pendaftarTable').DataTable({
+                "language": {
+                    "emptyTable": "Belum ada pendaftar"
+                }
+            }); 
+            $('#hasilTable').DataTable({
+                "language": {
+                    "emptyTable": "Belum ada pendaftar"
+                }
+            }); 
         });
     });
 </script>

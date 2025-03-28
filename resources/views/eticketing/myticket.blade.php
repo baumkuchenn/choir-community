@@ -39,14 +39,14 @@
                 <p class="text-center">Kamu belum memiliki tiket, silahkan membeli tiket terlebih dahulu</p>
             @else
                 @foreach ($purchaseBerlangsung as $purchase)
-                    <div class="card shadow border-0">
+                    <div class="card shadow border-0 mb-3">
                         <div class="card-body">
                             <p>
                                 Pembelian {{ \Carbon\Carbon::parse($purchase->waktu_pembelian)->translatedFormat('j F Y') }}
                                 @if ($purchase->status == 'verifikasi')
                                     <span class="bg-info fw-bold p-1">Verifikasi Pembayaran</span>
                                 @elseif ($purchase->status == 'selesai')
-                                    <span class="bg-info fw-bold p-1">Pembayaran Berhasil</span>
+                                    <span class="bg-success text-white fw-bold p-1">Pembayaran Berhasil</span>
                                 @endif
                             </p>
                             <hr>
@@ -142,14 +142,14 @@
                 <p class="text-center">Kamu belum memiliki tiket, silahkan membeli tiket terlebih dahulu</p>
             @else
                 @foreach ($purchaseLalu as $purchase)
-                    <div class="card shadow border-0">
+                    <div class="card shadow border-0 mb-3">
                         <div class="card-body">
                             <p>
                                 Pembelian {{ \Carbon\Carbon::parse($purchase->waktu_pembelian)->translatedFormat('j F Y') }}
                                 @if ($purchase->status == 'verifikasi')
                                     <span class="bg-info fw-bold p-1">Verifikasi Pembayaran</span>
                                 @elseif ($purchase->status == 'selesai')
-                                    <span class="bg-info fw-bold p-1">Pembayaran Berhasil</span>
+                                    <span class="bg-success text-white fw-bold p-1">Pembayaran Berhasil</span>
                                 @endif
                             </p>
                             <hr>

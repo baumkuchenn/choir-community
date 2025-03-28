@@ -22,7 +22,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <label for="jenis_kegiatan" class="form-label">Jenis Kegiatan</label>
-                    <select class="form-control" id="jenis_kegiatan" name="jenis_kegiatan" required>
+                    <select class="form-select" id="jenis_kegiatan" name="jenis_kegiatan" required>
                         <option value="" disabled selected>Pilih jenis kegiatan</option>
                         <option value="INTERNAL" {{ old('jenis_kegiatan') == 'INTERNAL' ? 'selected' : '' }}>Internal</option>
                         <option value="EKSTERNAL" {{ old('jenis_kegiatan') == 'EKSTERNAL' ? 'selected' : '' }}>External</option>
@@ -37,7 +37,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <label for="sub_kegiatan_id" class="form-label">Sub Kegiatan</label>
-                    <select class="form-control" id="sub_kegiatan_id" name="sub_kegiatan_id">
+                    <select class="form-select" id="sub_kegiatan_id" name="sub_kegiatan_id">
                         <option value="" disabled selected>Pilih sub kegiatan</option>
                         @foreach ($events as $subEvent)
                             <option value="{{ $subEvent->id }}" {{ old('sub_kegiatan_id') == $subEvent->id ? 'selected' : '' }}>
@@ -115,7 +115,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <label for="kegiatan_berulang" class="form-label">Kegiatan Berulang</label>
-                    <select class="form-control" id="kegiatan_berulang" name="kegiatan_berulang" required>
+                    <select class="form-select" id="kegiatan_berulang" name="kegiatan_berulang" required>
                         <!-- <option value="ya" {{ old('kegiatan_berulang') == 'ya' ? 'selected' : '' }}>Ya</option> -->
                         <option value="tidak" {{ old('kegiatan_berulang', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
                     </select>
@@ -128,7 +128,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <label for="kegiatan_kolaborasi" class="form-label">Kegiatan Kolaborasi</label>
-                    <select class="form-control" id="kegiatan_kolaborasi" name="kegiatan_kolaborasi" required>
+                    <select class="form-select" id="kegiatan_kolaborasi" name="kegiatan_kolaborasi" required>
                         <!-- <option value="ya" {{ old('kegiatan_kolaborasi') == 'ya' ? 'selected' : '' }}>Ya</option> -->
                         <option value="tidak" {{ old('kegiatan_kolaborasi', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
                     </select>
@@ -141,7 +141,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <label for="peran" class="form-label">Peran dalam Kegiatan</label>
-                    <select class="form-control" id="peran" name="peran" required>
+                    <select class="form-select" id="peran" name="peran" required>
                         <option value="penyanyi" {{ old('peran', 'penyanyi') == 'penyanyi' ? 'selected' : '' }}>Penyanyi</option>
                         <option value="panitia" {{ old('peran') == 'panitia' ? 'selected' : '' }}>Panitia</option>
                         <option value="keduanya" {{ old('peran') == 'keduanya' ? 'selected' : '' }}>Penyanyi dan Panitia</option>
@@ -155,7 +155,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <label for="panitia_eksternal" class="form-label">Kegiatan Menggunakan Panitia Eksternal</label>
-                    <select class="form-control" id="panitia_eksternal" name="panitia_eksternal" required>
+                    <select class="form-select" id="panitia_eksternal" name="panitia_eksternal" required>
                         <option value="ya" {{ old('panitia_eksternal') == 'ya' ? 'selected' : '' }}>Ya</option>
                         <option value="tidak" {{ old('panitia_eksternal', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
                     </select>
@@ -168,7 +168,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <label for="metode_rekrut_panitia" class="form-label">Metode Rekrut Panitia Internal</label>
-                    <select class="form-control" id="metode_rekrut_panitia" name="metode_rekrut_panitia" required>
+                    <select class="form-select" id="metode_rekrut_panitia" name="metode_rekrut_panitia" required>
                         <option value="PILIH" {{ old('metode_rekrut_panitia') == 'PILIH' ? 'selected' : '' }}>Pilih langsung</option>
                         <option value="SELEKSI" {{ old('metode_rekrut_panitia', 'SELEKSI') == 'SELEKSI' ? 'selected' : '' }}>Seleksi</option>
                     </select>
@@ -181,7 +181,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <label for="metode_rekrut_penyanyi" class="form-label">Metode Rekrut Penyanyi</label>
-                    <select class="form-control" id="metode_rekrut_penyanyi" name="metode_rekrut_penyanyi" required>
+                    <select class="form-select" id="metode_rekrut_penyanyi" name="metode_rekrut_penyanyi" required>
                         <option value="PILIH" {{ old('metode_rekrut_penyanyi') == 'PILIH' ? 'selected' : '' }}>Pilih langsung</option>
                         <option value="SELEKSI" {{ old('metode_rekrut_penyanyi', 'SELEKSI') == 'SELEKSI' ? 'selected' : '' }}>Seleksi</option>
                     </select>

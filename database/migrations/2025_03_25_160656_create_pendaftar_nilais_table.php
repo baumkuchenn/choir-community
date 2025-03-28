@@ -20,6 +20,7 @@ return new class extends Migration
 
             $table->softDeletes();
             $table->timestamps();
+            $table->primary(['pendaftars_id', 'butirs_id']);
         });
     }
 

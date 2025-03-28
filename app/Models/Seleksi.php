@@ -9,10 +9,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Seleksi extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['tanggal_mulai', 'tanggal_selesai', 'jam_mulai', 'jam_selesai', 'lokasi', 'choirs_id'];
+    protected $fillable = ['tanggal_mulai', 'tanggal_selesai', 'jam_mulai', 'jam_selesai', 'lokasi', 'pendaftaran_terakhir', 'choirs_id'];
 
     public function pendaftarSeleksis()
     {
         return $this->hasMany(PendaftarSeleksi::class, 'seleksis_id');
+    }
+
+    public function choir()
+    {
+        return $this->belongsTo(Choir::class, 'choirs_id');
     }
 }

@@ -28,7 +28,7 @@
                 <!-- Asal kota -->
                 <div class="mb-3">
                     <label for="kota" class="form-label">Asal Kota</label>
-                    <input type="text" class="form-control" id="kota" name="kota" placeholder="" value="{{ old('kota', $user->kota) }}" required autofocus>
+                    <input type="text" class="form-control" id="kota" name="kota" placeholder="" value="{{ old('kota') }}" required autofocus>
                     @error('kota')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -37,7 +37,7 @@
                 <!-- Alamat -->
                 <div class="mb-3">
                     <label for="alamat" class="form-label">Alamat</label>
-                    <input type="text" class="form-control" id="alamat" name="alamat" placeholder="" value="{{ old('alamat', $user->alamat) }}" required autofocus>
+                    <input type="text" class="form-control" id="alamat" name="alamat" placeholder="" value="{{ old('alamat') }}" required autofocus>
                     @error('alamat')
                     <div class="text-danger">{{ $message }}</div>
                     @enderror

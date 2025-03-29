@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('tipe', ['SSAATTBB', 'SSAA', 'TTBB']);
             $table->string('kota', 45);
             $table->text('alamat');
-            $table->string('deskripsi', 1000);
+            $table->text('deskripsi');
             $table->enum('jenis_rekrutmen', ['open', 'seleksi'])->default('seleksi');
 
             $table->softDeletes();

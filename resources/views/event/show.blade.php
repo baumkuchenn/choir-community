@@ -285,7 +285,7 @@
 
                     <div class="mb-3">
                         <h5>Deskripsi Konser</h5>
-                        <textarea name="deskripsi" class="form-control" placeholder="" rows="5" maxlength="1000" id="deskripsi-area" required>{{ old('deskripsi', $concert->deskripsi ?? '') }}</textarea>
+                        <textarea name="deskripsi" class="form-control" placeholder="" rows="5" maxlength="1000" id="deskripsi-area" required>{!! old('deskripsi', $concert->deskripsi ?? '') !!}</textarea>
                         <small class="text-muted d-block mt-1" id="deskripsi-counter">0/1000 karakter</small>
                         @error('deskripsi')
                             <div class="text-danger">{{ $message }}</div>
@@ -321,7 +321,7 @@
 
                     <div class="mb-3">
                         <h5>Syarat dan Ketentuan</h5>
-                        <textarea name="syarat_ketentuan" class="form-control" placeholder="" rows="5" maxlength="1000" id="syarat_ketentuan-area" required>{{ old('syarat_ketentuan', $concert->syarat_ketentuan ?? '') }}</textarea>
+                        <textarea name="syarat_ketentuan" class="form-control" placeholder="" rows="5" maxlength="1000" id="syarat_ketentuan-area" required>{!! old('syarat_ketentuan', $concert->syarat_ketentuan ?? '') !!}</textarea>
                         <small class="text-muted d-block mt-1" id="syarat_ketentuan-counter">0/1000 karakter</small>
                         @error('syarat_ketentuan')
                             <div class="text-danger">{{ $message }}</div>

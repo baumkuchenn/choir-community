@@ -30,12 +30,45 @@
 
             <div class="row mb-3">
                 <div class="col-6">
-                    <label for="logo" class="form-label">Upload Logo</label>
-                    <div class="d-flex align-items-center">
+                    <label for="logo" class="form-label">Logo Komunitas Paduan Suara</label>
+                    <div class="d-flex align-items-center gap-3">
                         <img id="logoPreview" src="{{ old('logo') }}" alt="Logo" style="width: 100px; height: 100px;">
-                        <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                        <div class="text-center">
+                            <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                            <small class="fw-light">JPG, JPEG, atau PNG. Max 2 MB</small>
+                        </div>
                     </div>
+                    <small class="fw-light">Rekomendasi logo memiliki aspek ratio 1:1</small>
                     @error('logo')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-6">
+                    <label for="profil" class="form-label">Foto Profil Komunitas Paduan Suara</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <img id="profilPreview" src="{{ old('profil') }}" alt="profil" style="width: 160px; height: 90px;">
+                        <div class="text-center">
+                            <input type="file" class="form-control" id="profil" name="profil" accept="image/*">
+                            <small class="fw-light">JPG, JPEG, atau PNG. Max 2 MB</small>
+                        </div>
+                    </div>
+                    <small class="fw-light">Rekomendasi foto memiliki aspek ratio 16:9</small>
+                    @error('profil')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label for="tipe" class="form-label">Tipe Paduan Suara</label>
+                    <select class="form-select" id="tipe" name="tipe" required>
+                        <option value="">Pilih Tipe</option>
+                        <option value="SSAA" {{ old('tipe') == 'SSAA' ? 'selected' : '' }}>SSAA (Female Choir)</option>
+                        <option value="TTBB" {{ old('tipe') == 'TTBB' ? 'selected' : '' }}>TTBB (Male Choir)</option>
+                        <option value="SSAATTBB" {{ old('tipe') == 'SSAATTBB' ? 'selected' : '' }}>SSAATTBB (Mixed Choir)</option>
+                    </select>
+                    @error('tipe')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
@@ -48,6 +81,32 @@
                         <option value="">Pilih Kota</option>
                     </select>
                     @error('kota')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label for="alamat" class="form-label">Alamat</label>
+                    <input type="text" class="form-control" id="alamat" name="alamat" placeholder="" value="{{ old('alamat') }}" required>
+                    @error('alamat')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label for="deskripsi" class="form-label">Deskripsi Paduan Suara</label>
+                    <textarea class="form-control" name="deskripsi" id="deskripsi" maxlength="1000" rows="10" required>
+                        {!! old('deskripsi') !!}
+                    </textarea>
+                    <div class="d-flex justify-content-between">
+                        <small class="fw-light">Deskripsi akan ditampilkan ketika membuka seleksi anggota baru</small>
+                        <small id="deskripsi-counter">0/1000</small>
+                    </div>
+                    @error('deskripsi')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
@@ -78,6 +137,45 @@
         //         }
         //     }
         // });
+
+        
+        //Update preview logo dan profil
+        document.getElementById('logo').addEventListener('change', function(event) {
+            const file = event.target.files[0]; // Get the selected file
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('logoPreview').src = e.target.result; // Set the image source to preview
+                };
+                reader.readAsDataURL(file); // Convert the file to Base64
+            }
+        });
+
+        document.getElementById('profil').addEventListener('change', function(event) {
+            const file = event.target.files[0]; // Get the selected file
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profilPreview').src = e.target.result; // Set the image source to preview
+                };
+                reader.readAsDataURL(file); // Convert the file to Base64
+            }
+        });
+
+
+        //Counter Deskripsi
+        const deksripsiInput = document.getElementById("deskripsi");
+        const deskripsiCount = document.getElementById("deskripsi-counter");
+
+        function updateCounter(inputElement, counterElement) {
+            counterElement.textContent = `${inputElement.value.length}/1000 karakter`;
+        }
+
+        updateCounter(deksripsiInput, deskripsiCount);
+
+        deksripsiInput.addEventListener("input", function() {
+            updateCounter(deksripsiInput, deskripsiCount);
+        });
     });
 </script>
 @endsection

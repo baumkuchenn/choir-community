@@ -104,7 +104,7 @@
                 <div class="col-12">
                     <h5 class="fw-bold">Catatan Wawancara</h5>
                     <textarea class="form-control" name="hasil_wawancara" id="hasil_wawancara" rows="10" required>
-                        {!! nl2br(e(old('hasil_wawancara', $pendaftar->hasil_wawancara))) !!}
+                        {{ old('hasil_wawancara', $pendaftar->hasil_wawancara) }}
                     </textarea>
                 </div>
             </div>

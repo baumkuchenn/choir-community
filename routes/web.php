@@ -82,9 +82,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('choir/join/{id}', [ChoirController::class, 'register'])->name('choir.register');
         Route::get('choir/join/detail/{id}', [ChoirController::class, 'detail'])->name('choir.detail');
         Route::get('choir/search', [ChoirController::class, 'search'])->name('choir.search');
-        Route::resource('choir', ChoirController::class);
+        Route::resource('choir', ChoirController::class)
+            ->except(['update', 'destroy']);
 
         Route::middleware(['auth', 'choir.member'])->group(function () {
+            //Manajemen Choir
+            Route::put('choir/{choir}', [ChoirController::class, 'update'])
+                ->name('choir.update');
+            Route::delete('choir/{choir}', [ChoirController::class, 'destroy'])
+                ->name('choir.update');
+
             //Manajemen Event
             Route::resource('events', EventController::class);
             Route::post('/events/{id}/payment', [EventController::class, 'payment'])->name('events.payment');
@@ -103,6 +110,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/seleksi/{seleksi}/wawancara/{user}', [SeleksiController::class, 'wawancara'])->name('seleksi.wawancara');
             Route::post('/seleksi/wawancara/check-in', [SeleksiController::class, 'checkIn'])->name('seleksi.checkin-pendaftar');
             Route::put('/seleksi/wawancara/', [SeleksiController::class, 'simpanPendaftar'])->name('seleksi.simpan-pendaftar');
+            Route::post('/seleksi/wawancara/lolos', [SeleksiController::class, 'lolos'])->name('seleksi.lolos-pendaftar');
             Route::resource('seleksi', SeleksiController::class);
 
             //Manajemen Roles

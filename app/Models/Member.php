@@ -10,7 +10,7 @@ class Member extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'members';
-    protected $fillable = ['choirs_id', 'users_id', 'admin'];
+    protected $fillable = ['choirs_id', 'users_id', 'suara', 'positions_id', 'admin'];
 
     public function user()
     {

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('users_id');
             $table->foreign('users_id')->references('id')->on('users');
 
-            $table->enum('suara', ['S', 'A', 'T', 'B'])->nullable();
+            $table->string('suara', 45)->nullable();
 
             $table->unsignedBigInteger('positions_id')->nullable();
             $table->foreign('positions_id')->references('id')->on('positions');

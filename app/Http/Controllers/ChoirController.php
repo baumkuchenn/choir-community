@@ -110,9 +110,14 @@ class ChoirController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Choir $choir)
+    public function update(Request $request, string $id)
     {
-        //
+        Choir::find($id)
+            ->update([
+                'jenis_rekrutmen' => $request->jenis_rekrutmen,
+            ]);
+
+        return redirect()->back()->with('success', 'Metode rekrutmen berhasil diperbarui!');
     }
 
     /**

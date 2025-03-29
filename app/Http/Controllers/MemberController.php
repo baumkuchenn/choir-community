@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\ButirPenilaian;
 use App\Models\Choir;
+use App\Models\Division;
 use App\Models\Member;
+use App\Models\Position;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +21,8 @@ class MemberController extends Controller
         $penyanyi = Member::where('choirs_id', Auth::user()->members->first()->id)
             ->where('admin', 'tidak')
             ->get();
-        $pengurus = Member::where('choirs_id', Auth::user()->members->first()->id)
+        $pengurus = Member::with('position.division')
+            ->where('choirs_id', Auth::user()->members->first()->id)
             ->where('admin', 'tidak')
             ->whereNotNull('positions_id')
             ->get();
@@ -72,7 +75,10 @@ class MemberController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $member = Member::with('user')->where('id', $id)->first();
+        $choir = Choir::find(Auth::user()->members->first()->id);
+        $position = Division::with('positions')->where('choirs_id', $choir->id)->get();
+        return view('member.show', compact('member', 'choir', 'position'));
     }
 
     /**
@@ -88,12 +94,13 @@ class MemberController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $choir = Choir::find($id)
+        Member::find($id)
             ->update([
-                'jenis_rekrutmen' => $request->jenis_rekrutmen,
+                'suara' => $request->input('suara'),
+                'positions_id' => $request->input('positions_id') ?: null,
             ]);
 
-        return redirect()->back()->with('success', 'Metode rekrutmen berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Data anggota berhasil diperbarui!');
     }
 
     /**

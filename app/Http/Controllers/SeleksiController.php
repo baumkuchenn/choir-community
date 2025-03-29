@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ButirPenilaian;
+use App\Models\Member;
 use App\Models\PendaftarSeleksi;
 use App\Models\Seleksi;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ class SeleksiController extends Controller
         ]);
         $data = $request->except('_token');
         $data['choirs_id'] = Auth::user()->members->first()->id;
-        $seleksi = Seleksi::create($data);
+        Seleksi::create($data);
 
         return redirect()->route('seleksi.index')
             ->with('success', 'Seleksi baru berhasil dibuat.');
@@ -71,7 +72,7 @@ class SeleksiController extends Controller
     public function wawancara(string $seleksiId, string $userId)
     {
         $seleksi = Seleksi::find($seleksiId);
-        $pendaftar = PendaftarSeleksi::with('user')->where('seleksis_id', $seleksiId)->where('users_id', $userId)->first();
+        $pendaftar = PendaftarSeleksi::with('user', 'nilais')->where('seleksis_id', $seleksiId)->where('users_id', $userId)->first();
         $butir = ButirPenilaian::where('choirs_id', $seleksi->choirs_id)->get();
         return view('member.seleksi.detail', compact('seleksi', 'pendaftar', 'butir'));
     }
@@ -86,6 +87,26 @@ class SeleksiController extends Controller
         ]);
         return redirect()->route('seleksi.wawancara', ['seleksi' => $request->input('seleksis_id'), 'user' => $request->input('users_id')])
             ->with('success', 'Status kehadiran berhasil diperbarui.');
+    }
+
+    public function lolos(Request $request)
+    {
+        $pendaftar = PendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))
+            ->where('users_id', $request->input('users_id'))
+            ->first();
+        $pendaftar->update([
+            'lolos' => $request->input('is_lolos'),
+        ]);
+
+        if ($pendaftar->lolos == 'ya') {
+            Member::create([
+                'choirs_id' => Auth::user()->members->first()->id,
+                'users_id' => $request->input('users_id'),
+                'suara' => $pendaftar->kategori_suara,
+            ]);
+        }
+        return redirect()->route('seleksi.show', $request->input('seleksis_id'))
+            ->with('success', 'Status pendaftar berhasil diperbarui.');
     }
 
     public function simpanPendaftar(Request $request)
@@ -105,7 +126,7 @@ class SeleksiController extends Controller
             $file = $request->file('lembar_penilaian');
             $extension = $file->getClientOriginalExtension();
             $fileName = 'seleksi_' . $request->input('seleksis_id') . '_user_' . $request->input('users_id') . '.' . $extension;
-            $filePath = $file->storeAs('uploads/lembar_penilaian', $fileName, 'public');
+            $filePath = $file->storeAs('seleksis/lembar_penilaian', $fileName, 'public');
         }
 
         $pendaftar->update([

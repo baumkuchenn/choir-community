@@ -16,11 +16,11 @@
                 <h5>Divisi Pengurus</h5>
             </div>
             <table id="divisiTable" class="table table-bordered shadow text-center">
-                <thead class="text-center">
+                <thead>
                     <tr class="bg-primary">
-                        <th>Nama Singkatan</th>
-                        <th>Nama</th>
-                        <th>Aksi</th>
+                        <th class="text-center">Nama Singkatan</th>
+                        <th class="text-center">Nama</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,10 +46,10 @@
             <table id="jabatanTable" class="table table-bordered shadow text-center">
                 <thead class="text-center">
                     <tr class="bg-primary">
-                        <th>Nama</th>
-                        <th>Divisi</th>
-                        <th>Akses</th>
-                        <th>Aksi</th>
+                        <th class="text-center">Nama</th>
+                        <th class="text-center">Divisi</th>
+                        <th class="text-center">Akses</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -121,12 +121,15 @@
 
         //Data table untuk search bar
         $('#jabatanTable').DataTable({
+            "lengthMenu": [5, 10, 20, 40],
+            "order": [[1, "asc"]],
             "language": {
                 "emptyTable": "Belum ada divisi pengurus komunitas"
             }
         });
 
         $('#divisiTable').DataTable({
+            "lengthMenu": [5, 10, 20, 40],
             "language": {
                 "emptyTable": "Belum ada jabatan per divisi pengurus"
             }

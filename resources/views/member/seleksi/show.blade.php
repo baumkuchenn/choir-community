@@ -108,13 +108,13 @@
                         + Tambah Anggota Baru
                     </button>
                     <table id="pendaftarTable" class="table table-bordered shadow text-center">
-                        <thead class="text-center">
+                        <thead>
                             <tr class="bg-primary">
-                                <th>Nama Lengkap</th>
-                                <th>Nomor Handphone</th>
-                                <th>Email</th>
-                                <th>Jenis Kelamin</th>
-                                <th>Aksi</th>
+                                <th class="text-center">Nama Lengkap</th>
+                                <th class="text-center">Nomor Handphone</th>
+                                <th class="text-center">Email</th>
+                                <th class="text-center">Jenis Kelamin</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -125,7 +125,9 @@
                                     <td>{{ $item->user->email }}</td>
                                     <td>{{ $item->user->jenis_kelamin }}</td>
                                     <td>
-                                        <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
+                                        @if ($item->nilais->isEmpty())
+                                            <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -172,7 +174,15 @@
                                         @endif
                                     </td>
                                     <td>{{ $item->nilais->sum('pivot.nilai') }}</td>
-                                    <td>{{ $item->lolos }}</td>
+                                    <td>
+                                        @if($item->lolos == 'belum')
+                                            Pending
+                                        @elseif($item->lolos == 'ya')
+                                            Diterima
+                                        @elseif($item->lolos == 'tidak')
+                                            Ditolak
+                                        @endif
+                                    </td>
                                     <td>
                                         <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
                                     </td>

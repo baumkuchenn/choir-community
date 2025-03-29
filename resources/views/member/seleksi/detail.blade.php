@@ -122,7 +122,7 @@
                     <div class="col-6">
                         <label for="kategori_suara" class="form-label">Kategori Suara</label>
                         <select class="form-select" id="kategori_suara" name="kategori_suara" required>
-                            <option value="">Pilih Suara</option>
+                            <option value="" disabled>Pilih Suara</option>
                             @if($choir->tipe == 'SSAA' || $choir->tipe == 'SSAATTBB')
                                 <option value="sopran_1" {{ old('kategori_suara', $pendaftar->kategori_suara) == 'sopran_1' ? 'selected' : '' }}>Sopran 1</option>
                                 <option value="sopran_2" {{ old('kategori_suara', $pendaftar->kategori_suara) == 'sopran_2' ? 'selected' : '' }}>Sopran 2</option>
@@ -153,14 +153,16 @@
                     <label class="form-label fw-bold">Upload Lembar Penilaian</label>
                     <div class="border p-3 rounded text-center" id="upload-box" style="border: 2px dashed #ccc;">
                         <input type="file" id="lembarPenilaian" name="lembar_penilaian" class="d-none" accept="image/*,.pdf">
-                        <button type="button" class="btn btn-primary" onclick="document.getElementById('lembarPenilaian').click();">
-                            Pilih File
-                        </button>
+                        @if ($pendaftar->nilais->isEmpty())
+                            <button type="button" class="btn btn-primary" onclick="document.getElementById('lembarPenilaian').click();">
+                                Pilih File
+                            </button>
+                        @endif
                         <p class="text-muted mt-2">Hanya file JPG, PNG, dan PDF. Maksimal 2MB.</p>
                         <div id="preview-container" class="mt-3">
                             @if(old('lembar_penilaian', $pendaftar->lembar_penilaian ?? false))
                                 @php
-                                    $filePath = asset('storage/lembar_penilaian/' . old('lembar_penilaian', $pendaftar->lembar_penilaian));
+                                    $filePath = asset('storage/' . old('lembar_penilaian', $pendaftar->lembar_penilaian));
                                     $fileExtension = pathinfo($filePath, PATHINFO_EXTENSION);
                                 @endphp
 
@@ -179,10 +181,27 @@
             </div>
 
             <div class="row">
-                <div class="col-12 d-flex justify-content-center">
-                    <button class="btn btn-primary w-75 fw-bold">Simpan Hasil Seleksi</button>
-                </div>
+                @if ($pendaftar->lolos == 'belum')
+                    @if ($pendaftar->nilais->isNotEmpty())
+                        <div class="col-6 d-flex justify-content-center">
+                            <button type="button" class="btn btn-outline-primary w-75 fw-bold" onclick="savePendaftar('tidak')">Tolak</button>
+                        </div>
+                        <div class="col-6 d-flex justify-content-center">
+                            <button type="button" class="btn btn-primary w-75 fw-bold" onclick="savePendaftar('ya')">Terima</button>
+                        </div>
+                    @else
+                        <div class="col-12 d-flex justify-content-center">
+                            <button class="btn btn-primary w-75 fw-bold">Simpan Hasil Seleksi</button>
+                        </div>
+                    @endif
+                @endif
             </div>
+        </form>
+        <form id="lolos-form" method="POST" action="{{ route('seleksi.lolos-pendaftar') }}" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="is_lolos" id="is_lolos" value="">
+            <input type="hidden" name="seleksis_id" value="{{$seleksi->id}}">
+            <input type="hidden" name="users_id" value="{{$pendaftar->users_id}}">
         </form>
     </div>
 </div>
@@ -190,6 +209,11 @@
 
 @section('js')
 <script>
+    function savePendaftar(value){
+            document.getElementById('is_lolos').value = value;
+            document.getElementById("lolos-form").submit();
+    };
+
     document.addEventListener("DOMContentLoaded", function(){
         document.getElementById('lembarPenilaian').addEventListener('change', function (event) {
             let file = event.target.files[0];

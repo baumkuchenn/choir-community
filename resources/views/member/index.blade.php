@@ -24,34 +24,25 @@
                 <h5>Pengurus</h5>
             </div>
             <table id="pengurusTable" class="table table-bordered shadow text-center">
-                <thead class="text-center">
+                <thead>
                     <tr class="bg-primary">
-                        <th>Nama Lengkap</th>
-                        <th>Divisi</th>
-                        <th>Jabatan</th>
-                        <th>Aksi</th>
+                        <th class="text-center">Nama Lengkap</th>
+                        <th class="text-center">Divisi</th>
+                        <th class="text-center">Jabatan</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if($pengurus->isNotEmpty())
-                        @foreach($pengurus as $member)
-                            <tr>
-                                <td>{{ $member->user->name }}</td>
-                                <td>{{ $member->positions->divisions->nama }}</td>
-                                <td>{{ $member->positions->nama }}</td>
-                                <td class="d-flex justify-content-center gap-3">
-                                    <form action="{{ route('members.show', $member->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                        @csrf
-                                        <button class="btn btn-primary">Lihat Detail</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @else
+                    @foreach($pengurus as $item)
                         <tr>
-                            <td colspan="5">Belum ada anggota pengurus</td>
+                            <td>{{ $item->user->name }}</td>
+                            <td>{{ $item->position->division->nama }}</td>
+                            <td>{{ $item->position->nama }}</td>
+                            <td class="d-flex justify-content-center gap-3">
+                                <a href="{{ route('members.show', $item->id) }}" class="btn btn-primary">Lihat Detail</a>
+                            </td>
                         </tr>
-                    @endif
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -60,38 +51,66 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5>Penyanyi</h5>
             </div>
-            <table id="pengurusTable" class="table table-bordered shadow text-center">
+            <table id="penyanyiTable" class="table table-bordered shadow text-center">
                 <thead class="text-center">
                     <tr class="bg-primary">
-                        <th>Nama Lengkap</th>
-                        <th>Suara</th>
-                        <th>Nomor Handphone</th>
-                        <th>Aksi</th>
+                        <th class="text-center">Nama Lengkap</th>
+                        <th class="text-center">Suara</th>
+                        <th class="text-center">Nomor Handphone</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if($penyanyi->isNotEmpty())
-                        @foreach($penyanyi as $member)
-                            <tr>
-                                <td>{{ $member->user->name }}</td>
-                                <td>{{ $member->suara }}</td>
-                                <td>{{ $member->user->no_handphone }}</td>
-                                <td class="d-flex justify-content-center gap-3">
-                                    <form action="{{ route('members.show', $member->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                        @csrf
-                                        <button class="btn btn-primary">Lihat Detail</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @else
+                    @foreach($penyanyi as $item)
                         <tr>
-                            <td colspan="5">Belum ada anggota penyanyi</td>
+                            <td>{{ $item->user->name }}</td>
+                            <td>
+                                @if($item->suara == 'sopran_1')
+                                    Sopran 1
+                                @elseif($item->suara == 'sopran_2')
+                                    Sopran 2
+                                @elseif($item->suara == 'alto_1')
+                                    Alto 1
+                                @elseif($item->suara == 'alto_2')
+                                    Alto 2
+                                @elseif($item->suara == 'tenor_1')
+                                    Tenor 1
+                                @elseif($item->suara == 'tenor_2')
+                                    Tenor 2
+                                @elseif($item->suara == 'bass_1')
+                                    Bass 1
+                                @elseif($item->suara == 'bass_2')
+                                    Bass 2
+                                @endif
+                            </td>
+                            <td>{{ $item->user->no_handphone }}</td>
+                            <td class="d-flex justify-content-center gap-3">
+                                <a href="{{ route('members.show', $item->id) }}" class="btn btn-primary">Lihat Detail</a>
+                            </td>
                         </tr>
-                    @endif
+                    @endforeach
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+<script>
+    $(document).ready(function() {
+        $('#pengurusTable').DataTable({
+            "lengthMenu": [5, 10, 20, 40],
+            "language": {
+                "emptyTable": "Belum ada pengurus dalam komunitas"
+            }
+        }); 
+        $('#penyanyiTable').DataTable({
+            "lengthMenu": [5, 10, 20, 40],
+            "language": {
+                "emptyTable": "Belum ada penyanyi dalam komunitas"
+            }
+        }); 
+    });
+</script>
 @endsection

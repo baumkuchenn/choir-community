@@ -18,7 +18,7 @@
         <h2 class="mb-3 fw-bold text-center">Daftar Anggota Komunitas</h2>
         <h5 class="mb-3 fw-bold">Pengaturan</h5>
         
-        <form action="{{ route('members.update', $choir->id) }}" method="POST" class="row mb-3">
+        <form action="{{ route('choir.update', $choir->id) }}" method="POST" class="row mb-3">
             @csrf
             @method('PUT')
             <div class="col-12 mb-3">

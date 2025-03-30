@@ -15,13 +15,15 @@ return new class extends Migration
             $table->id();
             $table->string('nama', 45);
             $table->string('nama_singkat', 25);
-            $table->string('logo', 255);
-            $table->string('profil', 255);
+            $table->string('logo', 255)->nullable();
+            $table->string('profil', 255)->nullable();
             $table->enum('tipe', ['SSAATTBB', 'SSAA', 'TTBB']);
-            $table->string('kota', 45);
             $table->text('alamat');
             $table->text('deskripsi');
             $table->enum('jenis_rekrutmen', ['open', 'seleksi'])->default('seleksi');
+
+            $table->unsignedBigInteger('kotas_id')->nullable();
+            $table->foreign('kotas_id')->references('id')->on('kotas');
 
             $table->softDeletes();
             $table->timestamps();

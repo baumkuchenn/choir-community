@@ -5,7 +5,7 @@
     <div class="col-md-11 col-lg-11 mx-auto">
         <a href="{{ $backUrl ?? route('management.index') }}" class="btn btn-outline-primary">Kembali</a>
         <h2 class="mb-3 fw-bold text-center">Buat Komunitas Paduan Suara Baru</h2>
-        <form action="{{ route('choir.store') }}" method="POST" class="mb-0">
+        <form action="{{ route('choir.store') }}" method="POST" enctype="multipart/form-data" class="mb-0">
             @csrf
             <div class="row mb-3">
                 <div class="col-12">
@@ -19,10 +19,10 @@
 
             <div class="row mb-3">
                 <div class="col-12">
-                    <label for="nama_singkatan" class="form-label">Nama Singkatan Komunitas Paduan Suara</label>
-                    <input type="text" class="form-control" id="nama_singkatan" name="nama_singkatan" placeholder="" value="{{ old('nama_singkatan') }}" required>
+                    <label for="nama_singkat" class="form-label">Nama Singkatan Komunitas Paduan Suara</label>
+                    <input type="text" class="form-control" id="nama_singkat" name="nama_singkat" placeholder="" value="{{ old('nama_singkat') }}" required>
                     <small class="fw-light">Nama ini digunakan untuk pembuatan invoice pada e-ticketing konser</small>
-                    @error('nama_singkatan')
+                    @error('nama_singkat')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
@@ -76,11 +76,9 @@
 
             <div class="row mb-3">
                 <div class="col-12">
-                    <label for="kota" class="form-label">Kota Beroperasi</label>
-                    <select class="form-select" id="kota" name="kota" required>
-                        <option value="">Pilih Kota</option>
-                    </select>
-                    @error('kota')
+                    <label for="kotas_id" class="form-label">Kota Beroperasi</label>
+                    <select class="form-select" id="kotas_id" name="kotas_id" required></select>
+                    @error('kotas_id')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
@@ -99,9 +97,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <label for="deskripsi" class="form-label">Deskripsi Paduan Suara</label>
-                    <textarea class="form-control" name="deskripsi" id="deskripsi" maxlength="1000" rows="10" required>
-                        {!! old('deskripsi') !!}
-                    </textarea>
+                    <textarea class="form-control" name="deskripsi" id="deskripsi" maxlength="1000" rows="10" required>{!! old('deskripsi') !!}</textarea>
                     <div class="d-flex justify-content-between">
                         <small class="fw-light">Deskripsi akan ditampilkan ketika membuka seleksi anggota baru</small>
                         <small id="deskripsi-counter">0/1000</small>
@@ -121,24 +117,27 @@
 @section('js')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // $('#kota').select2({
-        //     placeholder: 'Cari Kota...',
-        //     allowClear: true,
-        //     ajax: {
-        //         url: '{{-- route("kota.search") --}}',
-        //         dataType: 'json',
-        //         delay: 250,
-        //         processResults: function(data) {
-        //             return {
-        //                 results: data.map(function(item) {
-        //                     return { id: item.nama, text: item.nama };
-        //                 })
-        //             };
-        //         }
-        //     }
-        // });
+        //Selector untuk asal kota
+        $('#kotas_id').select2({
+            placeholder: 'Cari Kota...',
+            ajax: {
+                url: '{{ route("kota.search") }}',
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data
+                    };
+                }
+            }
+        });
 
-        
+
         //Update preview logo dan profil
         document.getElementById('logo').addEventListener('change', function(event) {
             const file = event.target.files[0]; // Get the selected file

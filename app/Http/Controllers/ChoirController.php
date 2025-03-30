@@ -88,7 +88,40 @@ class ChoirController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nama' => 'required|string|max:45',
+            'nama_singkat' => 'required|string|max:25',
+            'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'profil' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'tipe' => 'required|string|max:25',
+            'kotas_id' => 'required',
+            'alamat' => 'required|string|max:255',
+            'deskripsi' => 'required|string|max:1000',
+        ]);
+        
+        $choir = Choir::create($request->except(['logo', 'profil']));
+
+        if ($request->hasFile('logo')) {
+            $image = $request->file('logo');
+            $filename = $choir->id . '.jpg';
+            $path = $image->storeAs('choirs/logo', $filename, 'public');
+            $choir->update(['logo' => $path]);
+        }
+
+        // Handle profil upload
+        if ($request->hasFile('profil')) {
+            $image = $request->file('profil');
+            $filename = $choir->id . '.jpg';
+            $path = $image->storeAs('choirs/profil', $filename, 'public');
+            $choir->update(['profil' => $path]);
+        }
+
+        $choir->members()->create([
+            'users_id' => Auth::id(),
+            'admin' => 'ya',
+        ]);
+
+        return redirect()->route('management.index');
     }
 
     /**

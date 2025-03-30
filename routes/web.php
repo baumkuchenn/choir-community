@@ -7,6 +7,7 @@ use App\Http\Controllers\ConcertController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EticketController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\KotaController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PersonalInfoController;
@@ -84,6 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('choir/search', [ChoirController::class, 'search'])->name('choir.search');
         Route::resource('choir', ChoirController::class)
             ->except(['update', 'destroy']);
+        Route::get('/kota/search', [KotaController::class, 'search'])->name('kota.search');
 
         Route::middleware(['auth', 'choir.member'])->group(function () {
             //Manajemen Choir

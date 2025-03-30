@@ -103,9 +103,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <h5 class="fw-bold">Catatan Wawancara</h5>
-                    <textarea class="form-control" name="hasil_wawancara" id="hasil_wawancara" rows="10" required>
-                        {{ old('hasil_wawancara', $pendaftar->hasil_wawancara) }}
-                    </textarea>
+                    <textarea class="form-control" name="hasil_wawancara" id="hasil_wawancara" rows="10" required>{{ old('hasil_wawancara', $pendaftar->hasil_wawancara) }}</textarea>
                 </div>
             </div>
 

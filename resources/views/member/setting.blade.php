@@ -28,9 +28,11 @@
                     <option value="seleksi" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'seleksi' ? 'selected' : '' }}>Seleksi</option>
                 </select>
             </div>
-            <div class="col-2">
-                <button class="btn btn-primary">Simpan</button>
-            </div>
+            @can('akses-admin')
+                <div class="col-2">
+                    <button class="btn btn-primary">Simpan</button>
+                </div>
+            @endcan
         </form>
 
         <div class="mb-3">

@@ -6,12 +6,6 @@ body {
     color: rgb(var(--bs-tertiary-color-rgb));
 }
 
-@media (max-width: 992px) {
-    body {
-        padding-top: 13.5rem;
-    }
-}
-
 
 /* HEADER
   -------------------------------------------------- */

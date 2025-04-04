@@ -98,7 +98,7 @@ class ChoirController extends Controller
             'alamat' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:1000',
         ]);
-        
+
         $choir = Choir::create($request->except(['logo', 'profil']));
 
         if ($request->hasFile('logo')) {
@@ -127,9 +127,11 @@ class ChoirController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Choir $choir)
+    public function show(string $id)
     {
-        //
+        $choir = Choir::find($id);
+
+        return view('choir.profile', compact('choir'));
     }
 
     /**
@@ -145,12 +147,52 @@ class ChoirController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        Choir::find($id)
-            ->update([
+        $choir = Choir::find($id);
+        if ($request->has('jenis_rekrutmen')) {
+            //For updating jenis_rekrutmen
+            $choir->update([
                 'jenis_rekrutmen' => $request->jenis_rekrutmen,
             ]);
 
-        return redirect()->back()->with('success', 'Metode rekrutmen berhasil diperbarui!');
+            return redirect()->back()->with('success', 'Metode rekrutmen berhasil diperbarui!');
+        }
+
+        //For updating profile
+        $request->validate([
+            'nama' => 'required|string|max:45',
+            'nama_singkat' => 'required|string|max:25',
+            'logo' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'profil' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'tipe' => 'required',
+            'kotas_id' => 'required',
+            'alamat' => 'required|string|max:255',
+            'deskripsi' => 'required|string|max:1000',
+        ]);
+
+        if ($request->hasFile('logo')) {
+            $image = $request->file('logo');
+            $filename = $choir->id . '.jpg';
+            $path = $image->storeAs('choirs/logo', $filename, 'public');
+
+            $choir->logo = $path;
+        } elseif ($request->filled('existing_logo')) {
+            $choir->logo = $request->existing_logo;
+        }
+
+        // Handle profil upload
+        if ($request->hasFile('profil')) {
+            $image = $request->file('profil');
+            $filename = $choir->id . '.jpg';
+            $path = $image->storeAs('choirs/profil', $filename, 'public');
+
+            $choir->profil = $path;
+        } elseif ($request->filled('existing_profil')) {
+            $choir->profil = $request->existing_profil;
+        }
+
+        $choir->update($request->except(['logo', 'profil']));
+
+        return redirect()->back()->with('success', 'Profil komunitas paduan suara berhasil diperbarui!');
     }
 
     /**

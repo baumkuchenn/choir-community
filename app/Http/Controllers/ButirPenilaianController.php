@@ -18,7 +18,7 @@ class ButirPenilaianController extends Controller
      */
     public function create()
     {
-        $choirId = Auth::user()->members->first()->id;
+        $choirId = Auth::user()->members->first()->choirs_id;
         return view('member.modal.butir-penilaian.form-create', compact('choirId'));
     }
 
@@ -51,7 +51,7 @@ class ButirPenilaianController extends Controller
     public function edit(string $id)
     {
         $butirPenilaian = ButirPenilaian::findOrFail($id);
-        $choirId = Auth::user()->members->first()->id;
+        $choirId = Auth::user()->members->first()->choirs_id;
         return view('member.modal.butir-penilaian.form-edit', compact('butirPenilaian', 'choirId'));
     }
 

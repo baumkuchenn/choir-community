@@ -27,12 +27,12 @@ class EventController extends Controller
     public function index()
     {
         $eventSelanjutnya = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->members->first()->id)
+            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()])
             ->get();
 
         $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->members->first()->id)
+            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()])
             ->get();
 
@@ -45,7 +45,7 @@ class EventController extends Controller
     public function create()
     {
         $events = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->members->first()->id)
+            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->get();
 
         return view('event.create', compact('events'));
@@ -86,7 +86,7 @@ class EventController extends Controller
     {
         $event = Event::with('concert')->find($id);
         $events = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->members->first()->id)
+            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->get();
         $concert = $event->concert;
         if (!$concert) {

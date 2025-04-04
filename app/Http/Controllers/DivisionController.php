@@ -21,7 +21,7 @@ class DivisionController extends Controller
      */
     public function create()
     {
-        $choirId = Auth::user()->members->first()->id;
+        $choirId = Auth::user()->members->first()->choirs_id;
         return view('role.modal.divisi.form-create', compact('choirId'));
     }
 
@@ -55,7 +55,7 @@ class DivisionController extends Controller
     public function edit(string $id)
     {
         $divisi = Division::findOrFail($id);
-        $choirId = Auth::user()->members->first()->id;
+        $choirId = Auth::user()->members->first()->choirs_id;
         return view('role.modal.divisi.form-edit', compact('divisi', 'choirId'));
     }
 

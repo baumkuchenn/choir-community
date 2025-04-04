@@ -18,28 +18,28 @@ class MemberController extends Controller
      */
     public function index()
     {
-        $penyanyi = Member::where('choirs_id', Auth::user()->members->first()->id)
+        $penyanyi = Member::where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->where('admin', 'tidak')
             ->get();
         $pengurus = Member::with('position.division')
-            ->where('choirs_id', Auth::user()->members->first()->id)
+            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->where('admin', 'tidak')
             ->whereNotNull('positions_id')
             ->get();
-        $choir = Choir::find(Auth::user()->members->first()->id);
+        $choir = Choir::find(Auth::user()->members->first()->choirs_id);
         return view('member.index', compact('pengurus', 'penyanyi', 'choir'));
     }
 
     public function setting()
     {
-        $choir = Choir::find(Auth::user()->members->first()->id);
+        $choir = Choir::find(Auth::user()->members->first()->choirs_id);
         $butirPenilaian = ButirPenilaian::where('choirs_id', $choir->id)->get();
         return view('member.setting', compact('choir', 'butirPenilaian'));
     }
 
     public function create()
     {
-        $choir = Choir::find(Auth::user()->members->first()->id);
+        $choir = Choir::find(Auth::user()->members->first()->choirs_id);
         if ($choir->jenis_rekrutmen == 'seleksi') {
             return redirect()->route('seleksi.index');
         } else {
@@ -76,7 +76,7 @@ class MemberController extends Controller
     public function show(string $id)
     {
         $member = Member::with('user')->where('id', $id)->first();
-        $choir = Choir::find(Auth::user()->members->first()->id);
+        $choir = Choir::find(Auth::user()->members->first()->choirs_id);
         $position = Division::with('positions')->where('choirs_id', $choir->id)->get();
         return view('member.show', compact('member', 'choir', 'position'));
     }

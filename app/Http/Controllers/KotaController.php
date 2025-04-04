@@ -9,6 +9,13 @@ class KotaController extends Controller
 {
     public function search(Request $request)
     {
+        if ($request->has('id')) {
+            $kota = Kota::find($request->id);
+            return response()->json([
+                'id' => $kota->id,
+                'text' => $kota->nama,
+            ]);
+        }
         $search = $request->input('search');
         $kotas = Kota::where('nama', 'LIKE', "%{$search}%")
             ->limit(10)

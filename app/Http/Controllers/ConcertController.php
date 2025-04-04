@@ -26,7 +26,7 @@ class ConcertController extends Controller
 
         $concert = Concert::where('events_id', $id)->firstOrFail();
         $previousStatus = $concert->status;
-        
+
         if ($request->hasFile('seating_plan')) {
             $image = $request->file('seating_plan');
             $filename = 'eventId_' . $id . '.jpg';
@@ -47,7 +47,7 @@ class ConcertController extends Controller
             $concert->gambar = $request->existing_gambar;
         }
 
-        $concert->update($request->except(['seating_plan', 'existing_seating_plan', 'gambar', 'existing_gambar']));
+        $concert->update($request->except(['seating_plan', 'gambar']));
 
         if ($concert->status === 'draft') {
             $concert->update(['status' => 'published']);

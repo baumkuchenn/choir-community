@@ -122,22 +122,35 @@
                 <!-- Full Navbar Content (Large Screens) -->
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <div class="d-flex flex-wrap align-items-center text-end ms-auto">
-                        <div class="flex-shrink-0 dropdown">
-                            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle me-2 pe-2" data-bs-toggle="dropdown">
-                                <i class="fa-solid fa-list-check"></i> Manajemen
-                            </a>
-                            <ul class="dropdown-menu text-small shadow">
-                                <li><a class="dropdown-item" href="{{ route('events.index') }}">Manajemen Kegiatan</a></li>
-                                <li><a class="dropdown-item" href="{{ route('members.index') }}">Manajemen Anggota</a></li>
-                                <li><a class="dropdown-item" href="{{ route('roles.index') }}">Manajemen Roles</a></li>
-                            </ul>
-                        </div>
-                        <a href="{{ route('management.calendar') }}" class="btn me-2">
+                        @if(Gate::check('akses-event') || Gate::check('akses-member') || Gate::check('akses-roles') || Gate::check('akses-eticket'))
+                            <div class="flex-shrink-0 dropdown">
+                                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle me-2 pe-2" data-bs-toggle="dropdown">
+                                    <i class="fa-solid fa-list-check"></i> Manajemen
+                                </a>
+                                <ul class="dropdown-menu text-small shadow">
+                                @if(Gate::allows('akses-event') || Gate::allows('akses-eticket'))
+                                    <li><a class="dropdown-item" href="{{ route('events.index') }}">Manajemen Kegiatan</a></li>
+                                @endif
+                                @can('akses-member')
+                                    <li><a class="dropdown-item" href="{{ route('members.index') }}">Manajemen Anggota</a></li>
+                                @endcan
+                                @can('akses-roles')
+                                    <li><a class="dropdown-item" href="{{ route('roles.index') }}">Manajemen Roles</a></li>
+                                @endcan
+                                </ul>
+                            </div>
+                        @endif
+                        <a href="{{ route('calendar.index') }}" class="btn me-2">
                             <i class="fa-solid fa-calendar-days"></i> Kalender
                         </a>
                         <a href="{{ route('management.notification') }}" class="btn me-2">
                             <i class="fa-solid fa-bell"></i> Notifikasi
                         </a>
+                        @can('akses-admin')
+                        <a href="{{ route('choir.profile', Auth::user()->members->first()->choirs_id) }}" class="btn me-2">
+                            <i class="fa-solid fa-users"></i> Profil Komunitas
+                        </a>
+                        @endcan
                         <div class="flex-shrink-0 dropdown">
                             <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
                                 <img src="https://github.com/mdo.png" alt="Profile" width="32" height="32" class="rounded-circle">
@@ -171,22 +184,35 @@
                     <img src="https://github.com/mdo.png" alt="Profile" width="50" height="50" class="rounded-circle mb-2">
                     <p class="mb-3"><b>{{ Auth::user()->name }}</b></p>
                 </div>
-                <div class="dropdown">
-                    <button class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2 dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="fa-solid fa-list-check" style="width: 20px; text-align: center;"></i> Manajemen
-                    </button>
-                    <ul class="dropdown-menu text-small shadow w-100">
-                        <li><a class="dropdown-item" href="{{ route('events.index') }}">Manajemen Kegiatan</a></li>
-                        <li><a class="dropdown-item" href="{{ route('members.index') }}">Manajemen Anggota</a></li>
-                        <li><a class="dropdown-item" href="{{ route('roles.index') }}">Manajemen Roles</a></li>
-                    </ul>
-                </div>
-                <a href="{{ route('management.calendar') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                @if(Gate::check('akses-event') || Gate::check('akses-member') || Gate::check('akses-roles'))
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2 dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-list-check" style="width: 20px; text-align: center;"></i> Manajemen
+                        </button>
+                        <ul class="dropdown-menu text-small shadow w-100">
+                        @if(Gate::allows('akses-event') || Gate::allows('akses-eticket'))
+                            <li><a class="dropdown-item" href="{{ route('events.index') }}">Manajemen Kegiatan</a></li>
+                        @endif
+                        @can('akses-member')
+                            <li><a class="dropdown-item" href="{{ route('members.index') }}">Manajemen Anggota</a></li>
+                        @endcan
+                        @can('akses-roles')
+                            <li><a class="dropdown-item" href="{{ route('roles.index') }}">Manajemen Roles</a></li>
+                        @endcan
+                        </ul>
+                    </div>
+                @endif
+                <a href="{{ route('calendar.index') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
                     <i class="fa-solid fa-calendar-days" style="width: 20px; text-align: center;"></i> Kalender
                 </a>
                 <a href="{{ route('management.notification') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
                     <i class="fa-solid fa-bell" style="width: 20px; text-align: center;"></i> Notifikasi
                 </a>
+                @can('akses-admin')
+                <a href="{{ route('choir.profile', Auth::user()->members->first()->choirs_id) }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                    <i class="fa-solid fa-users" style="width: 20px; text-align: center;"></i> Profil Komunitas
+                </a>
+                @endcan
                 <hr>
                 <a href="{{ route('profile.edit') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
                     <i class="fa-solid fa-user" style="width: 20px; text-align: center;"></i> Profil

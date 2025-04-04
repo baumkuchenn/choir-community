@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'choir.member' => \App\Http\Middleware\ChoirMember::class,
+            'akses' => \App\Http\Middleware\CheckAkses::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

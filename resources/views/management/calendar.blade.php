@@ -1,57 +1,12 @@
-@php
-    $layout = Auth::check() && Auth::user()->members()->exists() ? 'layouts.management' : 'layouts.header-only';
-@endphp
-
-@extends($layout)
+@extends('layouts.management')
 
 @section('content')
 <div class="container d-flex justify-content-center">
-    @if($choir)
-        <div class="col-12">
-            <div class="mt-3 mb-3 text-center">
-                <h3 class="fw-bold">{{ $choir->nama }}</h3>
-            </div>
-            <div class="d-flex flex-column flex-lg-row gap-3 gap-lg-5 mt-5">
-                <div class="card shadow w-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="fw-bold">Notifikasi</h4>
-                            <a href="{{ route('management.notification') }}" class="btn btn-outline-primary">Lihat Semua</a>
-                        </div>
-
-                        <div class="mt-2">
-                            @if($notifications->isNotEmpty())
-                                <ul class="list-group">
-                                    @foreach($notifications as $notification)
-                                        <li class="list-group-item">{{ $notification->pesan }}</li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <p class="text-muted">Tidak ada notifikasi</p>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                <div class="card shadow w-100">
-                    <div class="card-body">
-                        <h4 class="fw-bold text-center">Kalender Kegiatan</h4>
-                        <div id="calendar" class="mt-4"></div>
-                        <div id="event-info"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @else
-        <div class="col-11 col-lg-8">
-            <div class="mt-3 mb-3 text-center">
-                <h3 class="fw-bold">Anda belum tergabung pada komunitas paduan suara</h3>
-            </div>
-            <div class="d-flex flex-column flex-lg-row gap-2">
-                <a href="{{ route('choir.join') }}" class="btn btn-outline-primary w-100 fw-bold">Gabung Komunitas Paduan Suara</a>
-                <a href="{{ route('choir.create') }}" class="btn btn-primary w-100 fw-bold">Buat Komunitas Paduan Suara Baru</a>
-            </div>
-        </div>
-    @endif
+    <div class="col-12">
+        <h3 class="fw-bold text-center mt-3 mb-3">Kalender Kegiatan</h3>
+        <div id="calendar" class="mt-4"></div>
+        <div id="event-info"></div>
+    </div>
 </div>
 @endsection
 

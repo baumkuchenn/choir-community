@@ -22,7 +22,7 @@ class PositionController extends Controller
      */
     public function create()
     {
-        $divisi = Division::where('choirs_id', Auth::user()->members->first()->id)->get();
+        $divisi = Division::where('choirs_id', Auth::user()->members->first()->choirs_id)->get();
         return view('role.modal.position.form-create', compact('divisi'));
     }
 
@@ -55,7 +55,7 @@ class PositionController extends Controller
     public function edit(string $id)
     {
         $jabatan = Position::findOrFail($id);
-        $divisi = Division::where('choirs_id', Auth::user()->members->first()->id)->get();
+        $divisi = Division::where('choirs_id', Auth::user()->members->first()->choirs_id)->get();
         return view('role.modal.position.form-edit', compact('jabatan', 'divisi'));
     }
 

@@ -14,7 +14,7 @@ class ManagementController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $choir = $user->members->first();
+        $choir = $user->members->first()->choir;
         $notifications = $user->notifications()->latest()->take(5)->get();
 
         return view('management.index', compact('choir', 'notifications'));
@@ -70,6 +70,11 @@ class ManagementController extends Controller
 
     public function calendar()
     {
+        return view('management.calendar');
+    }
+
+    public function calendarShow()
+    {
         $events = Event::select(
             'nama as title',
             'tanggal_mulai as start',
@@ -79,9 +84,18 @@ class ManagementController extends Controller
             'lokasi'
         )
             ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->members->first()->id)
+            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->get();
 
         return response()->json($events);
+    }
+
+    public function notification()
+    {
+        $user = Auth::user();
+        $choir = $user->members->first()->choir;
+        $notifications = $user->notifications()->latest()->take(5)->get();
+
+        return view('management.notifications', compact('choir', 'notifications'));
     }
 }

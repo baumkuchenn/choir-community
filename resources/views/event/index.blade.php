@@ -10,7 +10,9 @@
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
         <h2 class="mb-3 fw-bold text-center">Daftar Kegiatan Komunitas</h2>
-        <a href="{{ route('events.create') }}" class="btn btn-primary mb-3 fw-bold" >+ Tambah Kegiatan</a>
+        @can('akses-event')
+            <a href="{{ route('events.create') }}" class="btn btn-primary mb-3 fw-bold" >+ Tambah Kegiatan</a>
+        @endcan
 
         <h5 class="mb-3 fw-bold">Kegiatan Kedepannya</h5>
         <hr>
@@ -41,12 +43,16 @@
                                 </div>
                                 <div class="col-md-5 text-end d-none d-md-block">
                                     <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                    <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                    @can('akses-event')
+                                        <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                    @endcan
                                 </div>
                             </div>
                             <div class="col-12 text-end d-block d-md-none">
                                 <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                @can('akses-event')
+                                    <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                @endcan
                             </div>
                         </div>
                     </div>
@@ -83,12 +89,16 @@
                                 </div>
                                 <div class="col-md-5 text-end d-none d-md-block">
                                     <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                    <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                    @can('akses-event')
+                                        <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                    @endcan
                                 </div>
                             </div>
                             <div class="col-12 text-end d-block d-md-none">
                                 <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                @can('akses-event')
+                                    <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                                @endcan
                             </div>
                         </div>
                     </div>

@@ -14,7 +14,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $divisi = Division::where('choirs_id', Auth::user()->members->first()->id)
+        $divisi = Division::where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->with('positions')
             ->get();
         

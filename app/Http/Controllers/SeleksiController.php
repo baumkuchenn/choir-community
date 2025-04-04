@@ -13,10 +13,10 @@ class SeleksiController extends Controller
 {
     public function index()
     {
-        $seleksiLalu = Seleksi::where('choirs_id', Auth::user()->members->first()->id)
+        $seleksiLalu = Seleksi::where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("TIMESTAMP(tanggal_selesai, jam_selesai) < ?", [now()])
             ->get();
-        $seleksiDepan = Seleksi::where('choirs_id', Auth::user()->members->first()->id)
+        $seleksiDepan = Seleksi::where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("TIMESTAMP(tanggal_selesai, jam_selesai) > ?", [now()])
             ->get();
 
@@ -41,7 +41,7 @@ class SeleksiController extends Controller
             'lokasi' => 'required|string|max:255',
         ]);
         $data = $request->except('_token');
-        $data['choirs_id'] = Auth::user()->members->first()->id;
+        $data['choirs_id'] = Auth::user()->members->first()->choirs_id;
         Seleksi::create($data);
 
         return redirect()->route('seleksi.index')
@@ -100,7 +100,7 @@ class SeleksiController extends Controller
 
         if ($pendaftar->lolos == 'ya') {
             Member::create([
-                'choirs_id' => Auth::user()->members->first()->id,
+                'choirs_id' => Auth::user()->members->first()->choirs_id,
                 'users_id' => $request->input('users_id'),
                 'suara' => $pendaftar->kategori_suara,
             ]);

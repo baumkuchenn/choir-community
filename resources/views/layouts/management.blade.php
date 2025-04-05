@@ -140,7 +140,7 @@
                                 </ul>
                             </div>
                         @endif
-                        <a href="{{ route('calendar.index') }}" class="btn me-2">
+                        <a href="{{ route('management.calendar.index') }}" class="btn me-2">
                             <i class="fa-solid fa-calendar-days"></i> Kalender
                         </a>
                         <a href="{{ route('management.notification') }}" class="btn me-2">
@@ -202,7 +202,7 @@
                         </ul>
                     </div>
                 @endif
-                <a href="{{ route('calendar.index') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                <a href="{{ route('management.calendar.index') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
                     <i class="fa-solid fa-calendar-days" style="width: 20px; text-align: center;"></i> Kalender
                 </a>
                 <a href="{{ route('management.notification') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">

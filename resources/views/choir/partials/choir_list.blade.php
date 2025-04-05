@@ -26,7 +26,5 @@
     @endforeach
 
     <!-- Pagination -->
-    <div class="d-flex justify-content-center mt-3">
-        {{ $choir->links() }}
-    </div>
+    {{ $choir->links() }}
 @endif

@@ -96,6 +96,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             //Manajemen Event
             Route::middleware('akses:akses-event')->group(function () {
+                Route::get('events/search-lalu', [EventController::class, 'searchEventLalu'])->name('events.search.lalu');
+                Route::get('events/search-selanjutnya', [EventController::class, 'searchEventSelanjutnya'])->name('events.search.selanjutnya');
+                Route::get('events/search-choir', [EventController::class, 'searchChoir'])->name('events.search.choir');
                 Route::resource('events', EventController::class);
             });
 
@@ -134,9 +137,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             });
 
             //Kalender dan notifikasi
-            Route::get('/calendar', [ManagementController::class, 'calendar'])->name('calendar.index');
-            Route::get('/calendar/show', [ManagementController::class, 'calendarShow'])->name('calendar.show');
+            Route::get('/calendar', [ManagementController::class, 'calendar'])->name('management.calendar.index');
+            Route::get('/calendar/show', [ManagementController::class, 'calendarShow'])->name('management.calendar.show');
             Route::get('/notification', [ManagementController::class, 'notification'])->name('management.notification');
+            Route::get('/events/{event}/daftar', [ManagementController::class, 'daftar'])->name('management.event.daftar');
         });
     });
 });

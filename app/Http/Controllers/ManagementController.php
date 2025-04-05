@@ -98,4 +98,8 @@ class ManagementController extends Controller
 
         return view('management.notifications', compact('choir', 'notifications'));
     }
+
+    public function daftar(string $id) {
+        $event = Event::find($id);
+    }
 }

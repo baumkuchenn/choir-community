@@ -26,12 +26,16 @@
                     <a class="nav-link active px-3" data-bs-toggle="tab" href="#form-detail" role="tab" aria-controls="detail" aria-selected="true">Detail</a>
                     @can('akses-member')
                         <a class="nav-link px-3" data-bs-toggle="tab" href="#penyanyi" role="tab" aria-controls="penyanyi" aria-selected="false">Penyanyi</a>
-                        <a class="nav-link px-3" data-bs-toggle="tab" href="#panitia" role="tab" aria-controls="panitia" aria-selected="false">Panitia</a>
+                        @if ($event->jenis_kegiatan == 'konser')
+                            <a class="nav-link px-3" data-bs-toggle="tab" href="#panitia" role="tab" aria-controls="panitia" aria-selected="false">Panitia</a>
+                        @endif
                     @endcan
-                    @can('akses-eticket')
-                        <a class="nav-link px-3" data-bs-toggle="tab" href="#tiket" role="tab" aria-controls="tiket" aria-selected="false">Tiket</a>
-                        <a class="nav-link px-3" data-bs-toggle="tab" href="#feedback" role="tab" aria-controls="feedback" aria-selected="false">Feedback</a>
-                    @endcan
+                    @if ($event->jenis_kegiatan == 'konser')
+                        @can('akses-eticket')
+                            <a class="nav-link px-3" data-bs-toggle="tab" href="#tiket" role="tab" aria-controls="tiket" aria-selected="false">Tiket</a>
+                            <a class="nav-link px-3" data-bs-toggle="tab" href="#feedback" role="tab" aria-controls="feedback" aria-selected="false">Feedback</a>
+                        @endcan
+                    @endif
                 </div>
             </div>
         </nav>
@@ -55,6 +59,23 @@
                         <label for="nama" class="form-label">Nama Kegiatan</label>
                         <input type="text" class="form-control" id="nama" name="nama" placeholder="" value="{{ old('nama', $event->nama) }}" required>
                         @error('nama')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="sub_kegiatan_id" class="form-label">Sub Kegiatan Dari</label>
+                        <select class="form-select" id="sub_kegiatan_id" name="sub_kegiatan_id">
+                            <option value="" disabled selected>Pilih kegiatan utama</option>
+                            @foreach ($events as $subEvent)
+                                <option value="{{ $subEvent->id }}" {{ old('sub_kegiatan_id', $event->sub_kegiatan_id) == $subEvent->id ? 'selected' : '' }}>
+                                    {{ $subEvent->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('sub_kegiatan_id')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
@@ -91,17 +112,6 @@
                         @error('jam_selesai')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <label for="tanggal_gladi" class="form-label">Tanggal Gladi</label>
-                        <input type="date" class="form-control" id="tanggal_gladi" name="tanggal_gladi" placeholder="" value="{{ old('tanggal_gladi', $event->tanggal_gladi) }}">
-                    </div>
-                    <div class="col-6">
-                        <label for="jam_gladi" class="form-label">Jam Gladi</label>
-                        <input type="time" class="form-control" id="jam_gladi" name="jam_gladi" placeholder="" value="{{ old('jam_gladi', $event->jam_gladi) }}">
                     </div>
                 </div>
 

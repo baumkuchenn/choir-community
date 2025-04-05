@@ -3,17 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bank;
+use App\Models\Choir;
 use App\Models\Concert;
 use App\Models\Event;
 use App\Models\Invoice;
+use App\Models\Member;
 use App\Models\Purchase;
 use App\Models\PurchaseDetail;
 use App\Models\Ticket;
 use App\Models\TicketType;
+use App\Notifications\EventNotification;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Milon\Barcode\DNS1D;
 
@@ -29,14 +33,63 @@ class EventController extends Controller
         $eventSelanjutnya = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()])
-            ->get();
+            ->paginate(10);
 
         $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()])
-            ->get();
+            ->paginate(10);
 
         return view('event.index', compact('eventSelanjutnya', 'eventLalu'));
+    }
+
+    public function searchEventSelanjutnya(Request $request)
+    {
+        $searchQuery = $request->input('search');
+
+        $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
+            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()])
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('nama', 'LIKE', "%{$searchQuery}%");
+            })
+            ->paginate(10);
+
+        return view('event.partials.event_lalu_list', compact('eventLalu'))->render();
+    }
+
+    public function searchEventLalu(Request $request)
+    {
+        $searchQuery = $request->input('search');
+
+        $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
+            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()])
+            ->where(function ($query) use ($searchQuery) {
+                $query->where('nama', 'LIKE', "%{$searchQuery}%");
+            })
+            ->paginate(10);
+
+        return view('event.partials.event_lalu_list', compact('eventLalu'))->render();
+    }
+
+    public function searchChoir(Request $request)
+    {
+        if ($request->has('choirs_id')) {
+            $choir = Choir::find($request->id);
+            return response()->json([
+                'id' => $choir->id,
+                'text' => $choir->nama,
+            ]);
+        }
+        $search = $request->input('search');
+        $choirs = Choir::where('nama', 'LIKE', "%{$search}%")
+            ->limit(10)
+            ->get(['id', 'nama']);
+
+        return response()->json($choirs->map(function ($choir) {
+            return ['id' => $choir->id, 'text' => $choir->nama];
+        }));
     }
 
     /**
@@ -46,6 +99,7 @@ class EventController extends Controller
     {
         $events = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+            ->where('parent_kegiatan', 'ya')
             ->get();
 
         return view('event.create', compact('events'));
@@ -56,27 +110,77 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'jenis_kegiatan' => 'required|string',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date',
-            'jam_mulai' => 'required',
-            'jam_selesai' => 'required',
-            'lokasi' => 'required|string|max:255',
-            'peran' => 'required|string',
-            'panitia_eksternal' => 'required|string',
-            'metode_rekrut_panitia' => 'required|string',
-            'metode_rekrut_penyanyi' => 'required|string',
-        ]);
-        $event = Event::create($request->all());
-
+        $message = "";
         $userChoirs = Auth::user()->members->pluck('id')->toArray();
-        $choirIds = array_unique(array_merge($userChoirs, $request->choirs ?? []));
+
+        if ($request->parent_kegiatan == 'ya') {
+            $request->validate([
+                'nama' => 'required|string|max:255',
+                'jenis_kegiatan' => 'required',
+            ]);
+            $event = Event::create($request->all());
+            $message = "Kegiatan utama baru berhasil dibuat.";
+        } else {
+            $rules = [
+                'nama' => 'required|string|max:255',
+                'parent_kegiatan' => 'required',
+                'jenis_kegiatan' => 'required|string',
+                'sub_kegiatan_id' => 'required',
+                'tanggal_mulai' => 'required|date',
+                'tanggal_selesai' => 'required|date',
+                'jam_mulai' => 'required',
+                'jam_selesai' => 'required',
+                'lokasi' => 'required|string|max:255',
+            ];
+
+            if ($request->jenis_kegiatan === 'konser') {
+                $rules['kegiatan_kolaborasi'] = 'required';
+                $rules['peran'] = 'required';
+
+                if ($request->kegiatan_kolaborasi === 'ya') {
+                    $rules['choirs_id'] = 'required';
+                }
+
+                if (in_array($request->peran, ['panitia', 'keduanya'])) {
+                    $rules['panitia_eksternal'] = 'required|string';
+                    $rules['metode_rekrut_panitia'] = 'required|string';
+                }
+            }
+
+            $request->validate($rules);
+            $request->merge([
+                'visibility' => $request->has('parent_display') ? 'inherited' : 'public',
+            ]);
+
+            $event = Event::create($request->all());
+            $message = "Kegiatan baru berhasil dibuat.";
+
+            if ($request->has('all_notification')) {
+                $members = Member::with('user')
+                    ->where('choirs_id', $userChoirs[0])
+                    ->where('admin', 'tidak')
+                    ->get()
+                    ->pluck('user')
+                    ->filter()
+                    ->unique('id');
+                Notification::send($members, new EventNotification($event));
+            } elseif ($request->has('parent_notification')) {
+                // $members = Member::with('user')
+                //     ->where('choirs_id', $userChoirs[0])
+                //     ->where('admin', 'tidak')
+                //     ->get()
+                //     ->pluck('user')
+                //     ->filter()
+                //     ->unique('id');
+                // Notification::send($members, new EventNotification($event));
+            }
+        }
+
+        $choirIds = array_unique(array_merge($userChoirs, $request->choirs_id ?? []));
         $event->choirs()->attach($choirIds);
 
         return redirect()->route('events.index')
-            ->with('success', 'Kegiatan baru berhasil dibuat.');
+            ->with('success', $message);
     }
 
     /**
@@ -87,39 +191,43 @@ class EventController extends Controller
         $event = Event::with('concert')->find($id);
         $events = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+            ->where('parent_kegiatan', 'ya')
             ->get();
-        $concert = $event->concert;
-        if (!$concert) {
-            Concert::create([
-                'events_id' => $id,
-            ]);
+
+        $concert = null;
+        $banks = collect();
+        $purchases = collect();
+        $ticketTypes = collect();
+        $donations = collect();
+        $feedbacks = collect();
+
+        if ($event->jenis_kegiatan == 'konser') {
+            $concert = $event->concert;
+            if (!$concert) {
+                Concert::create([
+                    'events_id' => $id,
+                ]);
+            }
+
+            $purchases = $concert->purchases()
+                ->with('user:id,name,no_handphone', 'invoice.tickets:id,invoices_id,check_in')
+                ->whereIn('status', ['verifikasi', 'selesai'])
+                ->orderByRaw("FIELD(status, 'verifikasi', 'selesai')")
+                ->orderBy('waktu_pembayaran', 'desc')
+                ->get();
+
+            $ticketTypes = $concert->ticketTypes()
+                ->withCount(['purchases as terjual' => function ($query) {
+                    $query->whereIn('status', ['verifikasi', 'selesai'])
+                        ->select(DB::raw("COALESCE(SUM(jumlah), 0)"));
+                }])
+                ->get();
+            $donations = $concert->donations()->with('user:id,name,no_handphone')->get();
+            $feedbacks = $concert->feedbacks()->with('user:id,name')->get();
+            $banks = Bank::all();
         }
 
-        $emptyPaginator = new LengthAwarePaginator([], 0, 5, 1, ['path' => request()->url()]);
-
-        $purchases = $emptyPaginator;
-        $ticketTypes = $emptyPaginator;
-        $donations = $emptyPaginator;
-        $feedbacks = $emptyPaginator;
-
-        $purchases = $concert->purchases()
-            ->with('user:id,name,no_handphone', 'invoice.tickets:id,invoices_id,check_in')
-            ->whereIn('status', ['verifikasi', 'selesai'])
-            ->orderByRaw("FIELD(status, 'verifikasi', 'selesai')")
-            ->orderBy('waktu_pembayaran', 'desc')
-            ->paginate(5);
-
-        $ticketTypes = $concert->ticketTypes()
-            ->withCount(['purchases as terjual' => function ($query) {
-                $query->whereIn('status', ['verifikasi', 'selesai'])
-                    ->select(DB::raw("COALESCE(SUM(jumlah), 0)"));
-            }])
-            ->paginate(5);
-        $donations = $concert->donations()->with('user:id,name,no_handphone')->paginate(5);
-        $feedbacks = $concert->feedbacks()->with('user:id,name')->paginate(5);
-        $banks = Bank::all();
-
-        return view('event.show', compact('event', 'events', 'concert', 'banks','purchases', 'ticketTypes', 'donations', 'feedbacks'));
+        return view('event.show', compact('event', 'events', 'concert', 'banks', 'purchases', 'ticketTypes', 'donations', 'feedbacks'));
     }
 
     /**
@@ -136,7 +244,8 @@ class EventController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'nama' => 'required|string|max:45',
+            'nama' => 'required|string|max:255',
+            'sub_kegiatan_id' => 'required',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date',
             'jam_mulai' => 'required',

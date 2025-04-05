@@ -1,0 +1,52 @@
+@if ($eventLalu->isEmpty())
+    <p class="text-center">Komunitas ini belum memiliki kegiatan.</p>
+@else
+    @foreach ($eventLalu as $event)
+        <div class="card shadow border-0 mb-3">
+            <div class="card-body">
+                <div class="d-flex flex-column gap-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="col-md-7">
+                            <h5 class="fw-bold">{{ $event->nama }}</h5>
+                            <div class="mt-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-calendar-days fa-fw fs-5"></i>
+                                    <p class="mb-0">
+                                        @if ($event->tanggal_mulai != $event->tanggal_selesai)
+                                            {{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d') }} - 
+                                            {{ \Carbon\Carbon::parse($event->tanggal_selesai)->translatedFormat('d F Y') }}
+                                        @else
+                                            {{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d F Y') }}
+                                        @endif
+                                    </p>
+                                </div>
+                                <div class="mt-2 d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-clock fa-fw fs-5"></i>
+                                    <p class="mb-0">{{ \Carbon\Carbon::parse($event->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($event->jam_selesai)->format('H:i') }} WIB</p>
+                                </div>
+                                <div class="mt-2 d-flex gap-2">
+                                    <i class="fa-solid fa-location-dot fa-fw fs-5"></i>
+                                    <p class="mb-0">{{ $event->lokasi }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5 text-end d-none d-md-block">
+                            <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
+                            @can('akses-event')
+                                <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                            @endcan
+                        </div>
+                    </div>
+                    <div class="col-12 text-end d-block d-md-none">
+                        <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
+                        @can('akses-event')
+                            <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
+                        @endcan
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+    <!-- Pagination -->
+    {{ $eventLalu->links() }}
+@endif

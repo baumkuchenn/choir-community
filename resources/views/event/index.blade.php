@@ -2,9 +2,9 @@
 
 @section('content')
 <div class="container">
-    @if(session('status') === 'success')
+    @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('message') }}
+            {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
@@ -14,97 +14,87 @@
             <a href="{{ route('events.create') }}" class="btn btn-primary mb-3 fw-bold" >+ Tambah Kegiatan</a>
         @endcan
 
-        <h5 class="mb-3 fw-bold">Kegiatan Kedepannya</h5>
+        <div class="d-flex justify-content-between align-items-end mt-4 mb-3">
+            <h5 class="fw-bold">Kegiatan Kedepannya</h5>
+            <input type="text" id="eventSelanjutnyaSearch" class="form-control w-25" placeholder="Search..." autocomplete="off">
+        </div>
         <hr>
-        @if ($eventSelanjutnya->isEmpty())
-            <p class="text-center">Komunitas ini belum memiliki kegiatan.</p>
-        @else
-            @foreach ($eventSelanjutnya as $event)
-                <div class="card shadow border-0">
-                    <div class="card-body">
-                        <div class="d-flex flex-column gap-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="col-md-7">
-                                    <h5 class="fw-bold">{{ $event->nama }}</h5>
-                                    <div class="mt-4">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="fa-solid fa-calendar-days fa-fw fs-5"></i>
-                                            <p class="mb-0">{{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d F Y') }}</p>
-                                        </div>
-                                        <div class="mt-2 d-flex align-items-center gap-2">
-                                            <i class="fa-solid fa-clock fa-fw fs-5"></i>
-                                            <p class="mb-0">Open Gate: {{ \Carbon\Carbon::parse($event->jam_mulai)->format('H:i') }} WIB</p>
-                                        </div>
-                                        <div class="mt-2 d-flex gap-2">
-                                            <i class="fa-solid fa-location-dot fa-fw fs-5"></i>
-                                            <p class="mb-0">{{ $event->lokasi }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-5 text-end d-none d-md-block">
-                                    <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                    @can('akses-event')
-                                        <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
-                                    @endcan
-                                </div>
-                            </div>
-                            <div class="col-12 text-end d-block d-md-none">
-                                <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                @can('akses-event')
-                                    <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
-                                @endcan
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        @endif
+        <div id="eventSelanjutnyaLoading" class="text-center mt-2" style="display: none;">
+            <span class="spinner-border text-primary" role="status"></span>
+        </div>
+        <div id="eventSelanjutnyaList"> 
+            @include('event.partials.event_selanjutnya_list', ['eventSelanjutnya' => $eventSelanjutnya])
+        </div>
+        
 
-        <h5 class="mt-4 mb-3 fw-bold">Kegiatan Lalu</h5>
+        <div class="d-flex justify-content-between align-items-end mt-4 mb-3">
+            <h5 class="fw-bold">Kegiatan Lalu</h5>
+            <input type="text" id="eventLaluSearch" class="form-control w-25" placeholder="Search..." autocomplete="off">
+        </div>
         <hr>
-        @if ($eventLalu->isEmpty())
-            <p class="text-center">Komunitas ini belum memiliki kegiatan.</p>
-        @else
-            @foreach ($eventLalu as $event)
-                <div class="card shadow border-0 mb-3">
-                    <div class="card-body">
-                        <div class="d-flex flex-column gap-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="col-md-7">
-                                    <h5 class="fw-bold">{{ $event->nama }}</h5>
-                                    <div class="mt-4">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="fa-solid fa-calendar-days fa-fw fs-5"></i>
-                                            <p class="mb-0">{{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d F Y') }}</p>
-                                        </div>
-                                        <div class="mt-2 d-flex align-items-center gap-2">
-                                            <i class="fa-solid fa-clock fa-fw fs-5"></i>
-                                            <p class="mb-0">Open Gate: {{ \Carbon\Carbon::parse($event->jam_mulai)->format('H:i') }} WIB</p>
-                                        </div>
-                                        <div class="mt-2 d-flex gap-2">
-                                            <i class="fa-solid fa-location-dot fa-fw fs-5"></i>
-                                            <p class="mb-0">{{ $event->lokasi }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-5 text-end d-none d-md-block">
-                                    <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                    @can('akses-event')
-                                        <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
-                                    @endcan
-                                </div>
-                            </div>
-                            <div class="col-12 text-end d-block d-md-none">
-                                <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
-                                @can('akses-event')
-                                    <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
-                                @endcan
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        @endif
+        <div id="eventLaluLoading" class="text-center mt-2" style="display: none;">
+            <span class="spinner-border text-primary" role="status"></span>
+        </div>
+        <div id="eventLaluList"> 
+            @include('event.partials.event_lalu_list', ['eventLalu' => $eventLalu])
+        </div>
     </div>
 </div>
+@endsection
+
+@section ('js')
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function fetchEventSelanjutnya(page = 1, search = '') {
+            document.getElementById('eventSelanjutnyaLoading').style.display = 'block'; // Show loading animation
+
+            fetch(`{{ route('events.search.selanjutnya') }}?search=${search}&page=${page}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('eventSelanjutnyaList').innerHTML = data;
+                    document.getElementById('eventSelanjutnyaLoading').style.display = 'none'; // Hide loading animation
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        }
+
+        function fetchEventLalu(page = 1, search = '') {
+            document.getElementById('eventLaluLoading').style.display = 'block'; // Show loading animation
+
+            fetch(`{{ route('events.search.lalu') }}?search=${search}&page=${page}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('eventLaluList').innerHTML = data;
+                    document.getElementById('eventLaluLoading').style.display = 'none'; // Hide loading animation
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        }
+
+        // Search function
+        document.getElementById('eventSelanjutnyaSearch').addEventListener('keyup', function () {
+            let search = this.value;
+            fetchEventLalu(1, search);
+        });
+        document.getElementById('eventLaluSearch').addEventListener('keyup', function () {
+            let search = this.value;
+            fetchEventLalu(1, search);
+        });
+
+        // Handle pagination click
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.pagination a')) {
+                e.preventDefault();
+                let page = new URL(e.target.href).searchParams.get("page");
+                if (link.closest('#eventSelanjutnyaList')) {
+                    const search = document.getElementById('eventSelanjutnyaSearch').value;
+                    fetchEventSelanjutnya(page, search);
+                }
+
+                if (link.closest('#eventLaluList')) {
+                    const search = document.getElementById('eventLaluSearch').value;
+                    fetchEventLalu(page, search);
+                }
+            }
+        });
+    });
+</script>
 @endsection

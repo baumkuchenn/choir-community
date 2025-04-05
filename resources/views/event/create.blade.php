@@ -21,173 +21,174 @@
 
             <div class="row mb-3">
                 <div class="col-12">
-                    <label for="jenis_kegiatan" class="form-label">Jenis Kegiatan</label>
-                    <select class="form-select" id="jenis_kegiatan" name="jenis_kegiatan" required>
-                        <option value="" disabled selected>Pilih jenis kegiatan</option>
-                        <option value="INTERNAL" {{ old('jenis_kegiatan') == 'INTERNAL' ? 'selected' : '' }}>Internal</option>
-                        <option value="EKSTERNAL" {{ old('jenis_kegiatan') == 'EKSTERNAL' ? 'selected' : '' }}>External</option>
-                        <option value="KONSER" {{ old('jenis_kegiatan') == 'KONSER' ? 'selected' : '' }}>Konser</option>
+                    <label for="parent_kegiatan" class="form-label">Kegiatan Utama</label>
+                    <select class="form-select" id="parent_kegiatan" name="parent_kegiatan" data-name="parent" required>
+                        <option value="ya" {{ old('parent_kegiatan', 'ya') == 'ya' ? 'selected' : '' }}>Ya</option>
+                        <option value="tidak" {{ old('parent_kegiatan') == 'tidak' ? 'selected' : '' }}>Tidak</option>
                     </select>
+                    @error('parent_kegiatan')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label for="jenis_kegiatan" class="form-label">Jenis Kegiatan</label>
+                    <select class="form-select" id="jenis_kegiatan" name="jenis_kegiatan" data-name="jenis" required></select>
                     @error('jenis_kegiatan')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
 
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="sub_kegiatan_id" class="form-label">Sub Kegiatan</label>
-                    <select class="form-select" id="sub_kegiatan_id" name="sub_kegiatan_id">
-                        <option value="" disabled selected>Pilih sub kegiatan</option>
-                        @foreach ($events as $subEvent)
-                            <option value="{{ $subEvent->id }}" {{ old('sub_kegiatan_id') == $subEvent->id ? 'selected' : '' }}>
-                                {{ $subEvent->nama }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('sub_kegiatan_id')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+            <div id="parent_wrapper">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="sub_kegiatan_id" class="form-label">Sub Kegiatan Dari</label>
+                        <select class="form-select" id="sub_kegiatan_id" name="sub_kegiatan_id">
+                            <option value="" disabled selected>Pilih kegiatan utama</option>
+                            @foreach ($events as $subEvent)
+                                <option value="{{ $subEvent->id }}" {{ old('sub_kegiatan_id') == $subEvent->id ? 'selected' : '' }}>
+                                    {{ $subEvent->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('sub_kegiatan_id')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-6">
-                    <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
-                    <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" placeholder="" value="{{ old('tanggal_mulai') }}" required>
-                    @error('tanggal_mulai')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
+                        <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" placeholder="" value="{{ old('tanggal_mulai') }}" required>
+                        @error('tanggal_mulai')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-6">
+                        <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
+                        <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" placeholder="" value="{{ old('tanggal_selesai') }}" required>
+                        @error('tanggal_selesai')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
-                <div class="col-6">
-                    <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
-                    <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" placeholder="" value="{{ old('tanggal_selesai') }}" required>
-                    @error('tanggal_selesai')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-6">
-                    <label for="jam_mulai" class="form-label">Jam Mulai</label>
-                    <input type="time" class="form-control" id="jam_mulai" name="jam_mulai" placeholder="" value="{{ old('jam_mulai') }}" required>
-                    @error('jam_mulai')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="jam_mulai" class="form-label">Jam Mulai</label>
+                        <input type="time" class="form-control" id="jam_mulai" name="jam_mulai" placeholder="" value="{{ old('jam_mulai') }}" required>
+                        @error('jam_mulai')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-6">
+                        <label for="jam_selesai" class="form-label">Jam Selesai</label>
+                        <input type="time" class="form-control" id="jam_selesai" name="jam_selesai" placeholder="" value="{{ old('jam_selesai') }}" required>
+                        @error('jam_selesai')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
-                <div class="col-6">
-                    <label for="jam_selesai" class="form-label">Jam Selesai</label>
-                    <input type="time" class="form-control" id="jam_selesai" name="jam_selesai" placeholder="" value="{{ old('jam_selesai') }}" required>
-                    @error('jam_selesai')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-6">
-                    <label for="tanggal_gladi" class="form-label">Tanggal Gladi</label>
-                    <input type="date" class="form-control" id="tanggal_gladi" name="tanggal_gladi" placeholder="" value="{{ old('tanggal_gladi') }}">
-                    @error('tanggal_gladi')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="lokasi" class="form-label">Lokasi</label>
+                        <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="" value="{{ old('lokasi') }}" required>
+                        @error('lokasi')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
-                <div class="col-6">
-                    <label for="jam_gladi" class="form-label">Jam Gladi</label>
-                    <input type="time" class="form-control" id="jam_gladi" name="jam_gladi" placeholder="" value="{{ old('jam_gladi') }}">
-                    @error('jam_gladi')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="lokasi" class="form-label">Lokasi</label>
-                    <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="" value="{{ old('lokasi') }}" required>
-                    @error('lokasi')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
+                <div id="konser_wrapper">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label for="kegiatan_kolaborasi" class="form-label">Kegiatan Kolaborasi</label>
+                            <select class="form-select" id="kegiatan_kolaborasi" name="kegiatan_kolaborasi" data-name="kolaborasi" required>
+                                <option value="ya" {{ old('kegiatan_kolaborasi') == 'ya' ? 'selected' : '' }}>Ya</option>
+                                <option value="tidak" {{ old('kegiatan_kolaborasi', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
+                            </select>
+                            @error('kegiatan_kolaborasi')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="kegiatan_berulang" class="form-label">Kegiatan Berulang</label>
-                    <select class="form-select" id="kegiatan_berulang" name="kegiatan_berulang" required>
-                        <!-- <option value="ya" {{ old('kegiatan_berulang') == 'ya' ? 'selected' : '' }}>Ya</option> -->
-                        <option value="tidak" {{ old('kegiatan_berulang', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
-                    </select>
-                    @error('kegiatan_berulang')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
+                    <div id="kolaborasi_wrapper" class="row mb-3">
+                        <div class="col-12">
+                            <label for="choirs_id" class="form-label">Paduan Suara Kolaborasi</label>
+                            <select class="form-select" id="choirs_id" name="choirs_id"></select>
+                            @error('choirs_id')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="kegiatan_kolaborasi" class="form-label">Kegiatan Kolaborasi</label>
-                    <select class="form-select" id="kegiatan_kolaborasi" name="kegiatan_kolaborasi" required>
-                        <!-- <option value="ya" {{ old('kegiatan_kolaborasi') == 'ya' ? 'selected' : '' }}>Ya</option> -->
-                        <option value="tidak" {{ old('kegiatan_kolaborasi', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
-                    </select>
-                    @error('kegiatan_kolaborasi')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label for="peran" class="form-label">Peran dalam Kegiatan</label>
+                            <select class="form-select" id="peran" name="peran" data-name="peran" required>
+                                <option value="" disabled selected>Pilih peran dalam kegiatan</option>
+                                <option value="penyanyi" {{ old('peran') == 'penyanyi' ? 'selected' : '' }}>Penyanyi</option>
+                                <option value="panitia" {{ old('peran') == 'panitia' ? 'selected' : '' }}>Panitia</option>
+                                <option value="keduanya" {{ old('peran') == 'keduanya' ? 'selected' : '' }}>Penyanyi dan Panitia</option>
+                            </select>
+                            @error('peran')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
 
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="peran" class="form-label">Peran dalam Kegiatan</label>
-                    <select class="form-select" id="peran" name="peran" required>
-                        <option value="penyanyi" {{ old('peran', 'penyanyi') == 'penyanyi' ? 'selected' : '' }}>Penyanyi</option>
-                        <option value="panitia" {{ old('peran') == 'panitia' ? 'selected' : '' }}>Panitia</option>
-                        <option value="keduanya" {{ old('peran') == 'keduanya' ? 'selected' : '' }}>Penyanyi dan Panitia</option>
-                    </select>
-                    @error('peran')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
+                    <div id="peran_wrapper">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="panitia_eksternal" class="form-label">Kegiatan Menggunakan Panitia Eksternal</label>
+                                <select class="form-select" id="panitia_eksternal" name="panitia_eksternal" required>
+                                    <option value="ya" {{ old('panitia_eksternal') == 'ya' ? 'selected' : '' }}>Ya</option>
+                                    <option value="tidak" {{ old('panitia_eksternal', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
+                                </select>
+                                @error('panitia_eksternal')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="panitia_eksternal" class="form-label">Kegiatan Menggunakan Panitia Eksternal</label>
-                    <select class="form-select" id="panitia_eksternal" name="panitia_eksternal" required>
-                        <option value="ya" {{ old('panitia_eksternal') == 'ya' ? 'selected' : '' }}>Ya</option>
-                        <option value="tidak" {{ old('panitia_eksternal', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
-                    </select>
-                    @error('panitia_eksternal')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="metode_rekrut_panitia" class="form-label">Metode Rekrut Panitia Internal</label>
+                                <select class="form-select" id="metode_rekrut_panitia" name="metode_rekrut_panitia" required>
+                                    <option value="pilih" {{ old('metode_rekrut_panitia') == 'pilih' ? 'selected' : '' }}>Pilih langsung</option>
+                                    <option value="seleksi" {{ old('metode_rekrut_panitia', 'seleksi') == 'seleksi' ? 'selected' : '' }}>Seleksi</option>
+                                </select>
+                                @error('metode_rekrut_panitia')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="metode_rekrut_panitia" class="form-label">Metode Rekrut Panitia Internal</label>
-                    <select class="form-select" id="metode_rekrut_panitia" name="metode_rekrut_panitia" required>
-                        <option value="PILIH" {{ old('metode_rekrut_panitia') == 'PILIH' ? 'selected' : '' }}>Pilih langsung</option>
-                        <option value="SELEKSI" {{ old('metode_rekrut_panitia', 'SELEKSI') == 'SELEKSI' ? 'selected' : '' }}>Seleksi</option>
-                    </select>
-                    @error('metode_rekrut_panitia')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                <div class="row">
+                    <div class="col-12">
+                        <input class="form-check-input" type="checkbox" id="all_notification" name="all_notification" value="ya">
+                        <label class="form-check-label" for="all_notification">Kirim notifikasi ke seluruh anggota komunitas.</label>
+                    </div>
                 </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label for="metode_rekrut_penyanyi" class="form-label">Metode Rekrut Penyanyi</label>
-                    <select class="form-select" id="metode_rekrut_penyanyi" name="metode_rekrut_penyanyi" required>
-                        <option value="PILIH" {{ old('metode_rekrut_penyanyi') == 'PILIH' ? 'selected' : '' }}>Pilih langsung</option>
-                        <option value="SELEKSI" {{ old('metode_rekrut_penyanyi', 'SELEKSI') == 'SELEKSI' ? 'selected' : '' }}>Seleksi</option>
-                    </select>
-                    @error('metode_rekrut_penyanyi')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                <div class="row">
+                    <div class="col-12">
+                        <input class="form-check-input" type="checkbox" id="parent_notification" name="parent_notification" value="ya">
+                        <label class="form-check-label" for="parent_notification">Kirim notifikasi ke anggota komunitas yang ikut dalam kegiatan utama.</label>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <input class="form-check-input" type="checkbox" id="parent_display" name="parent_display" value="ya">
+                        <label class="form-check-label" for="parent_display">Hanya tampilkan kegiatan ke anggota komunitas yang ikut dalam kegiatan utama.</label>
+                    </div>
                 </div>
             </div>
 
@@ -199,8 +200,143 @@
 
 @section('js')
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        
+    function toggleWrapper(element, wrapper, validValues = []) {
+        const elementValue = element.value;
+        const inputs = wrapper.querySelectorAll("input, select, textarea");
+
+        if (validValues.includes(elementValue)) {
+            wrapper.style.display = "block";
+            inputs.forEach(el => el.disabled = false);
+        } else {
+            wrapper.style.display = "none";
+            inputs.forEach(el => {
+                el.disabled = true;
+                if (el.tagName === "SELECT") {
+                    const defaultOption = el.querySelector("option[default], option[selected]");
+                    if (defaultOption) {
+                        el.value = defaultOption.value;
+                    } else {
+                        el.selectedIndex = 0;
+                    }
+                } else {
+                    el.value = "";
+                }
+            });
+        }
+    }
+
+
+    function updateJenisKegiatanOptions() {
+        const parentValue = document.getElementById("parent_kegiatan").value;
+        const jenisKegiatanSelect = document.getElementById("jenis_kegiatan");
+        const oldJenisKegiatan = "{{ old('jenis_kegiatan') }}";
+
+        const optionsForParent = {
+            ya: [
+                { value: "internal", text: "Internal" },
+                { value: "eksternal", text: "Eksternal" },
+            ],
+            tidak: [
+                { value: "seleksi", text: "Seleksi Penyanyi" },
+                { value: "latihan", text: "Latihan" },
+                { value: "konser", text: "Konser" },
+                { value: "gladi", text: "Gladi Kegiatan" },
+                { value: "lomba", text: "Lomba" },
+            ]
+        };
+
+        const options = optionsForParent[parentValue] || [];
+
+        // Clear existing options
+        jenisKegiatanSelect.innerHTML = "";
+
+        // Add placeholder
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        placeholder.textContent = "Pilih jenis kegiatan";
+        jenisKegiatanSelect.appendChild(placeholder);
+
+        // Add new options
+        options.forEach(opt => {
+            const option = document.createElement("option");
+            option.value = opt.value;
+            option.textContent = opt.text;
+
+            if (opt.value === oldJenisKegiatan) {
+                console.log('tes');
+                option.selected = true;
+            }
+
+            jenisKegiatanSelect.appendChild(option);
+        });
+
+        // If needed, reset selected value
+        jenisKegiatanSelect.value = "";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        //Wrapper parent kegiatan
+        const parent = document.getElementById("parent_kegiatan");
+        const parentWrapper = document.getElementById("parent_wrapper");
+        toggleWrapper(parent, parentWrapper, ["tidak"]);
+        parent.addEventListener("change", function () {
+            toggleWrapper(parent, parentWrapper, ["tidak"]);
+        });
+
+
+        //Wrapper jenis konser
+        const jenis = document.getElementById("jenis_kegiatan");
+        const konserWrapper = document.getElementById("konser_wrapper");
+        toggleWrapper(jenis, konserWrapper, ["konser"]);
+        jenis.addEventListener("change", function () {
+            toggleWrapper(jenis, konserWrapper, ["konser"]);
+        });
+
+
+        //Wrapper kolaborasi
+        const kolaborasi = document.getElementById("kegiatan_kolaborasi");
+        const kolaborasiWrapper = document.getElementById("kolaborasi_wrapper");
+        toggleWrapper(kolaborasi, kolaborasiWrapper, ["ya"]);
+        kolaborasi.addEventListener("change", function () {
+            toggleWrapper(kolaborasi, kolaborasiWrapper, ["ya"]);
+        });
+
+
+        //Wrapper peran
+        const peran = document.getElementById("peran");
+        const peranWrapper = document.getElementById("peran_wrapper");
+        toggleWrapper(peran, peranWrapper, ["panitia", "keduanya"]);
+        peran.addEventListener("change", function () {
+            toggleWrapper(peran, peranWrapper, ["panitia", "keduanya"]);
+        });
+
+
+        //Ubah value jenis kegiatan sesuai parent
+        updateJenisKegiatanOptions();
+        document.getElementById("parent_kegiatan").addEventListener("change", updateJenisKegiatanOptions);
+
+
+        //JS Select2 buat padus kolaborasi
+        $('#choirs_id').select2({
+            placeholder: 'Cari Komunitas Paduan Suara...',
+            ajax: {
+                url: '{{ route("events.search.choir") }}',
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data
+                    };
+                }
+            }
+        });
     });
 </script>
 @endsection

@@ -14,18 +14,17 @@ return new class extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('nama', 255);
+            $table->enum('parent_kegiatan', ['ya', 'tidak']);
             $table->enum('jenis_kegiatan', ['internal', 'eksternal', 'konser']);
-            $table->date('tanggal_mulai');
-            $table->date('tanggal_selesai');
-            $table->time('jam_mulai');
-            $table->time('jam_selesai');
-            $table->date('tanggal_gladi')->nullable();
-            $table->time('jam_gladi')->nullable();
-            $table->string('lokasi', 255);
-            $table->enum('peran', ['panitia', 'penyanyi', 'keduanya']);
-            $table->enum('panitia_eksternal', ['ya', 'tidak']);
-            $table->enum('metode_rekrut_panitia', ['pilih', 'seleksi']);
-            $table->enum('metode_rekrut_penyanyi', ['pilih', 'seleksi']);
+            $table->date('tanggal_mulai')->nullable();
+            $table->date('tanggal_selesai')->nullable();
+            $table->time('jam_mulai')->nullable();
+            $table->time('jam_selesai')->nullable();
+            $table->string('lokasi', 255)->nullable();
+            $table->enum('peran', ['panitia', 'penyanyi', 'keduanya'])->nullable();
+            $table->enum('panitia_eksternal', ['ya', 'tidak'])->nullable();
+            $table->enum('metode_rekrut_panitia', ['pilih', 'seleksi'])->nullable();
+            $table->enum('visibility', ['public', 'inherited'])->nullable();
 
             $table->unsignedBigInteger('sub_kegiatan_id')->nullable();
             $table->foreign('sub_kegiatan_id')->references('id')->on('events');

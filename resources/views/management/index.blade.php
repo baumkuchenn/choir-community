@@ -15,17 +15,23 @@
                 <div class="card shadow w-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="fw-bold">Notifikasi</h4>
+                            <h4 class="fw-bold">Notifikasi <span class="badge bg-primary">{{ auth()->user()->unreadNotifications->count() }}</span></h4>
                             <a href="{{ route('management.notification') }}" class="btn btn-outline-primary">Lihat Semua</a>
                         </div>
 
                         <div class="mt-2">
-                            @if($notifications->isNotEmpty())
-                                <ul class="list-group">
-                                    @foreach($notifications as $notification)
-                                        <li class="list-group-item">{{ $notification->pesan }}</li>
-                                    @endforeach
-                                </ul>
+                            @if(auth()->user()->notifications->isNotEmpty())
+                                @foreach(auth()->user()->notifications as $notification)
+                                    <div class="alert alert-info mb-2">
+                                        <strong>{{ $notification->data['title'] ?? 'Notifikasi' }}</strong><br>
+                                        <p>{{ $notification->data['message'] ?? '-' }}</p>
+                                        @if(isset($notification->data['url']))
+                                            <a href="{{ $notification->data['url'] }}" class="btn btn-primary btn-sm">
+                                                {{ $notification->data['button_text'] ?? 'Lihat' }}
+                                            </a>
+                                        @endif
+                                    </div>
+                                @endforeach
                             @else
                                 <p class="text-muted">Tidak ada notifikasi</p>
                             @endif
@@ -68,7 +74,7 @@
                 center: '',
                 right: 'today prev,next'
             },
-            events: "{{ route('calendar.show') }}",
+            events: "{{ route('management.calendar.show') }}",
             eventDidMount: function(info) {
                 // Clear the event info area only once before adding new events
                 if (!info.event._cleared) {

@@ -23,7 +23,7 @@
                 center: '',
                 right: 'today prev,next'
             },
-            events: "{{ route('calendar.show') }}",
+            events: "{{ route('management.calendar.show') }}",
             eventDidMount: function(info) {
                 // Clear the event info area only once before adding new events
                 if (!info.event._cleared) {

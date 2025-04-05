@@ -2,9 +2,9 @@
 
 @section('content')
 <div class="container">
-    @if(session('status') === 'success')
+    @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('message') }}
+            {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif

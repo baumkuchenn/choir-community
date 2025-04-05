@@ -25,9 +25,9 @@
         </ul>
     </div>
     <div class="ps-3" style="width: 90%;">
-        @if(session('status') === 'success')
+        @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('message') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif

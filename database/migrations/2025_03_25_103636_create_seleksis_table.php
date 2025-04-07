@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('seleksis', function (Blueprint $table) {
             $table->id();
+            $table->enum('tipe', ['member', 'event']);
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->time('jam_mulai');
@@ -22,6 +23,8 @@ return new class extends Migration
 
             $table->unsignedBigInteger('choirs_id');
             $table->foreign('choirs_id')->references('id')->on('choirs');
+            $table->unsignedBigInteger('events_id')->nullable();
+            $table->foreign('events_id')->references('id')->on('events');
 
             $table->softDeletes();
             $table->timestamps();

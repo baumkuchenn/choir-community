@@ -9,7 +9,7 @@
         </div>
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
-        <a href="{{ $backUrl ?? route('management.index') }}" class="btn btn-outline-primary mb-3">Kembali</a>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-3">Kembali</a>
         
         <h5 class="mb-3 fw-bold">Seleksi yang diikuti</h5>
         <hr>

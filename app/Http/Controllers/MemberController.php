@@ -50,12 +50,24 @@ class MemberController extends Controller
     public function search(Request $request)
     {
         $search = $request->input('search');
-        $users = User::where('name', 'LIKE', "%{$search}%")
-            ->whereDoesntHave('members', function ($query) {
-                $query->where('admin', 'ya');
-            })
-            ->limit(10)
-            ->get(['id', 'name']);
+        if ($request->boolean('only_choir_members')) {
+            $choirId = Auth::user()->members->first()->choirs_id;
+
+            $users = User::where('name', 'LIKE', "%{$search}%")
+                ->whereHas('members', function ($query) use ($choirId) {
+                    $query->where('choirs_id', $choirId)
+                        ->where('admin', '!=', 'ya');
+                })
+                ->limit(10)
+                ->get(['id', 'name']);
+        } else {
+            $users = User::where('name', 'LIKE', "%{$search}%")
+                ->whereDoesntHave('members', function ($query) {
+                    $query->where('admin', 'ya');
+                })
+                ->limit(10)
+                ->get(['id', 'name']);
+        }
 
         return response()->json($users->map(function ($user) {
             return ['id' => $user->id, 'text' => $user->name];

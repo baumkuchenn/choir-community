@@ -4,7 +4,7 @@
 @section('content')
 <div class="container">
     <div class="col-md-11 col-lg-11 mx-auto">
-        <a href="{{ $backUrl ?? route('events.index') }}" class="btn btn-outline-primary">Kembali</a>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
         <h2 class="mb-3 fw-bold text-center">Isi Detail Kegiatan Baru</h2>
         
         <form method="POST" action="{{ route('events.store') }}" enctype="multipart/form-data" class="mb-0">
@@ -241,7 +241,7 @@
                 { value: "latihan", text: "Latihan" },
                 { value: "konser", text: "Konser" },
                 { value: "gladi", text: "Gladi Kegiatan" },
-                { value: "lomba", text: "Lomba" },
+                { value: "event", text: "Hari H Kegiatan (Lomba/Job/Event Lain)" },
             ]
         };
 

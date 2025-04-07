@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\PendaftarSeleksi;
+use App\Models\Seleksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -99,7 +101,19 @@ class ManagementController extends Controller
         return view('management.notifications', compact('choir', 'notifications'));
     }
 
-    public function daftar(string $id) {
+    public function daftar(string $id)
+    {
         $event = Event::find($id);
+        if ($event->jenis_kegiatan == 'seleksi') {
+            $seleksi = Seleksi::where('events_id', $event->id)->first();
+
+            PendaftarSeleksi::create([
+                'users_id' => Auth::id(),
+                'seleksis_id' => $seleksi->id,
+            ]);
+        }
+        
+        return redirect()->route('management.index')
+            ->with('success', 'Berhasil mendaftar kegiatan.');
     }
 }

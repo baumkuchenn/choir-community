@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <a href="{{ $backUrl ?? route('eticket.myticket') }}" class="btn btn-outline-primary">Kembali</a>
+    <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
     <div class="row mt-3">
         <div class="col-12 col-lg-8">
             <img src="{{ asset('storage/' . $concert->gambar) }}" style="width: 100%; max-height: 360px;">

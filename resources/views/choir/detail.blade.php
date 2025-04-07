@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <a href="{{ $backUrl ?? route('choir.join') }}" class="btn btn-outline-primary">Kembali</a>
+    <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
     <div class="row mt-3">
         <h3 class="fw-bold">{{ $seleksi->choir->nama }}</h3>
         <div class="col-12 col-lg-8">

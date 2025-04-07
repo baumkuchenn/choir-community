@@ -18,7 +18,7 @@
                 {{ \Carbon\Carbon::parse($seleksi->tanggal_mulai)->translatedFormat('d F Y') }}
             @endif
         </h5>
-        <a href="{{ $backUrl ?? route('seleksi.show', $seleksi->id) }}" class="btn btn-outline-primary mb-3">Kembali</a>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-3">Kembali</a>
         <div class="row mb-3">
             <div class="col-12 d-flex gap-3 align-items-center">
                 <h5 class="fw-bold">Status Kehadiran

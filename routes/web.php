@@ -10,6 +10,8 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\KotaController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PenyanyiController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
@@ -127,6 +129,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::put('/seleksi/wawancara/', [SeleksiController::class, 'simpanPendaftar'])->name('seleksi.simpan-pendaftar');
                 Route::post('/seleksi/wawancara/lolos', [SeleksiController::class, 'lolos'])->name('seleksi.lolos-pendaftar');
                 Route::resource('seleksi', SeleksiController::class);
+                Route::resource('penyanyi', PenyanyiController::class);
             });
 
             //Manajemen Roles
@@ -140,7 +143,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/calendar', [ManagementController::class, 'calendar'])->name('management.calendar.index');
             Route::get('/calendar/show', [ManagementController::class, 'calendarShow'])->name('management.calendar.show');
             Route::get('/notification', [ManagementController::class, 'notification'])->name('management.notification');
-            Route::get('/events/{event}/daftar', [ManagementController::class, 'daftar'])->name('management.event.daftar');
+            Route::post('/notifications/read/{id}', [NotificationController::class, 'readAndRedirect'])->name('notifications.readAndRedirect');
+            Route::post('/events/{event}/daftar', [ManagementController::class, 'daftar'])->name('management.event.daftar');
         });
     });
 });

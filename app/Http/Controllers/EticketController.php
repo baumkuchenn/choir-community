@@ -122,8 +122,7 @@ class EticketController extends Controller
         $tickets = $concert->ticketTypes;
         $hargaMulai = $tickets->min('harga');
 
-        return view('eticketing.show', compact('concert', 'event', 'tickets', 'hargaMulai'))
-            ->with('backUrl', url()->previous());
+        return view('eticketing.show', compact('concert', 'event', 'tickets', 'hargaMulai'));
     }
 
     /**

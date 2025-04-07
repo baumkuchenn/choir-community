@@ -9,7 +9,7 @@
         </div>
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
-        <a href="{{ $backUrl ?? route('members.index') }}" class="btn btn-outline-primary">Kembali</a>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
         <h2 class="mb-3 fw-bold text-center">Daftar Seleksi Komunitas</h2>
         <a href="{{ route('seleksi.create') }}" class="btn btn-primary mb-3 fw-bold" >+ Tambah Seleksi</a>
 

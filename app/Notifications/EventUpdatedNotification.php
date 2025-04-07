@@ -2,13 +2,12 @@
 
 namespace App\Notifications;
 
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EventNotification extends Notification
+class EventUpdatedNotification extends Notification
 {
     use Queueable;
     protected $event;
@@ -34,17 +33,10 @@ class EventNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'title' => 'Kegiatan Baru',
-            'message' => 'Ada kegiatan baru: ' . $this->event->nama,
+            'title' => 'Perubahan Informasi Kegiatan',
+            'message' => 'Terdapat perubahan informasi pada kegiatan ' . $this->event->nama,
             'button_text' => 'Lihat Detail',
-            'modal_id' => 'daftar',
-            'event_id' => $this->event->id,
-            'event_nama' => $this->event->nama,
-            'event_tanggal' => Carbon::parse($this->event->tanggal_mulai)->translatedFormat('d F Y') .
-                ($this->event->tanggal_mulai != $this->event->tanggal_selesai
-                    ? ' - ' . Carbon::parse($this->event->tanggal_selesai)->translatedFormat('d F Y')
-                    : ''),
-            'event_lokasi' => $this->event->lokasi,
+            'url' => route('management.calendar.show'),
         ];
     }
 }

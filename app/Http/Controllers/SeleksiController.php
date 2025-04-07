@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\ButirPenilaian;
+use App\Models\Event;
 use App\Models\Member;
 use App\Models\PendaftarSeleksi;
+use App\Models\Penyanyi;
 use App\Models\Seleksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +17,11 @@ class SeleksiController extends Controller
     {
         $seleksiLalu = Seleksi::where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("TIMESTAMP(tanggal_selesai, jam_selesai) < ?", [now()])
+            ->where('tipe', 'member')
             ->get();
         $seleksiDepan = Seleksi::where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("TIMESTAMP(tanggal_selesai, jam_selesai) > ?", [now()])
+            ->where('tipe', 'member')
             ->get();
 
         return view('member.seleksi.index', compact('seleksiDepan', 'seleksiLalu'));
@@ -40,7 +44,8 @@ class SeleksiController extends Controller
             'jam_selesai' => 'required',
             'lokasi' => 'required|string|max:255',
         ]);
-        $data = $request->except('_token');
+        $data = $request->all();
+        $data['type'] = 'member';
         $data['choirs_id'] = Auth::user()->members->first()->choirs_id;
         Seleksi::create($data);
 
@@ -91,6 +96,8 @@ class SeleksiController extends Controller
 
     public function lolos(Request $request)
     {
+        $seleksi = Seleksi::find($request->seleksis_id);
+
         $pendaftar = PendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))
             ->where('users_id', $request->input('users_id'))
             ->first();
@@ -98,13 +105,25 @@ class SeleksiController extends Controller
             'lolos' => $request->input('is_lolos'),
         ]);
 
-        if ($pendaftar->lolos == 'ya') {
-            Member::create([
-                'choirs_id' => Auth::user()->members->first()->choirs_id,
-                'users_id' => $request->input('users_id'),
-                'suara' => $pendaftar->kategori_suara,
-            ]);
+        if (!is_null($seleksi->events_id)) {
+            $event = Event::find($seleksi->events_id);
+            if ($pendaftar->lolos == 'ya') {
+                Penyanyi::create([
+                    'events_id' => $event->sub_kegiatan_id,
+                    'members_id' => Member::where('users_id', $request->users_id)->first()->id,
+                    'suara' => $pendaftar->kategori_suara,
+                ]);
+            }
+        } else {
+            if ($pendaftar->lolos == 'ya') {
+                Member::create([
+                    'choirs_id' => Auth::user()->members->first()->choirs_id,
+                    'users_id' => $request->input('users_id'),
+                    'suara' => $pendaftar->kategori_suara,
+                ]);
+            }
         }
+
         return redirect()->route('seleksi.show', $request->input('seleksis_id'))
             ->with('success', 'Status pendaftar berhasil diperbarui.');
     }
@@ -137,15 +156,9 @@ class SeleksiController extends Controller
         ]);
 
         foreach ($request->input('butir_penilaians') as $butir) {
-            $pendaftar->nilais()->updateOrInsert(
-                [
-                    'pendaftars_id' => $pendaftar->id,
-                    'butirs_id' => $butir['id']
-                ],
-                [
-                    'nilai' => $butir['nilai'] * ($butir['bobot_nilai'] / 100)
-                ]
-            );
+            $pendaftar->nilais()->attach($butir['id'], [
+                'nilai' => $butir['nilai'] * ($butir['bobot_nilai'] / 100),
+            ]);
         }
         return redirect()->route('seleksi.show', $request->input('seleksis_id'))
             ->with('success', 'Simpan data wawancara berhasil.');

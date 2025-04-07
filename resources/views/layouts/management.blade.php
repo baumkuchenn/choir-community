@@ -261,6 +261,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     @yield('js')
+    @stack('js')
     <script>
         //Button hapus
         document.querySelectorAll('.deleteBtn').forEach(button => {

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <a href="{{ $backUrl ?? route('eticket.myticket') }}" class="btn btn-outline-primary">Kembali</a>
+    <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
     <button class="btn btn-primary" onclick="printSection('print-invoice')">Print</button>
     <div id="print-invoice">
         <div class="row mt-3">

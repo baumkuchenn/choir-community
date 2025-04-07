@@ -26,4 +26,9 @@ class Member extends Model
     {
         return $this->belongsTo(Position::class, 'positions_id');
     }
+
+    public function penyanyis()
+    {
+        return $this->hasMany(Penyanyi::class, 'members_id');
+    }
 }

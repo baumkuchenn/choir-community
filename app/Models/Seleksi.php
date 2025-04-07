@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Seleksi extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['tanggal_mulai', 'tanggal_selesai', 'jam_mulai', 'jam_selesai', 'lokasi', 'pendaftaran_terakhir', 'choirs_id'];
+    protected $fillable = ['tipe', 'tanggal_mulai', 'tanggal_selesai', 'jam_mulai', 'jam_selesai', 'lokasi', 'pendaftaran_terakhir', 'choirs_id', 'events_id'];
 
     public function pendaftarSeleksis()
     {

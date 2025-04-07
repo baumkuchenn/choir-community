@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="col-md-11 col-lg-11 mx-auto">
-        <a href="{{ $backUrl ?? route('management.index') }}" class="btn btn-outline-primary">Kembali</a>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
         <h2 class="mb-3 fw-bold text-center">Buat Komunitas Paduan Suara Baru</h2>
         <form action="{{ route('choir.store') }}" method="POST" enctype="multipart/form-data" class="mb-0">
             @csrf

@@ -20,6 +20,12 @@ class Event extends Model
     public function choirs()
     {
         return $this->belongsToMany(Choir::class, 'collabs', 'events_id', 'choirs_id')
-            ->withPivot('penyelenggara');
+            ->withPivot('penyelenggara')
+            ->withTimestamps();
+    }
+
+    public function penyanyis()
+    {
+        return $this->hasMany(Penyanyi::class, 'events_id');
     }
 }

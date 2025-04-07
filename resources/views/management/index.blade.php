@@ -4,10 +4,17 @@
 
 @extends($layout)
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
 @section('content')
 <div class="container d-flex justify-content-center">
     @if($choir)
         <div class="col-12">
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
             <div class="mt-3 mb-3 text-center">
                 <h3 class="fw-bold">{{ $choir->nama }}</h3>
             </div>
@@ -20,15 +27,29 @@
                         </div>
 
                         <div class="mt-2">
-                            @if(auth()->user()->notifications->isNotEmpty())
-                                @foreach(auth()->user()->notifications as $notification)
+                            @if(auth()->user()->unreadNotifications->isNotEmpty())
+                                @foreach(auth()->user()->unreadNotifications->sortByDesc('created_at') as $notification)
                                     <div class="alert alert-info mb-2">
                                         <strong>{{ $notification->data['title'] ?? 'Notifikasi' }}</strong><br>
                                         <p>{{ $notification->data['message'] ?? '-' }}</p>
-                                        @if(isset($notification->data['url']))
-                                            <a href="{{ $notification->data['url'] }}" class="btn btn-primary btn-sm">
-                                                {{ $notification->data['button_text'] ?? 'Lihat' }}
-                                            </a>
+                                        @if(isset($notification->data['modal_id']))
+                                            <button 
+                                                class="btn btn-primary btn-sm open-daftar-modal"
+                                                data-id="{{ $notification->id }}"
+                                                data-nama="{{ $notification->data['event_nama'] }}"
+                                                data-tanggal="{{ $notification->data['event_tanggal'] }}"
+                                                data-lokasi="{{ $notification->data['event_lokasi'] }}"
+                                                data-action="{{ route('management.event.daftar', ['event' => $notification->data['event_id']]) }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#daftarConfirmModal"
+                                            >
+                                                {{ $notification->data['button_text']}}
+                                            </button>
+                                        @else
+                                            <form action="{{ route('notifications.readAndRedirect', $notification->id) }}" method="POST" class="mb-0">
+                                                @csrf
+                                                <button class="btn btn-primary btn-sm">{{ $notification->data['button_text']}}</button>
+                                            </form>
                                         @endif
                                     </div>
                                 @endforeach
@@ -36,6 +57,7 @@
                                 <p class="text-muted">Tidak ada notifikasi</p>
                             @endif
                         </div>
+                        @include('management.modal.daftar')
                     </div>
                 </div>
                 <div class="card shadow w-100">
@@ -132,6 +154,27 @@
         });
 
         calendar.render();
+
+        //Tombol notifikasi
+        document.querySelectorAll('.open-daftar-modal').forEach(button => {
+            button.addEventListener('click', function () {
+                document.getElementById('modalEventNama').textContent = this.dataset.nama;
+                document.getElementById('modalEventTanggal').textContent = this.dataset.tanggal;
+                document.getElementById('modalEventLokasi').textContent = this.dataset.lokasi;
+                
+                const form = document.getElementById('daftarForm');
+                form.setAttribute('action', this.dataset.action);
+
+                // AJAX: mark notification as read
+                fetch(`management/notifications/read/${this.dataset.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                    },
+                });
+            });
+        });
     });
 </script>
 @endsection

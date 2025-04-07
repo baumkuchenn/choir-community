@@ -8,11 +8,16 @@ use App\Models\Concert;
 use App\Models\Event;
 use App\Models\Invoice;
 use App\Models\Member;
+use App\Models\PendaftarSeleksi;
+use App\Models\Penyanyi;
 use App\Models\Purchase;
 use App\Models\PurchaseDetail;
+use App\Models\Seleksi;
 use App\Models\Ticket;
 use App\Models\TicketType;
 use App\Notifications\EventNotification;
+use App\Notifications\EventUpdatedNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -33,11 +38,13 @@ class EventController extends Controller
         $eventSelanjutnya = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()])
+            ->orderBy('tanggal_mulai', 'desc')
             ->paginate(10);
 
         $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()])
+            ->orderBy('tanggal_mulai', 'desc')
             ->paginate(10);
 
         return view('event.index', compact('eventSelanjutnya', 'eventLalu'));
@@ -154,6 +161,15 @@ class EventController extends Controller
 
             $event = Event::create($request->all());
             $message = "Kegiatan baru berhasil dibuat.";
+            if ($request->jenis_kegiatan == 'seleksi') {
+                $dataSeleksi = $request->all();
+                $dataSeleksi['tipe'] = 'event';
+                $dataSeleksi['choirs_id'] = Auth::user()->members->first()->choirs_id;
+                $dataSeleksi['events_id'] = $event->id;
+                $dataSeleksi['pendaftaran_terakhir'] = Carbon::parse($request->tanggal_mulai)->subDay()->toDateString();
+
+                Seleksi::create($dataSeleksi);
+            }
 
             if ($request->has('all_notification')) {
                 $members = Member::with('user')
@@ -195,11 +211,16 @@ class EventController extends Controller
             ->get();
 
         $concert = null;
+        $penyanyi = collect();
         $banks = collect();
         $purchases = collect();
         $ticketTypes = collect();
         $donations = collect();
         $feedbacks = collect();
+
+        $seleksi = null;
+        $pendaftar = collect();
+        $hasil = collect();
 
         if ($event->jenis_kegiatan == 'konser') {
             $concert = $event->concert;
@@ -208,6 +229,14 @@ class EventController extends Controller
                     'events_id' => $id,
                 ]);
             }
+
+            $eventIds = [$event->id];
+
+            if (!is_null($event->sub_kegiatan_id)) {
+                $eventIds[] = $event->sub_kegiatan_id;
+            }
+
+            $penyanyi = Penyanyi::whereIn('events_id', $eventIds)->get();
 
             $purchases = $concert->purchases()
                 ->with('user:id,name,no_handphone', 'invoice.tickets:id,invoices_id,check_in')
@@ -223,11 +252,17 @@ class EventController extends Controller
                 }])
                 ->get();
             $donations = $concert->donations()->with('user:id,name,no_handphone')->get();
-            $feedbacks = $concert->feedbacks()->with('user:id,name')->get();
+            $feedbacks = $concert->feedbacks()->with('user:id,name')->paginate(10);
             $banks = Bank::all();
+        } elseif ($event->jenis_kegiatan == 'seleksi') {
+            $seleksi = Seleksi::where('events_id', $event->id)->first();
+            $pendaftar = PendaftarSeleksi::with('user')->where('seleksis_id', $seleksi->id)->get();
+            $hasil = PendaftarSeleksi::with('user', 'nilais')->where('seleksis_id', $seleksi->id)
+                ->whereHas('nilais')
+                ->get();
         }
 
-        return view('event.show', compact('event', 'events', 'concert', 'banks', 'purchases', 'ticketTypes', 'donations', 'feedbacks'));
+        return view('event.show', compact('event', 'events', 'concert', 'penyanyi', 'purchases', 'ticketTypes', 'donations', 'feedbacks', 'banks', 'seleksi', 'pendaftar', 'hasil'));
     }
 
     /**
@@ -243,7 +278,8 @@ class EventController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
+        $event = Event::findOrFail($id);
+        $rules = [
             'nama' => 'required|string|max:255',
             'sub_kegiatan_id' => 'required',
             'tanggal_mulai' => 'required|date',
@@ -251,10 +287,50 @@ class EventController extends Controller
             'jam_mulai' => 'required',
             'jam_selesai' => 'required',
             'lokasi' => 'required|string|max:255',
+        ];
+
+        if ($event->jenis_kegiatan === 'konser') {
+            $rules['kegiatan_kolaborasi'] = 'required';
+            $rules['peran'] = 'required';
+
+            if ($request->kegiatan_kolaborasi === 'ya') {
+                $rules['choirs_id'] = 'required';
+            }
+
+            if (in_array($request->peran, ['panitia', 'keduanya'])) {
+                $rules['panitia_eksternal'] = 'required|string';
+                $rules['metode_rekrut_panitia'] = 'required|string';
+            }
+        }
+
+        $request->validate($rules);
+        $request->merge([
+            'visibility' => $request->has('parent_display') ? 'inherited' : 'public',
         ]);
 
-        $event = Event::findOrFail($id);
         $event->update($request->all());
+
+        $userChoirs = Auth::user()->members->pluck('id')->toArray();
+
+        if ($request->has('all_notification')) {
+            $members = Member::with('user')
+                ->where('choirs_id', $userChoirs[0])
+                ->where('admin', 'tidak')
+                ->get()
+                ->pluck('user')
+                ->filter()
+                ->unique('id');
+            Notification::send($members, new EventUpdatedNotification($event));
+        } elseif ($request->has('parent_notification')) {
+            // $members = Member::with('user')
+            //     ->where('choirs_id', $userChoirs[0])
+            //     ->where('admin', 'tidak')
+            //     ->get()
+            //     ->pluck('user')
+            //     ->filter()
+            //     ->unique('id');
+            // Notification::send($members, new EventUpdatedNotification($event));
+        }
 
         return redirect()->route('events.show', $id)
             ->with('success', 'Perubahan detail kegiatan berhasil.');

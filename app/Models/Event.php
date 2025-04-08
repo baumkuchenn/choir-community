@@ -28,4 +28,9 @@ class Event extends Model
     {
         return $this->hasMany(Penyanyi::class, 'events_id');
     }
+
+    public function latihans()
+    {
+        return $this->hasMany(Latihan::class, 'events_id');
+    }
 }

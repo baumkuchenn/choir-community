@@ -371,6 +371,122 @@
         });
     </script>
     @endpush
+@elseif($event->jenis_kegiatan == 'latihan')
+    @push('js')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            //Modal tambah latihan
+            document.getElementById('loadCreateForm').addEventListener('click', function() {
+                let route = this.dataset.action;
+                let id = this.dataset.id;
+                let tanggalMulai = this.dataset.tanggalMulai;
+                let tanggalSelesai = this.dataset.tanggalSelesai;
+
+                fetch(route)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('modalContainer').innerHTML = html;
+                        const modalElement = document.getElementById('createModal');
+
+                        modalElement.querySelector('#events_id').value = id;
+                        const dateInput = modalElement.querySelector('#tanggal');
+                        if (dateInput && tanggalMulai && tanggalSelesai) {
+                            dateInput.setAttribute('min', tanggalMulai);
+                            dateInput.setAttribute('max', tanggalSelesai);
+                        }
+                        new bootstrap.Modal(modalElement).show();
+                        
+                        //modal JS
+                        //Perulangan wrapper
+                        const kegiatanBerulang = document.getElementById('kegiatan_berulang');
+                        const perulanganWrapper = document.getElementById('perulangan_wrapper');
+                        const inputs = perulanganWrapper.querySelectorAll("input, select, textarea");
+
+                        function togglePerulanganWrapper() {
+                            if (kegiatanBerulang.value === 'ya') {
+                                perulanganWrapper.style.display = 'block';
+                                inputs.forEach(el => el.disabled = false);
+                            } else {
+                                perulanganWrapper.style.display = 'none';
+                                inputs.forEach(el => {
+                                    el.disabled = true;
+                                    if (el.tagName === "SELECT") {
+                                        const defaultOption = el.querySelector("option[default], option[selected]");
+                                        if (defaultOption) {
+                                            el.value = defaultOption.value;
+                                        } else {
+                                            el.selectedIndex = 0;
+                                        }
+                                    } else {
+                                        el.value = "";
+                                    }
+                                });
+                            }
+                        }
+
+                        if (kegiatanBerulang && perulanganWrapper) {
+                            kegiatanBerulang.addEventListener('change', togglePerulanganWrapper);
+                            togglePerulanganWrapper();
+                        }
+
+
+                        //Disable input tipe selesai perulangan
+                        const radios = modalElement.querySelectorAll('input[name="tipe_selesai"]');
+                        const inputTanggal = modalElement.querySelector('#tanggal_berakhir');
+                        const inputJumlah = modalElement.querySelector('#jumlah_perulangan');
+
+                        function toggleInputs() {
+                            const selected = modalElement.querySelector('input[name="tipe_selesai"]:checked')?.value;
+                            if (inputTanggal) inputTanggal.disabled = selected !== 'tanggal';
+                            if (inputJumlah) inputJumlah.disabled = selected !== 'jumlah';
+                        }
+
+                        radios.forEach(radio => {
+                            radio.addEventListener('change', toggleInputs);
+                        });
+
+                        toggleInputs();
+                    });
+            });
+
+            document.querySelectorAll(".loadEditForm").forEach((button) => {
+                button.addEventListener("click", function() {
+                    let latihanId = this.dataset.id;
+                    let eventId = this.dataset.eventId;
+                    let tanggalMulai = this.dataset.tanggalMulai;
+                    let tanggalSelesai = this.dataset.tanggalSelesai;
+                    let editUrl = `{{ route('latihans.edit', ':id') }}`.replace(':id', latihanId);
+
+                    fetch(editUrl)
+                        .then(response => response.text())
+                        .then(html => {
+                            document.getElementById("modalContainer").innerHTML = html;
+                            const modalElement = document.getElementById('editModal');
+
+                            modalElement.querySelector('#events_id').value = eventId;
+                            const dateInput = modalElement.querySelector('#tanggal');
+                            if (dateInput && tanggalMulai && tanggalSelesai) {
+                                dateInput.setAttribute('min', tanggalMulai);
+                                dateInput.setAttribute('max', tanggalSelesai);
+                            }
+
+                            new bootstrap.Modal(modalElement).show();
+                            
+                        })
+                        .catch(error => console.error("Error loading modal:", error));
+                });
+            });
+
+
+            //Data table pembeli tiket dan tipe tiket
+            $('#latihanTable').DataTable({
+                "language": {
+                    "emptyTable": "Belum ada jadwal latihan"
+                }
+            });
+        });
+    </script>
+    @endpush
 @elseif($event->jenis_kegiatan == 'seleksi')
     @push('js')
     <script>

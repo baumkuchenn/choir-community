@@ -77,52 +77,19 @@
                     </div>
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <label for="jam_mulai" class="form-label">Jam Mulai</label>
-                        <input type="time" class="form-control" id="jam_mulai" name="jam_mulai" placeholder="" value="{{ old('jam_mulai') }}" required>
-                        @error('jam_mulai')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-6">
-                        <label for="jam_selesai" class="form-label">Jam Selesai</label>
-                        <input type="time" class="form-control" id="jam_selesai" name="jam_selesai" placeholder="" value="{{ old('jam_selesai') }}" required>
-                        @error('jam_selesai')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <label for="lokasi" class="form-label">Lokasi</label>
-                        <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="" value="{{ old('lokasi') }}" required>
-                        @error('lokasi')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <div id="konser_wrapper">
+                <div id="non_latihan_wrapper">
                     <div class="row mb-3">
-                        <div class="col-12">
-                            <label for="kegiatan_kolaborasi" class="form-label">Kegiatan Kolaborasi</label>
-                            <select class="form-select" id="kegiatan_kolaborasi" name="kegiatan_kolaborasi" data-name="kolaborasi" required>
-                                <option value="ya" {{ old('kegiatan_kolaborasi') == 'ya' ? 'selected' : '' }}>Ya</option>
-                                <option value="tidak" {{ old('kegiatan_kolaborasi', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
-                            </select>
-                            @error('kegiatan_kolaborasi')
+                        <div class="col-6">
+                            <label for="jam_mulai" class="form-label">Jam Mulai</label>
+                            <input type="time" class="form-control" id="jam_mulai" name="jam_mulai" placeholder="" value="{{ old('jam_mulai') }}" required>
+                            @error('jam_mulai')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div>
-
-                    <div id="kolaborasi_wrapper" class="row mb-3">
-                        <div class="col-12">
-                            <label for="choirs_id" class="form-label">Paduan Suara Kolaborasi</label>
-                            <select class="form-select" id="choirs_id" name="choirs_id"></select>
-                            @error('choirs_id')
+                        <div class="col-6">
+                            <label for="jam_selesai" class="form-label">Jam Selesai</label>
+                            <input type="time" class="form-control" id="jam_selesai" name="jam_selesai" placeholder="" value="{{ old('jam_selesai') }}" required>
+                            @error('jam_selesai')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
@@ -130,28 +97,33 @@
 
                     <div class="row mb-3">
                         <div class="col-12">
-                            <label for="peran" class="form-label">Peran dalam Kegiatan</label>
-                            <select class="form-select" id="peran" name="peran" data-name="peran" required>
-                                <option value="" disabled selected>Pilih peran dalam kegiatan</option>
-                                <option value="penyanyi" {{ old('peran') == 'penyanyi' ? 'selected' : '' }}>Penyanyi</option>
-                                <option value="panitia" {{ old('peran') == 'panitia' ? 'selected' : '' }}>Panitia</option>
-                                <option value="keduanya" {{ old('peran') == 'keduanya' ? 'selected' : '' }}>Penyanyi dan Panitia</option>
-                            </select>
-                            @error('peran')
+                            <label for="lokasi" class="form-label">Lokasi</label>
+                            <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="" value="{{ old('lokasi') }}" required>
+                            @error('lokasi')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
 
-                    <div id="peran_wrapper">
+                    <div id="konser_wrapper">
                         <div class="row mb-3">
                             <div class="col-12">
-                                <label for="panitia_eksternal" class="form-label">Kegiatan Menggunakan Panitia Eksternal</label>
-                                <select class="form-select" id="panitia_eksternal" name="panitia_eksternal" required>
-                                    <option value="ya" {{ old('panitia_eksternal') == 'ya' ? 'selected' : '' }}>Ya</option>
-                                    <option value="tidak" {{ old('panitia_eksternal', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
+                                <label for="kegiatan_kolaborasi" class="form-label">Kegiatan Kolaborasi</label>
+                                <select class="form-select" id="kegiatan_kolaborasi" name="kegiatan_kolaborasi" data-name="kolaborasi" required>
+                                    <option value="ya" {{ old('kegiatan_kolaborasi') == 'ya' ? 'selected' : '' }}>Ya</option>
+                                    <option value="tidak" {{ old('kegiatan_kolaborasi', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
                                 </select>
-                                @error('panitia_eksternal')
+                                @error('kegiatan_kolaborasi')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div id="kolaborasi_wrapper" class="row mb-3">
+                            <div class="col-12">
+                                <label for="choirs_id" class="form-label">Paduan Suara Kolaborasi</label>
+                                <select class="form-select" id="choirs_id" name="choirs_id"></select>
+                                @error('choirs_id')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -159,14 +131,44 @@
 
                         <div class="row mb-3">
                             <div class="col-12">
-                                <label for="metode_rekrut_panitia" class="form-label">Metode Rekrut Panitia Internal</label>
-                                <select class="form-select" id="metode_rekrut_panitia" name="metode_rekrut_panitia" required>
-                                    <option value="pilih" {{ old('metode_rekrut_panitia') == 'pilih' ? 'selected' : '' }}>Pilih langsung</option>
-                                    <option value="seleksi" {{ old('metode_rekrut_panitia', 'seleksi') == 'seleksi' ? 'selected' : '' }}>Seleksi</option>
+                                <label for="peran" class="form-label">Peran dalam Kegiatan</label>
+                                <select class="form-select" id="peran" name="peran" data-name="peran" required>
+                                    <option value="" disabled selected>Pilih peran dalam kegiatan</option>
+                                    <option value="penyanyi" {{ old('peran') == 'penyanyi' ? 'selected' : '' }}>Penyanyi</option>
+                                    <option value="panitia" {{ old('peran') == 'panitia' ? 'selected' : '' }}>Panitia</option>
+                                    <option value="keduanya" {{ old('peran') == 'keduanya' ? 'selected' : '' }}>Penyanyi dan Panitia</option>
                                 </select>
-                                @error('metode_rekrut_panitia')
+                                @error('peran')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
+                            </div>
+                        </div>
+
+                        <div id="peran_wrapper">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label for="panitia_eksternal" class="form-label">Kegiatan Menggunakan Panitia Eksternal</label>
+                                    <select class="form-select" id="panitia_eksternal" name="panitia_eksternal" required>
+                                        <option value="ya" {{ old('panitia_eksternal') == 'ya' ? 'selected' : '' }}>Ya</option>
+                                        <option value="tidak" {{ old('panitia_eksternal', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
+                                    </select>
+                                    @error('panitia_eksternal')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label for="metode_rekrut_panitia" class="form-label">Metode Rekrut Panitia Internal</label>
+                                    <select class="form-select" id="metode_rekrut_panitia" name="metode_rekrut_panitia" required>
+                                        <option value="pilih" {{ old('metode_rekrut_panitia') == 'pilih' ? 'selected' : '' }}>Pilih langsung</option>
+                                        <option value="seleksi" {{ old('metode_rekrut_panitia', 'seleksi') == 'seleksi' ? 'selected' : '' }}>Seleksi</option>
+                                    </select>
+                                    @error('metode_rekrut_panitia')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -286,8 +288,14 @@
         });
 
 
-        //Wrapper jenis konser
+        //Wrapper jenis konser dan non latihan
         const jenis = document.getElementById("jenis_kegiatan");
+        const nonLatihanWrapper = document.getElementById("non_latihan_wrapper");
+        toggleWrapper(jenis, nonLatihanWrapper, ["seleksi", "konser", "gladi", "event"]);
+        jenis.addEventListener("change", function () {
+            toggleWrapper(jenis, nonLatihanWrapper, ["seleksi", "konser", "gladi", "event"]);
+        });
+        
         const konserWrapper = document.getElementById("konser_wrapper");
         toggleWrapper(jenis, konserWrapper, ["konser"]);
         jenis.addEventListener("change", function () {

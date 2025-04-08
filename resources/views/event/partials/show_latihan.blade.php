@@ -65,72 +65,41 @@
             </div>
         </div>
 
-        <div class="row mb-3">
-            <div class="col-6">
-                <label for="jam_mulai" class="form-label">Jam Mulai</label>
-                <input type="time" class="form-control" id="jam_mulai" name="jam_mulai" placeholder="" value="{{ old('jam_mulai', $event->jam_mulai) }}" required>
-                @error('jam_mulai')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
-            </div>
-            <div class="col-6">
-                <label for="jam_selesai" class="form-label">Jam Selesai</label>
-                <input type="time" class="form-control" id="jam_selesai" name="jam_selesai" placeholder="" value="{{ old('jam_selesai', $event->jam_selesai) }}" required>
-                @error('jam_selesai')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-12">
-                <label for="lokasi" class="form-label">Lokasi</label>
-                <input type="text" class="form-control" id="lokasi" name="lokasi" placeholder="" value="{{ old('lokasi', $event->lokasi) }}" required>
-                @error('lokasi')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
-            </div>
-        </div>
-
         <div class="fixed-bottom bg-body-secondary p-3 border-top text-end">
             <button class="btn btn-primary">Simpan Perubahan</button>
         </div>
     </form>
     
     <div class="tab-pane fade" id="jadwal" role="tabpanel">
-        <h5>Jadwal Latihan {{ $event->nama }}</h5>
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <p class="form-label">Jadwal Latihan</p>
-                </div>
-                <table class="table table-bordered shadow text-center">
-                    <thead>
-                        <tr class="bg-primary">
-                            <th>Tanggal</th>
-                            <th>Jam</th>
-                            <th>Lokasi</th>
-                            <th>Aksi</th>
+        <h5>Jadwal {{ $event->nama }}</h5>
+        <div class="mb-3">
+            <table id="latihanTable" class="table table-bordered shadow text-center">
+                <thead>
+                    <tr class="bg-primary">
+                        <th class="text-center">Tanggal</th>
+                        <th class="text-center">Jam Mulai</th>
+                        <th class="text-center">Jam Selesai</th>
+                        <th class="text-center">Lokasi</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($latihan as $item)
+                        <tr>
+                            <td>{{ $item->tanggal }}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->jam_mulai)->format('H:i') }} WIB</td>
+                            <td>{{ \Carbon\Carbon::parse($item->jam_selesai)->format('H:i') }} WIB</td>
+                            <td>{{ $item->lokasi }}</td>
+                            <td class="d-flex justify-content-center gap-3">
+                                <button class="btn btn-primary loadEditForm" data-id="{{ $item->id }}" data-event-id="{{ $event->id }}" data-tanggal-mulai="{{ $event->tanggal_mulai }}" data-tanggal-selesai="{{ $event->tanggal_selesai }}">Ubah</button>
+                                <button class="btn btn-outline-danger deleteBtn" data-name="latihan tanggal {{ $item->tanggal }}" data-action="{{ route('latihans.destroy', $item->id) }}">Hapus</button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @if($donations->isNotEmpty())
-                            @foreach($donations as $donation)
-                                <tr>
-                                    <td>{{ $donation->user->name }}</td>
-                                    <td>{{ $donation->user->no_handphone }}</td>
-                                    <td>Rp{{ number_format($donation->jumlah, 0, ',', '.') }}</td>
-                                </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td colspan="4">Belum ada jadwal latihan untuk kegiatan ini</td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
-                <!-- <button class="btn btn-primary fw-bold" id="loadCreateForm" data-id="{{ $event->id }}" data-action="{{ route('ticket-types.create') }}">+ Tambah Latihan</button> -->
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
+            <button class="btn btn-primary fw-bold" id="loadCreateForm" data-id="{{ $event->id }}" data-tanggal-mulai="{{ $event->tanggal_mulai }}" data-tanggal-selesai="{{ $event->tanggal_selesai }}" data-action="{{ route('latihans.create') }}">+ Tambah Jadwal</button>
         </div>
+        <div id="modalContainer"></div>
     </div>
 </div>

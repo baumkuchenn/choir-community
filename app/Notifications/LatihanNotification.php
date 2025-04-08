@@ -7,16 +7,18 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EventUpdatedNotification extends Notification
+class LatihanNotification extends Notification
 {
     use Queueable;
+    protected $latihan;
     protected $event;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($event)
+    public function __construct($latihan, $event)
     {
+        $this->latihan = $latihan;
         $this->event = $event;
     }
 
@@ -33,8 +35,8 @@ class EventUpdatedNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'title' => 'Perubahan Informasi Kegiatan',
-            'message' => 'Terdapat perubahan informasi pada kegiatan ' . $this->event->nama,
+            'title' => 'Jadwal Latihan Baru',
+            'message' => 'Terdapat jadwal latihan baru untuk kegiatan ' . $this->event->nama . ' pada tanggal ' . $this->latihan->tanggal,
             'button_text' => 'Lihat Detail',
             'url' => route('management.calendar.index'),
         ];

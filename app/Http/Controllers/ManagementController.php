@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Latihan;
 use App\Models\PendaftarSeleksi;
 use App\Models\Seleksi;
 use Illuminate\Http\Request;
@@ -87,9 +88,26 @@ class ManagementController extends Controller
         )
             ->join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+            ->where('jenis_kegiatan', '!=', 'latihan')
             ->get();
 
-        return response()->json($events);
+        $latihans = Latihan::select(
+            'events.nama as title',
+            'latihans.tanggal as start',
+            'latihans.tanggal as end',
+            'latihans.jam_mulai',
+            'latihans.jam_selesai',
+            'latihans.lokasi'
+        )
+            ->join('events', 'latihans.events_id', '=', 'events.id')
+            ->join('collabs', 'events.id', '=', 'collabs.events_id')
+            ->where('collabs.choirs_id', Auth::user()->members->first()->choirs_id)
+            ->get();
+
+        // Merge and return as one collection
+        $combined = $events->concat($latihans);
+
+        return response()->json($combined);
     }
 
     public function notification()
@@ -112,7 +130,7 @@ class ManagementController extends Controller
                 'seleksis_id' => $seleksi->id,
             ]);
         }
-        
+
         return redirect()->route('management.index')
             ->with('success', 'Berhasil mendaftar kegiatan.');
     }

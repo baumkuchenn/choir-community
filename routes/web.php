@@ -8,6 +8,7 @@ use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EticketController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\KotaController;
+use App\Http\Controllers\LatihanController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
@@ -102,6 +103,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('events/search-selanjutnya', [EventController::class, 'searchEventSelanjutnya'])->name('events.search.selanjutnya');
                 Route::get('events/search-choir', [EventController::class, 'searchChoir'])->name('events.search.choir');
                 Route::resource('events', EventController::class);
+                Route::resource('latihans', LatihanController::class);
             });
 
             //Manajemen Konser

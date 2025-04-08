@@ -12,22 +12,32 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <i class="fa-solid fa-calendar-days fa-fw fs-5"></i>
                                     <p class="mb-0">
-                                        @if ($event->tanggal_mulai != $event->tanggal_selesai)
-                                            {{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d') }} - 
-                                            {{ \Carbon\Carbon::parse($event->tanggal_selesai)->translatedFormat('d F Y') }}
+                                        @php
+                                            $mulai = \Carbon\Carbon::parse($event->tanggal_mulai);
+                                            $selesai = \Carbon\Carbon::parse($event->tanggal_selesai);
+                                        @endphp
+
+                                        @if ($mulai->month === $selesai->month && $mulai->year === $selesai->year)
+                                            {{-- Same month and year --}}
+                                            {{ $mulai->translatedFormat('d') }} - {{ $selesai->translatedFormat('d F Y') }}
                                         @else
-                                            {{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d F Y') }}
+                                            {{-- Different month or year --}}
+                                            {{ $mulai->translatedFormat('d F Y') }} - {{ $selesai->translatedFormat('d F Y') }}
                                         @endif
                                     </p>
                                 </div>
-                                <div class="mt-2 d-flex align-items-center gap-2">
-                                    <i class="fa-solid fa-clock fa-fw fs-5"></i>
-                                    <p class="mb-0">{{ \Carbon\Carbon::parse($event->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($event->jam_selesai)->format('H:i') }} WIB</p>
-                                </div>
-                                <div class="mt-2 d-flex gap-2">
-                                    <i class="fa-solid fa-location-dot fa-fw fs-5"></i>
-                                    <p class="mb-0">{{ $event->lokasi }}</p>
-                                </div>
+                                @if ($event->jam_mulai && $event->jam_selesai)
+                                    <div class="mt-2 d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-clock fa-fw fs-5"></i>
+                                        <p class="mb-0">{{ \Carbon\Carbon::parse($event->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($event->jam_selesai)->format('H:i') }} WIB</p>
+                                    </div>
+                                @endif
+                                @if ($event->lokasi)
+                                    <div class="mt-2 d-flex gap-2">
+                                        <i class="fa-solid fa-location-dot fa-fw fs-5"></i>
+                                        <p class="mb-0">{{ $event->lokasi }}</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         <div class="col-md-5 text-end d-none d-md-block">

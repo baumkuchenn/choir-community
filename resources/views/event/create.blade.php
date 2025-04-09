@@ -221,7 +221,11 @@
                         el.selectedIndex = 0;
                     }
                 } else {
-                    el.value = "";
+                    if (el.type === "checkbox" || el.type === "radio") {
+                        el.checked = false;
+                    } else if (['text', 'number', 'date', 'time'].includes(el.type)) {
+                        el.value = "";
+                    }
                 }
             });
         }

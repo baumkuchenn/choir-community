@@ -400,12 +400,18 @@
                         //Perulangan wrapper
                         const kegiatanBerulang = document.getElementById('kegiatan_berulang');
                         const perulanganWrapper = document.getElementById('perulangan_wrapper');
-                        const inputs = perulanganWrapper.querySelectorAll("input, select, textarea");
+                        const inputs = perulanganWrapper.querySelectorAll("input, select");
 
                         function togglePerulanganWrapper() {
                             if (kegiatanBerulang.value === 'ya') {
                                 perulanganWrapper.style.display = 'block';
-                                inputs.forEach(el => el.disabled = false);
+                                inputs.forEach(el => {
+                                    if (el.id !== 'tanggal_berakhir' && el.id !== 'jumlah_perulangan') {
+                                        el.disabled = false;
+                                    }
+                                });
+
+                                toggleInputs();
                             } else {
                                 perulanganWrapper.style.display = 'none';
                                 inputs.forEach(el => {
@@ -418,7 +424,11 @@
                                             el.selectedIndex = 0;
                                         }
                                     } else {
-                                        el.value = "";
+                                        if (el.type === "checkbox" || el.type === "radio") {
+                                            el.checked = false;
+                                        } else if (['text', 'number', 'date', 'time'].includes(el.type)) {
+                                            el.value = "";
+                                        }
                                     }
                                 });
                             }
@@ -436,7 +446,8 @@
                         const inputJumlah = modalElement.querySelector('#jumlah_perulangan');
 
                         function toggleInputs() {
-                            const selected = modalElement.querySelector('input[name="tipe_selesai"]:checked')?.value;
+                            const selected = modalElement.querySelector('input[name="tipe_selesai"]:checked').value;
+
                             if (inputTanggal) inputTanggal.disabled = selected !== 'tanggal';
                             if (inputJumlah) inputJumlah.disabled = selected !== 'jumlah';
                         }

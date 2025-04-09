@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('latihans.store') }}" method="POST" class="mb-0">
+                <form action="{{ route('latihans.store') }}" method="POST" class="mb-0" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" id="events_id" name="events_id" value="">
                     <div class="mb-3">
@@ -36,30 +36,19 @@
                     </div>
                     <div id="perulangan_wrapper">
                         <div class="row mb-3">
-                            <label for="interval" class="form-label">Jumlah Perulangan</label>
+                            <label for="interval" class="form-label">Ulangi Setiap</label>
                             <div class="col-6">
                                 <input type="number" class="form-control" id="interval" name="interval" required>
                             </div>
                             <div class="col-6">
                                 <select class="form-select" id="frekuensi" name="frekuensi" required>
-                                    <option value="minggu" selected>Per Minggu</option>
-                                    <option value="bulan" selected>Per Bulan</option>
+                                    <option value="minggu" selected>Minggu</option>
+                                    <option value="bulan" selected>Bulan</option>
                                 </select>
                             </div>
                         </div>
                         <div class="mb-3">
-                            @php
-                                $hari = [
-                                    'senin' => 'Senin',
-                                    'selasa' => 'Selasa',
-                                    'rabu' => 'Rabu',
-                                    'kamis' => 'Kamis',
-                                    'jumat' => 'Jumat',
-                                    'sabtu' => 'Sabtu',
-                                    'minggu' => 'Minggu',
-                                ];
-                            @endphp
-                            <label class="form-label">Hari Perulangan</label>
+                            <label class="form-label">Pada Hari</label>
                             <div class="row">
                                 @foreach(array_chunk($hari, 3, true) as $chunk)
                                     <div class="col-6 col-md-4">
@@ -74,14 +63,7 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            @php
-                                $tipeSelesai = [
-                                    'tidak' => 'Tidak pernah',
-                                    'tanggal' => 'Tanggal',
-                                    'jumlah' => 'Perulangan',
-                                ];
-                            @endphp
-                            <label class="form-label">Berhenti Pada</label>
+                            <label class="form-label">Berhenti</label>
                             <div class="row">
                                 @foreach($tipeSelesai as $key => $label)
                                     <div class="col-12">

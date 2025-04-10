@@ -60,6 +60,21 @@
                     </div>
                 </div>
 
+                <div id="seleksi_wrapper">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label for="tipe_seleksi" class="form-label">Tipe Seleksi</label>
+                            <select class="form-select" id="tipe_seleksi" name="tipe_seleksi" data-name="kolaborasi" required>
+                                <option value="event" {{ old('tipe_seleksi', 'event') == 'event' ? 'selected' : '' }}>Penyanyi</option>
+                                <option value="panitia" {{ old('tipe_seleksi') == 'panitia' ? 'selected' : '' }}>Panitia</option>
+                            </select>
+                            @error('kegiatan_kolaborasi')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row mb-3">
                     <div class="col-6">
                         <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
@@ -157,19 +172,6 @@
                                     @enderror
                                 </div>
                             </div>
-
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <label for="metode_rekrut_panitia" class="form-label">Metode Rekrut Panitia Internal</label>
-                                    <select class="form-select" id="metode_rekrut_panitia" name="metode_rekrut_panitia" required>
-                                        <option value="pilih" {{ old('metode_rekrut_panitia') == 'pilih' ? 'selected' : '' }}>Pilih langsung</option>
-                                        <option value="seleksi" {{ old('metode_rekrut_panitia', 'seleksi') == 'seleksi' ? 'selected' : '' }}>Seleksi</option>
-                                    </select>
-                                    @error('metode_rekrut_panitia')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -243,7 +245,7 @@
                 { value: "eksternal", text: "Eksternal" },
             ],
             tidak: [
-                { value: "seleksi", text: "Seleksi Penyanyi" },
+                { value: "seleksi", text: "Seleksi" },
                 { value: "latihan", text: "Latihan" },
                 { value: "konser", text: "Konser" },
                 { value: "gladi", text: "Gladi Kegiatan" },
@@ -271,7 +273,6 @@
             option.textContent = opt.text;
 
             if (opt.value === oldJenisKegiatan) {
-                console.log('tes');
                 option.selected = true;
             }
 
@@ -298,6 +299,12 @@
         toggleWrapper(jenis, nonLatihanWrapper, ["seleksi", "konser", "gladi", "event"]);
         jenis.addEventListener("change", function () {
             toggleWrapper(jenis, nonLatihanWrapper, ["seleksi", "konser", "gladi", "event"]);
+        });
+
+        const seleksiWrapper = document.getElementById("seleksi_wrapper");
+        toggleWrapper(jenis, seleksiWrapper, ["seleksi"]);
+        jenis.addEventListener("change", function () {
+            toggleWrapper(jenis, seleksiWrapper, ["seleksi"]);
         });
         
         const konserWrapper = document.getElementById("konser_wrapper");

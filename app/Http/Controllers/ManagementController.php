@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Latihan;
+use App\Models\PanitiaPendaftarSeleksi;
 use App\Models\PendaftarSeleksi;
+use App\Models\PendaftarSeleksiPanitia;
 use App\Models\Seleksi;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -89,7 +92,20 @@ class ManagementController extends Controller
             ->join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->where('jenis_kegiatan', '!=', 'latihan')
-            ->get();
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'title' => $event->title,
+                    'start' => $event->start,
+                    'end'   => Carbon::parse($event->start)->eq(Carbon::parse($event->end))
+                        ? $event->end // one-day event
+                        : Carbon::parse($event->end)->addDay()->toDateString(), // add +1
+                    'jam_mulai' => $event->jam_mulai,
+                    'jam_selesai' => $event->jam_selesai,
+                    'lokasi' => $event->lokasi,
+                    'allDay' => true,
+                ];
+            });
 
         $latihans = Latihan::select(
             'events.nama as title',
@@ -103,7 +119,6 @@ class ManagementController extends Controller
             ->join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('collabs.choirs_id', Auth::user()->members->first()->choirs_id)
             ->get();
-
         // Merge and return as one collection
         $combined = $events->concat($latihans);
 
@@ -125,10 +140,18 @@ class ManagementController extends Controller
         if ($event->jenis_kegiatan == 'seleksi') {
             $seleksi = Seleksi::where('events_id', $event->id)->first();
 
-            PendaftarSeleksi::create([
-                'users_id' => Auth::id(),
-                'seleksis_id' => $seleksi->id,
-            ]);
+            if ($seleksi->tipe == 'event') {
+                PendaftarSeleksi::create([
+                    'users_id' => Auth::id(),
+                    'seleksis_id' => $seleksi->id,
+                ]);
+            } elseif ($seleksi->tipe == 'panitia') {
+                PanitiaPendaftarSeleksi::create([
+                    'users_id' => Auth::id(),
+                    'seleksis_id' => $seleksi->id,
+                    'tipe' => ($event->choirs_id == (Auth::user()->members->first()->choirs_id ?? null)) ? 'internal' : 'eksternal',
+                ]);
+            }
         }
 
         return redirect()->route('management.index')

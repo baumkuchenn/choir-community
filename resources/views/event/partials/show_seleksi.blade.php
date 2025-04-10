@@ -117,92 +117,162 @@
         </div>
     </form>
     <div class="tab-pane fade" id="pendaftar" role="tabpanel">
-        <h5>Daftar Seleksi Penyanyi Baru</h5>
-        <button type="button" class="btn btn-primary mb-3 fw-bold" data-bs-toggle="modal" data-bs-target="#addMemberModal">
-            + Tambah Anggota Baru
-        </button>
-        <a href="{{ route('members.setting') }}" class="btn btn-outline-primary mb-3 fw-bold" >Pengaturan</a>
-        <table id="pendaftarTable" class="table table-bordered shadow text-center">
-            <thead>
-                <tr class="bg-primary">
-                    <th class="text-center">Nama Lengkap</th>
-                    <th class="text-center">Nomor Handphone</th>
-                    <th class="text-center">Email</th>
-                    <th class="text-center">Jenis Kelamin</th>
-                    <th class="text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($pendaftar as $item)
-                    <tr>
-                        <td>{{ $item->user->name }}</td>
-                        <td>{{ $item->user->no_handphone }}</td>
-                        <td>{{ $item->user->email }}</td>
-                        <td>{{ $item->user->jenis_kelamin }}</td>
-                        <td>
-                            @if ($item->nilais->isEmpty())
-                                <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
-                            @endif
-                        </td>
+        @if ($seleksi->tipe == 'event')
+            <h5>Daftar Seleksi Penyanyi</h5>
+            <button type="button" class="btn btn-primary mb-3 fw-bold" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                + Tambah Anggota Baru
+            </button>
+            <a href="{{ route('members.setting') }}" class="btn btn-outline-primary mb-3 fw-bold" >Pengaturan</a>
+            <table id="pendaftarTable" class="table table-bordered shadow text-center">
+                <thead>
+                    <tr class="bg-primary">
+                        <th class="text-center">Nama Lengkap</th>
+                        <th class="text-center">Nomor Handphone</th>
+                        <th class="text-center">Email</th>
+                        <th class="text-center">Jenis Kelamin</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach($pendaftar as $item)
+                        <tr>
+                            <td>{{ $item->user->name }}</td>
+                            <td>{{ $item->user->no_handphone }}</td>
+                            <td>{{ $item->user->email }}</td>
+                            <td>{{ $item->user->jenis_kelamin }}</td>
+                            <td>
+                                @if ($item->nilais->isEmpty())
+                                    <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @elseif ($seleksi->tipe == 'panitia')
+            <h5>Daftar Seleksi Panitia</h5>
+            <button type="button" class="btn btn-primary mb-3 fw-bold" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                + Tambah Anggota Baru
+            </button>
+            
+            <table id="pendaftarTable" class="table table-bordered shadow text-center">
+                <thead>
+                    <tr class="bg-primary">
+                        <th class="text-center">Nama Lengkap</th>
+                        <th class="text-center">Nomor Handphone</th>
+                        <th class="text-center">Email</th>
+                        <th class="text-center">Jenis Kelamin</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($pendaftar as $item)
+                        <tr>
+                            <td>{{ $item->user->name }}</td>
+                            <td>{{ $item->user->no_handphone }}</td>
+                            <td>{{ $item->user->email }}</td>
+                            <td>{{ $item->user->jenis_kelamin }}</td>
+                            <td>
+                                @if (empty($item->hasil_wawancara))
+                                    <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
     </div>
     <div class="tab-pane fade" id="hasil" role="tabpanel">
-        <h5>Hasil Seleksi Penyanyi</h5>
-        <table id="hasilTable" class="table table-bordered shadow text-center">
-            <thead>
-                <tr class="bg-primary">
-                    <th class="text-center">Nama Lengkap</th>
-                    <th class="text-center">Nomor Handphone</th>
-                    <th class="text-center">Suara</th>
-                    <th class="text-center">Nilai</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($hasil as $item)
-                    <tr>
-                        <td>{{ $item->user->name }}</td>
-                        <td>{{ $item->user->no_handphone }}</td>
-                        <td>
-                            @if($item->kategori_suara == 'sopran_1')
-                                Sopran 1
-                            @elseif($item->kategori_suara == 'sopran_2')
-                                Sopran 2
-                            @elseif($item->kategori_suara == 'alto_1')
-                                Alto 1
-                            @elseif($item->kategori_suara == 'alto_2')
-                                Alto 2
-                            @elseif($item->kategori_suara == 'tenor_1')
-                                Tenor 1
-                            @elseif($item->kategori_suara == 'tenor_2')
-                                Tenor 2
-                            @elseif($item->kategori_suara == 'bass_1')
-                                Bass 1
-                            @elseif($item->kategori_suara == 'bass_2')
-                                Bass 2
-                            @endif
-                        </td>
-                        <td>{{ $item->nilais->sum('pivot.nilai') }}</td>
-                        <td>
-                            @if($item->lolos == 'belum')
-                                Pending
-                            @elseif($item->lolos == 'ya')
-                                Diterima
-                            @elseif($item->lolos == 'tidak')
-                                Ditolak
-                            @endif
-                        </td>
-                        <td>
-                            <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
-                        </td>
+        @if ($seleksi->tipe == 'event')
+            <h5>Hasil Seleksi Penyanyi</h5>
+            <table id="hasilTable" class="table table-bordered shadow text-center">
+                <thead>
+                    <tr class="bg-primary">
+                        <th class="text-center">Nama Lengkap</th>
+                        <th class="text-center">Nomor Handphone</th>
+                        <th class="text-center">Suara</th>
+                        <th class="text-center">Nilai</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach($hasil as $item)
+                        <tr>
+                            <td>{{ $item->user->name }}</td>
+                            <td>{{ $item->user->no_handphone }}</td>
+                            <td>
+                                @if($item->kategori_suara == 'sopran_1')
+                                    Sopran 1
+                                @elseif($item->kategori_suara == 'sopran_2')
+                                    Sopran 2
+                                @elseif($item->kategori_suara == 'alto_1')
+                                    Alto 1
+                                @elseif($item->kategori_suara == 'alto_2')
+                                    Alto 2
+                                @elseif($item->kategori_suara == 'tenor_1')
+                                    Tenor 1
+                                @elseif($item->kategori_suara == 'tenor_2')
+                                    Tenor 2
+                                @elseif($item->kategori_suara == 'bass_1')
+                                    Bass 1
+                                @elseif($item->kategori_suara == 'bass_2')
+                                    Bass 2
+                                @endif
+                            </td>
+                            <td>{{ $item->nilais->sum('pivot.nilai') }}</td>
+                            <td>
+                                @if($item->lolos == 'belum')
+                                    Pending
+                                @elseif($item->lolos == 'ya')
+                                    Diterima
+                                @elseif($item->lolos == 'tidak')
+                                    Ditolak
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @elseif ($seleksi->tipe == 'panitia')
+            <h5>Hasil Seleksi Panitia</h5>
+            <table id="hasilTable" class="table table-bordered shadow text-center">
+                <thead>
+                    <tr class="bg-primary">
+                        <th class="text-center">Nama Lengkap</th>
+                        <th class="text-center">Nomor Handphone</th>
+                        <th class="text-center">Email</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($hasil as $item)
+                        <tr>
+                            <td>{{ $item->user->name }}</td>
+                            <td>{{ $item->user->no_handphone }}</td>
+                            <td>{{ $item->user->email }}</td>
+                            <td>
+                                @if($item->lolos == 'belum')
+                                    Pending
+                                @elseif($item->lolos == 'ya')
+                                    Diterima
+                                @elseif($item->lolos == 'tidak')
+                                    Ditolak
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
     </div>
 </div>
 @include('member.seleksi.modal.form-create')

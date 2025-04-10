@@ -12,6 +12,9 @@ use App\Http\Controllers\LatihanController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PanitiaController;
+use App\Http\Controllers\PanitiaDivisiController;
+use App\Http\Controllers\PanitiaJabatanController;
 use App\Http\Controllers\PenyanyiController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\PositionController;
@@ -132,6 +135,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::post('/seleksi/wawancara/lolos', [SeleksiController::class, 'lolos'])->name('seleksi.lolos-pendaftar');
                 Route::resource('seleksi', SeleksiController::class);
                 Route::resource('penyanyi', PenyanyiController::class);
+
+                //Kepanitiaan
+                Route::get('/panitia/setting/{event}', [PanitiaController::class, 'setting'])->name('panitia.setting');
+                Route::resource('panitia', PanitiaController::class);
+                Route::get('panitia-jabatan/{event}/create', [PanitiaJabatanController::class, 'create'])->name('panitia-jabatan.create');
+                Route::resource('panitia-jabatan', PanitiaJabatanController::class)->except(['create']);
+                Route::get('panitia-divisi/{event}/create', [PanitiaDivisiController::class, 'create'])->name('panitia-divisi.create');
+                Route::get('panitia-divisi/{event}/{divisi}/edit', [PanitiaDivisiController::class, 'edit'])->name('panitia-divisi.edit');
+                Route::resource('panitia-divisi', PanitiaDivisiController::class)->except(['create', 'edit']);
             });
 
             //Manajemen Roles

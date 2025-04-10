@@ -10,7 +10,7 @@ class Event extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'events';
-    protected $fillable = ['nama', 'parent_kegiatan', 'jenis_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'jam_mulai', 'jam_selesai', 'lokasi', 'peran', 'panitia_eksternal', 'metode_rekrut_panitia', 'visibility', 'sub_kegiatan_id'];
+    protected $fillable = ['nama', 'parent_kegiatan', 'jenis_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'jam_mulai', 'jam_selesai', 'lokasi', 'peran', 'panitia_eksternal', 'visibility', 'sub_kegiatan_id'];
 
     public function concert()
     {
@@ -32,5 +32,15 @@ class Event extends Model
     public function latihans()
     {
         return $this->hasMany(Latihan::class, 'events_id');
+    }
+
+    public function panitias()
+    {
+        return $this->hasMany(Panitia::class, 'events_id');
+    }
+
+    public function panitiaDivisis()
+    {
+        return $this->hasMany(PanitiaDivisi::class, 'events_id');
     }
 }

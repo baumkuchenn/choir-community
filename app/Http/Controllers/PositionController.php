@@ -83,6 +83,6 @@ class PositionController extends Controller
         $jabatan = Position::findOrFail($id);
         $jabatan->delete();
 
-        return redirect()->back()->with('success', 'Jabatan berhasil dihapus!');
+        return redirect()->back()->with('success', 'Jabatan pengurus berhasil dihapus!');
     }
 }

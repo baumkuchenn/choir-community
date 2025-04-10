@@ -9,6 +9,8 @@ use App\Models\Event;
 use App\Models\Invoice;
 use App\Models\Latihan;
 use App\Models\Member;
+use App\Models\Panitia;
+use App\Models\PanitiaPendaftarSeleksi;
 use App\Models\PendaftarSeleksi;
 use App\Models\Penyanyi;
 use App\Models\Purchase;
@@ -144,7 +146,9 @@ class EventController extends Controller
                     'lokasi' => 'required|string|max:255',
                 ];
 
-                if ($request->jenis_kegiatan === 'konser') {
+                if ($request->jenis_kegiatan == 'seleksi') {
+                    $rules['tipe_seleksi'] = 'required';
+                } elseif ($request->jenis_kegiatan === 'konser') {
                     $rules['kegiatan_kolaborasi'] = 'required';
                     $rules['peran'] = 'required';
 
@@ -154,7 +158,6 @@ class EventController extends Controller
 
                     if (in_array($request->peran, ['panitia', 'keduanya'])) {
                         $rules['panitia_eksternal'] = 'required|string';
-                        $rules['metode_rekrut_panitia'] = 'required|string';
                     }
                 }
             }
@@ -168,7 +171,7 @@ class EventController extends Controller
             $message = "Kegiatan baru berhasil dibuat.";
             if ($request->jenis_kegiatan == 'seleksi') {
                 $dataSeleksi = $request->all();
-                $dataSeleksi['tipe'] = 'event';
+                $dataSeleksi['tipe'] = $request->tipe_seleksi;
                 $dataSeleksi['choirs_id'] = Auth::user()->members->first()->choirs_id;
                 $dataSeleksi['events_id'] = $event->id;
                 $dataSeleksi['pendaftaran_terakhir'] = Carbon::parse($request->tanggal_mulai)->subDay()->toDateString();
@@ -251,6 +254,7 @@ class EventController extends Controller
 
         $concert = null;
         $penyanyi = collect();
+        $panitia = collect();
         $banks = collect();
         $purchases = collect();
         $ticketTypes = collect();
@@ -278,6 +282,7 @@ class EventController extends Controller
             }
 
             $penyanyi = Penyanyi::whereIn('events_id', $eventIds)->get();
+            $panitia = Panitia::whereIn('events_id', $eventIds)->get();
 
             $purchases = $concert->purchases()
                 ->with('user:id,name,no_handphone', 'invoice.tickets:id,invoices_id,check_in')
@@ -297,15 +302,27 @@ class EventController extends Controller
             $banks = Bank::all();
         } elseif ($event->jenis_kegiatan == 'seleksi') {
             $seleksi = Seleksi::where('events_id', $event->id)->first();
-            $pendaftar = PendaftarSeleksi::with('user')->where('seleksis_id', $seleksi->id)->get();
-            $hasil = PendaftarSeleksi::with('user', 'nilais')->where('seleksis_id', $seleksi->id)
-                ->whereHas('nilais')
-                ->get();
-        } elseif ($event->jenis_kegiatan == 'latihan'){
+            if ($seleksi->tipe == 'event') {
+                $pendaftar = PendaftarSeleksi::with('user')
+                    ->where('seleksis_id', $seleksi->id)->get();
+                $hasil = PendaftarSeleksi::with('user', 'nilais')
+                    ->where('seleksis_id', $seleksi->id)
+                    ->whereHas('nilais')
+                    ->get();
+            } elseif ($seleksi->tipe == 'panitia') {
+                $pendaftar = PanitiaPendaftarSeleksi::with('user')
+                    ->where('seleksis_id', $seleksi->id)
+                    ->get();
+                $hasil = PanitiaPendaftarSeleksi::with('user')
+                    ->where('seleksis_id', $seleksi->id)
+                    ->whereNotNull('hasil_wawancara')
+                    ->get();
+            }
+        } elseif ($event->jenis_kegiatan == 'latihan') {
             $latihan = Latihan::where('events_id', $event->id)->get();
         }
 
-        return view('event.show', compact('event', 'events', 'concert', 'penyanyi', 'purchases', 'ticketTypes', 'donations', 'feedbacks', 'banks', 'seleksi', 'pendaftar', 'hasil', 'latihan'));
+        return view('event.show', compact('event', 'events', 'concert', 'penyanyi', 'panitia', 'purchases', 'ticketTypes', 'donations', 'feedbacks', 'banks', 'seleksi', 'pendaftar', 'hasil', 'latihan'));
     }
 
     /**
@@ -342,7 +359,6 @@ class EventController extends Controller
 
             if (in_array($request->peran, ['panitia', 'keduanya'])) {
                 $rules['panitia_eksternal'] = 'required|string';
-                $rules['metode_rekrut_panitia'] = 'required|string';
             }
         }
 

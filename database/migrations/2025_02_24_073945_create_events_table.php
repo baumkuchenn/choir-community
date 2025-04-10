@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('lokasi', 255)->nullable();
             $table->enum('peran', ['panitia', 'penyanyi', 'keduanya'])->nullable();
             $table->enum('panitia_eksternal', ['ya', 'tidak'])->nullable();
-            $table->enum('metode_rekrut_panitia', ['pilih', 'seleksi'])->nullable();
             $table->enum('visibility', ['public', 'inherited'])->nullable();
 
             $table->unsignedBigInteger('sub_kegiatan_id')->nullable();

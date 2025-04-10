@@ -73,7 +73,7 @@ class DivisionController extends Controller
         $divisi = Division::findOrFail($id);
         $divisi->update($request->all());
 
-        return redirect()->back()->with('success', 'Divisi berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Divisi pengurus berhasil diperbarui!');
     }
 
     /**
@@ -84,6 +84,6 @@ class DivisionController extends Controller
         $divisi = Division::findOrFail($id);
         $divisi->delete();
 
-        return redirect()->back()->with('success', 'Divisi berhasil dihapus!');
+        return redirect()->back()->with('success', 'Divisi pengurus berhasil dihapus!');
     }
 }

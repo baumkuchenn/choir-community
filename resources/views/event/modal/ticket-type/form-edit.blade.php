@@ -1,15 +1,14 @@
-<div class="modal fade" id="editTicketTypeModal" tabindex="-1" aria-labelledby="editTicketModalLabel" aria-hidden="true">
+<div class="modal fade" id="editModal-ticket-type" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editTicketModalLabel">Edit Jenis Tiket</h5>
+                <h5 class="modal-title" id="editModalLabel">Edit Jenis Tiket</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editTicketForm" method="POST" action="{{ route('ticket-types.update', $ticketType->id) }}" class="mb-0">
+                <form id="editForm" method="POST" action="{{ route('ticket-types.update', $ticketType->id) }}" class="mb-0">
                     @csrf
                     @method('PUT')
-                    <input type="hidden" id="concerts_id" name="concerts_id" value="">
                     <input type="hidden" id="edit-ticket-id" name="id" value="{{ $ticketType->id }}">
 
                     <div class="mb-3">

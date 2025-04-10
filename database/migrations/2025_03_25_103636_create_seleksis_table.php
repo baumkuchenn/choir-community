@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('seleksis', function (Blueprint $table) {
             $table->id();
-            $table->enum('tipe', ['member', 'event']);
+            $table->enum('tipe', ['member', 'event', 'panitia']);
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->time('jam_mulai');

@@ -157,7 +157,36 @@
         </div>
         <div class="tab-pane fade" id="panitia" role="tabpanel">
             <h5>Daftar Panitia</h5>
-            <p>Isi daftar panitia di sini...</p>
+            <button type="button" class="btn btn-primary mb-3 fw-bold">
+                + Tambah Anggota Baru
+            </button>
+            <a href="{{ route('panitia.setting', $event->id) }}" class="btn btn-outline-primary mb-3 fw-bold" >Pengaturan</a>
+
+            <table id="panitiaTable" class="table table-bordered shadow text-center">
+                <thead>
+                    <tr class="bg-primary">
+                        <th class="text-center">Nama Lengkap</th>
+                        <th class="text-center">Divisi</th>
+                        <th class="text-center">Jabatan</th>
+                        <th class="text-center">Nomor Handphone</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($panitia as $item)
+                        <tr>
+                            <td>{{ $item->user->name }}</td>
+                            <td>{{ $item->jabatan?->divisi->nama }}</td>
+                            <td>{{ $item->jabatan?->nama }}</td>
+                            <td>{{ $item->user->no_handphone }}</td>
+                            <td>
+                                <button class="btn btn-primary loadEditForm" data-name="panitia" data-route="{{ route('panitia.edit', $item->id) }}">Ubah</button>
+                                <button class="btn btn-outline-danger deleteBtn" data-name="panitia {{ $item->user->name }}" data-action="{{ route('panitia.destroy', $item->id) }}">Hapus</button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     @endcan
     @can('akses-eticket')
@@ -237,7 +266,7 @@
                             <td>Rp{{ number_format($type->harga, 0, ',', '.') }}</td>
                             <td>{{ $type->terjual }}/{{ $type->jumlah }}</td>
                             <td class="d-flex justify-content-center gap-3">
-                                <button class="btn btn-primary loadEditForm" data-id="{{ $type->id }}" data-concert-id="{{ $concert->id }}">Ubah</button>
+                                <button class="btn btn-primary loadEditForm" data-name="ticket-type" data-route="{{ route('ticket-types.edit', $type->id) }}">Ubah</button>
                                 <button class="btn btn-outline-danger deleteBtn" data-name="tiket {{ $type->nama }}" data-action="{{ route('ticket-types.destroy', $type->id) }}">Hapus</button>
                             </td>
                         </tr>
@@ -607,3 +636,5 @@
         </div>
     @endcan
 </div>
+
+@include('member.seleksi.modal.form-create')

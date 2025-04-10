@@ -71,6 +71,31 @@
     @push('js')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            //Tambah penyanyi
+            $('#addMemberModal').on('shown.bs.modal', function () {
+                $('#user_id').select2({
+                    placeholder: 'Cari Pengguna...',
+                    dropdownParent: $('#addMemberModal'),
+                    ajax: {
+                        url: '{{ route("members.search") }}',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                search: params.term,
+                                only_choir_members: true
+                            };
+                        },
+                        processResults: function(data) {
+                            return {
+                                results: data
+                            };
+                        }
+                    }
+                });
+            });
+
+
             //Modal Jenis Tiket
             document.getElementById('loadCreateForm').addEventListener('click', function() {
                 let route = this.dataset.action;
@@ -89,21 +114,17 @@
 
             document.querySelectorAll(".loadEditForm").forEach((button) => {
                 button.addEventListener("click", function() {
-                    let ticketTypeId = this.dataset.id;
-                    let concertId = this.dataset.concertId;
-                    let editUrl = `{{ route('ticket-types.edit', ':id') }}`.replace(':id', ticketTypeId);
-
+                    let name = this.dataset.name;
+                    let editUrl = this.dataset.route;
+                    
                     fetch(editUrl)
                         .then(response => response.text())
                         .then(html => {
-                            document.getElementById("modalContainer").innerHTML = html;
-                            document.getElementById('editTicketTypeModal').querySelector('#concerts_id').value = concertId;
-                            let editModal = document.getElementById("editTicketTypeModal");
-                            if (editModal) {
-                                new bootstrap.Modal(editModal).show();
-                            } else {
-                                console.error("Modal element #editTicketTypeModal not found.");
-                            }
+                            let modalContainer = document.getElementById("modalContainer");
+                            modalContainer.innerHTML = html;
+
+                            let editModal = document.querySelector(`#editModal-${name}`);
+                            new bootstrap.Modal(editModal).show();
                         })
                         .catch(error => console.error("Error loading modal:", error));
                 });
@@ -114,6 +135,11 @@
             $('#penyanyiTable').DataTable({
                 "language": {
                     "emptyTable": "Belum ada penyanyi"
+                }
+            });
+            $('#panitiaTable').DataTable({
+                "language": {
+                    "emptyTable": "Belum ada panitia"
                 }
             });
             $('#purchaseTable').DataTable({

@@ -15,6 +15,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var eventInfoEl = document.getElementById('event-info');
+        let renderedEventIds = new Set();
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -24,12 +25,14 @@
                 right: 'today prev,next'
             },
             events: "{{ route('management.calendar.show') }}",
+            datesSet: function () {
+                if (eventInfoEl) eventInfoEl.innerHTML = '';
+                renderedEventIds.clear(); // Reset the tracking
+            },
             eventDidMount: function(info) {
-                // Clear the event info area only once before adding new events
-                if (!info.event._cleared) {
-                    eventInfoEl.innerHTML = ''; 
-                    info.event._cleared = true;
-                }
+                const eventId = info.event.id || info.event.title + info.event.startStr;
+                if (renderedEventIds.has(eventId)) return; // Prevent duplicate
+                renderedEventIds.add(eventId);
 
                 let start = new Date(info.event.start).toLocaleDateString('id-ID', {
                     day: '2-digit',

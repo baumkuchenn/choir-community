@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\ButirPenilaian;
 use App\Models\Event;
 use App\Models\Member;
+use App\Models\Panitia;
+use App\Models\PanitiaPendaftarSeleksi;
 use App\Models\PendaftarSeleksi;
 use App\Models\Penyanyi;
 use App\Models\Seleksi;
@@ -77,16 +79,35 @@ class SeleksiController extends Controller
     public function wawancara(string $seleksiId, string $userId)
     {
         $seleksi = Seleksi::find($seleksiId);
-        $pendaftar = PendaftarSeleksi::with('user', 'nilais')->where('seleksis_id', $seleksiId)->where('users_id', $userId)->first();
-        $butir = ButirPenilaian::where('choirs_id', $seleksi->choirs_id)->get();
+        $butir = collect();
+
+        if ($seleksi->tipe == 'event') {
+            $pendaftar = PendaftarSeleksi::with('user', 'nilais')
+                ->where('seleksis_id', $seleksiId)
+                ->where('users_id', $userId)
+                ->first();
+            $butir = ButirPenilaian::where('choirs_id', $seleksi->choirs_id)->get();
+        } elseif ($seleksi->tipe == 'panitia') {
+            $pendaftar = PanitiaPendaftarSeleksi::with('user')
+                ->where('users_id', $userId)
+                ->first();
+        }
+
         return view('member.seleksi.detail', compact('seleksi', 'pendaftar', 'butir'));
     }
 
     public function checkIn(Request $request)
     {
-        $pendaftar = PendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))
-            ->where('users_id', $request->input('users_id'))
-            ->first();
+        $seleksi = Seleksi::find($request->input('seleksis_id'));
+        if ($seleksi->tipe == 'event' || $seleksi->tipe == 'member') {
+            $pendaftar = PendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))
+                ->where('users_id', $request->input('users_id'))
+                ->first();
+        } elseif ($seleksi->tipe == 'panitia') {
+            $pendaftar = PanitiaPendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))
+                ->where('users_id', $request->input('users_id'))
+                ->first();
+        }
         $pendaftar->update([
             'kehadiran' => $request->input('kehadiran'),
         ]);
@@ -98,9 +119,15 @@ class SeleksiController extends Controller
     {
         $seleksi = Seleksi::find($request->seleksis_id);
 
-        $pendaftar = PendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))
-            ->where('users_id', $request->input('users_id'))
-            ->first();
+        if ($seleksi->tipe == 'event' || $seleksi->tipe == 'member') {
+            $pendaftar = PendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))
+                ->where('users_id', $request->input('users_id'))
+                ->first();
+        } elseif ($seleksi->tipe == 'panitia') {
+            $pendaftar = PanitiaPendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))
+                ->where('users_id', $request->input('users_id'))
+                ->first();
+        }
         $pendaftar->update([
             'lolos' => $request->input('is_lolos'),
         ]);
@@ -108,11 +135,18 @@ class SeleksiController extends Controller
         if (!is_null($seleksi->events_id)) {
             $event = Event::find($seleksi->events_id);
             if ($pendaftar->lolos == 'ya') {
-                Penyanyi::create([
-                    'events_id' => $event->sub_kegiatan_id,
-                    'members_id' => Member::where('users_id', $request->users_id)->first()->id,
-                    'suara' => $pendaftar->kategori_suara,
-                ]);
+                if ($seleksi->tipe == 'event') {
+                    Penyanyi::create([
+                        'events_id' => $event->sub_kegiatan_id,
+                        'members_id' => Member::where('users_id', $request->users_id)->first()->id,
+                        'suara' => $pendaftar->kategori_suara,
+                    ]);
+                } elseif ($seleksi->tipe == 'panitia') {
+                    Panitia::create([
+                        'events_id' => $event->sub_kegiatan_id,
+                        'users_id' => $request->users_id,
+                    ]);
+                }
             }
         } else {
             if ($pendaftar->lolos == 'ya') {
@@ -124,44 +158,72 @@ class SeleksiController extends Controller
             }
         }
 
-        return redirect()->route('seleksi.show', $request->input('seleksis_id'))
-            ->with('success', 'Status pendaftar berhasil diperbarui.');
+        if ($seleksi->tipe == 'event' || $seleksi->tipe == 'panitia') {
+            return redirect()->route('events.show', $seleksi->events_id)
+                ->with('success', 'Status pendaftar berhasil diperbarui.');
+        } elseif ($seleksi->tipe == 'member') {
+            return redirect()->route('seleksi.show', $request->input('seleksis_id'))
+                ->with('success', 'Status pendaftar berhasil diperbarui.');
+        }
     }
 
     public function simpanPendaftar(Request $request)
     {
+        $seleksi = Seleksi::find($request->input('seleksis_id'));
         $request->validate([
-            'butir_penilaians' => 'required|array',
-            'butir_penilaians.*.id' => 'exists:butir_penilaians,id',
-            'butir_penilaians.*.nilai' => 'required|numeric',
-            'lembar_penilaian' => 'required|mimes:jpg,png,jpeg,pdf|max:2048',
-            'kategori_suara' => 'required',
-            'range_suara' => 'required',
+            'hasil_wawancara' => 'required',
         ]);
 
-        $pendaftar = PendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))->where('users_id', $request->input('users_id'))->first();
+        if ($seleksi->tipe == 'event' || $seleksi->tipe == 'member') {
+            $request->validate([
+                'butir_penilaians' => 'required|array',
+                'butir_penilaians.*.id' => 'exists:butir_penilaians,id',
+                'butir_penilaians.*.nilai' => 'required|numeric',
+                'lembar_penilaian' => 'required|mimes:jpg,png,jpeg,pdf|max:2048',
+                'kategori_suara' => 'required',
+                'range_suara' => 'required',
+            ]);
 
-        if ($request->hasFile('lembar_penilaian')) {
-            $file = $request->file('lembar_penilaian');
-            $extension = $file->getClientOriginalExtension();
-            $fileName = 'seleksi_' . $request->input('seleksis_id') . '_user_' . $request->input('users_id') . '.' . $extension;
-            $filePath = $file->storeAs('seleksis/lembar_penilaian', $fileName, 'public');
-        }
+            $pendaftar = PendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))
+                ->where('users_id', $request->input('users_id'))
+                ->first();
 
-        $pendaftar->update([
-            'hasil_wawancara' => $request->input('hasil_wawancara'),
-            'range_suara' => $request->input('range_suara'),
-            'kategori_suara' => $request->input('kategori_suara'),
-            'lembar_penilaian' => $filePath
-        ]);
+            if ($request->hasFile('lembar_penilaian')) {
+                $file = $request->file('lembar_penilaian');
+                $extension = $file->getClientOriginalExtension();
+                $fileName = 'seleksi_' . $request->input('seleksis_id') . '_user_' . $request->input('users_id') . '.' . $extension;
+                $filePath = $file->storeAs('seleksis/lembar_penilaian', $fileName, 'public');
+            }
 
-        foreach ($request->input('butir_penilaians') as $butir) {
-            $pendaftar->nilais()->attach($butir['id'], [
-                'nilai' => $butir['nilai'] * ($butir['bobot_nilai'] / 100),
+            $pendaftar->update([
+                'hasil_wawancara' => $request->input('hasil_wawancara'),
+                'range_suara' => $request->input('range_suara'),
+                'kategori_suara' => $request->input('kategori_suara'),
+                'lembar_penilaian' => $filePath
+            ]);
+
+            foreach ($request->input('butir_penilaians') as $butir) {
+                $pendaftar->nilais()->attach($butir['id'], [
+                    'nilai' => $butir['nilai'] * ($butir['bobot_nilai'] / 100),
+                ]);
+            }
+        } elseif ($seleksi->tipe == 'panitia') {
+            $pendaftar = PanitiaPendaftarSeleksi::where('seleksis_id', $request->input('seleksis_id'))
+                ->where('users_id', $request->input('users_id'))
+                ->first();
+
+            $pendaftar->update([
+                'hasil_wawancara' => $request->input('hasil_wawancara'),
             ]);
         }
-        return redirect()->route('seleksi.show', $request->input('seleksis_id'))
-            ->with('success', 'Simpan data wawancara berhasil.');
+
+        if ($seleksi->tipe == 'event' || $seleksi->tipe == 'panitia') {
+            return redirect()->route('events.show', $seleksi->events_id)
+                ->with('success', 'Simpan data wawancara berhasil.');
+        } elseif ($seleksi->tipe == 'member') {
+            return redirect()->route('seleksi.show', $request->input('seleksis_id'))
+                ->with('success', 'Simpan data wawancara berhasil.');
+        }
     }
 
     /**

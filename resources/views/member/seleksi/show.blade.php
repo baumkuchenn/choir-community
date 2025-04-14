@@ -3,10 +3,15 @@
 @section('content')
 <div class="container">
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @elseif(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
         <h3 class="mb-3 fw-bold text-center">Detail Seleksi Anggota Baru Komunitas</h3>
@@ -195,7 +200,7 @@
         </div>
     </div>
 </div>
-@include('member.seleksi.modal.form-create')
+@include('member.seleksi.modal.form-create', ['seleksi', $seleksi])
 @endsection
 
 @section('js')
@@ -220,7 +225,7 @@
 
         //Modal tambah pendaftar
         $('#addMemberModal').on('shown.bs.modal', function () {
-            $('#user_id').select2({
+            $('#users_id').select2({
                 placeholder: 'Cari Pengguna...',
                 dropdownParent: $('#addMemberModal'),
                 ajax: {

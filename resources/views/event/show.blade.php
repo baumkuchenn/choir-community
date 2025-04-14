@@ -589,7 +589,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             //Modal tambah pendaftar
             $('#addMemberModal').on('shown.bs.modal', function () {
-                $('#user_id').select2({
+                $('#users_id').select2({
                     placeholder: 'Cari Pengguna...',
                     dropdownParent: $('#addMemberModal'),
                     ajax: {

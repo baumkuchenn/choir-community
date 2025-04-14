@@ -44,6 +44,15 @@ class PenyanyiController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'members_id' => 'required',
+            'suara' => 'required'
+        ]);
+        $existingPenyanyi = Penyanyi::where('members_id', $request->members_id)->first();
+
+        if ($existingPenyanyi) {
+            return back()->with('error', 'Anggota ini sudah terdaftar sebagai penyanyi.');
+        }
         Penyanyi::create($request->all());
         return redirect()->back()->with('success', 'Penyanyi berhasil ditambahkan');
     }

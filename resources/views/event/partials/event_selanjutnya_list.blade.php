@@ -17,11 +17,11 @@
                                             $selesai = \Carbon\Carbon::parse($event->tanggal_selesai);
                                         @endphp
 
-                                        @if ($mulai->month === $selesai->month && $mulai->year === $selesai->year)
-                                            {{-- Same month and year --}}
+                                        @if ($mulai->day === $selesai->day && $mulai->month === $selesai->month && $mulai->year === $selesai->year)
+                                            {{ $mulai->translatedFormat('d F Y') }}
+                                        @elseif ($mulai->month === $selesai->month && $mulai->year === $selesai->year)
                                             {{ $mulai->translatedFormat('d') }} - {{ $selesai->translatedFormat('d F Y') }}
                                         @else
-                                            {{-- Different month or year --}}
                                             {{ $mulai->translatedFormat('d F Y') }} - {{ $selesai->translatedFormat('d F Y') }}
                                         @endif
                                     </p>

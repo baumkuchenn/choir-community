@@ -271,8 +271,9 @@ class EventController extends Controller
         if ($event->jenis_kegiatan == 'konser') {
             $concert = $event->concert;
             if (!$concert) {
-                Concert::create([
+                $concert = Concert::create([
                     'events_id' => $id,
+                    'status' => 'draft',
                 ]);
             }
 

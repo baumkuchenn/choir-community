@@ -41,4 +41,9 @@ class Concert extends Model
     {
         return $this->hasMany(TicketType::class, 'concerts_id');
     }
+
+    public function kupons()
+    {
+        return $this->hasMany(Kupon::class, 'concerts_id');
+    }
 }

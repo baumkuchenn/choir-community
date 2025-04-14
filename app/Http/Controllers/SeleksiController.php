@@ -70,10 +70,14 @@ class SeleksiController extends Controller
 
     public function tambahPendaftar(Request $request)
     {
-        dd($request);
-        // $seleksi = Seleksi::find($id);
-        // $pendaftar = PendaftarSeleksi::with('user')->where('seleksis_id', $id)->get();
-        // return view('member.seleksi.modal.form-create', compact('seleksi', 'pendaftar'));
+        $existingPendaftar = PendaftarSeleksi::where('seleksis_id', $request->seleksis_id)
+            ->where('users_id', $request->user_id)
+            ->get();
+        if ($existingPendaftar) {
+            return back()->with('error', 'Anggota ini sudah terdaftar.');
+        }
+        PendaftarSeleksi::create($request->all());
+        return redirect()->back()->with('success', 'Pendaftar berhasil ditambahkan');
     }
 
     public function wawancara(string $seleksiId, string $userId)

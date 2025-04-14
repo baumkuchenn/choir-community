@@ -8,8 +8,9 @@
             <div class="modal-body">
                 <form action="{{ route('seleksi.tambah-pendaftar') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="seleksis_id" id="seleksis_id" value="{{ $seleksi->id }}">
                     <div class="mb-3">
-                        <select class="form-control" id="user_id" name="user_id" required></select>
+                        <select class="form-control" id="users_id" name="users_id" required></select>
                     </div>
                     <button type="submit" class="btn btn-primary">Simpan</button>
                 </form>

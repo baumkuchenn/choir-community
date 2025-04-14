@@ -32,4 +32,14 @@ class Purchase extends Model
     {
         return $this->hasOne(Invoice::class, 'purchases_id');
     }
+
+    public function kupon()
+    {
+        return $this->belongsTo(Kupon::class, 'kupons_id');
+    }
+
+    public function referal()
+    {
+        return $this->belongsTo(Kupon::class, 'referals_id');
+    }
 }

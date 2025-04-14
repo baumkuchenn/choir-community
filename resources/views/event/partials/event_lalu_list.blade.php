@@ -12,11 +12,17 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <i class="fa-solid fa-calendar-days fa-fw fs-5"></i>
                                     <p class="mb-0">
-                                        @if ($event->tanggal_mulai != $event->tanggal_selesai)
-                                            {{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d') }} - 
-                                            {{ \Carbon\Carbon::parse($event->tanggal_selesai)->translatedFormat('d F Y') }}
+                                        @php
+                                            $mulai = \Carbon\Carbon::parse($event->tanggal_mulai);
+                                            $selesai = \Carbon\Carbon::parse($event->tanggal_selesai);
+                                        @endphp
+
+                                        @if ($mulai->day === $selesai->day && $mulai->month === $selesai->month && $mulai->year === $selesai->year)
+                                            {{ $mulai->translatedFormat('d F Y') }}
+                                        @elseif ($mulai->month === $selesai->month && $mulai->year === $selesai->year)
+                                            {{ $mulai->translatedFormat('d') }} - {{ $selesai->translatedFormat('d F Y') }}
                                         @else
-                                            {{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d F Y') }}
+                                            {{ $mulai->translatedFormat('d F Y') }} - {{ $selesai->translatedFormat('d F Y') }}
                                         @endif
                                     </p>
                                 </div>

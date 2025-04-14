@@ -31,4 +31,9 @@ class Member extends Model
     {
         return $this->hasMany(Penyanyi::class, 'members_id');
     }
+
+    public function kupons()
+    {
+        return $this->hasMany(Kupon::class, 'members_id');
+    }
 }

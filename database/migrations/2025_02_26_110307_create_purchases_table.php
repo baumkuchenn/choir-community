@@ -19,6 +19,10 @@ return new class extends Migration
             $table->enum('status', ['bayar', 'verifikasi', 'selesai', 'batal']);
             $table->integer('total_tagihan');
 
+            $table->unsignedBigInteger('kupons_id')->nullable();
+            $table->foreign('kupons_id')->references('id')->on('kupons');
+            $table->unsignedBigInteger('referals_id')->nullable();
+            $table->foreign('referals_id')->references('id')->on('kupons');
             $table->unsignedBigInteger('users_id');
             $table->foreign('users_id')->references('id')->on('users');
             $table->unsignedBigInteger('concerts_id');

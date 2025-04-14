@@ -10,7 +10,7 @@ class TicketType extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'ticket_types';
-    protected $fillable = ['nama', 'harga', 'jumlah', 'pembelian_terakhir', 'concerts_id'];
+    protected $fillable = ['nama', 'harga', 'jumlah', 'pembelian_terakhir', 'concerts_id', 'visibility'];
 
     public function concert()
     {

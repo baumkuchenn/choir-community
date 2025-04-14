@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('harga');
             $table->integer('jumlah');
             $table->timestamp('pembelian_terakhir');
+            $table->enum('visibility', ['public', 'private']);
 
             $table->unsignedBigInteger('concerts_id');
             $table->foreign('concerts_id')->references('id')->on('concerts');

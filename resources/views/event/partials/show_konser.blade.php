@@ -108,9 +108,7 @@
     @can('akses-member')
         <div class="tab-pane fade" id="penyanyi" role="tabpanel">
             <h5>Daftar Penyanyi</h5>
-            <button type="button" class="btn btn-primary mb-3 fw-bold" data-bs-toggle="modal" data-bs-target="#addMemberModal">
-                + Tambah Anggota Baru
-            </button>
+            <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $event->sub_kegiatan_id ?? $event->id }}" data-name="penyanyi" data-action="{{ route('penyanyi.create') }}">+ Tambah Penyanyi</button>
 
             <table id="penyanyiTable" class="table table-bordered shadow text-center">
                 <thead>
@@ -157,10 +155,9 @@
         </div>
         <div class="tab-pane fade" id="panitia" role="tabpanel">
             <h5>Daftar Panitia</h5>
-            <button type="button" class="btn btn-primary mb-3 fw-bold">
-                + Tambah Anggota Baru
-            </button>
-            <a href="{{ route('panitia.setting', $event->id) }}" class="btn btn-outline-primary mb-3 fw-bold" >Pengaturan</a>
+
+            <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $event->sub_kegiatan_id ?? $event->id }}" data-name="panitia" data-panitia-eksternal="{{ $event->panitia_eksternal === 'ya' ? 'false' : 'true' }}" data-action="{{ route('panitia.create', $event->sub_kegiatan_id ?? $event->id) }}">+ Tambah Panitia</button>
+            <a href="{{ route('panitia.setting', $event->id) }}" class="btn btn-outline-primary fw-bold" >Pengaturan</a>
 
             <table id="panitiaTable" class="table table-bordered shadow text-center">
                 <thead>
@@ -176,11 +173,11 @@
                     @foreach($panitia as $item)
                         <tr>
                             <td>{{ $item->user->name }}</td>
-                            <td>{{ $item->jabatan?->divisi->nama }}</td>
-                            <td>{{ $item->jabatan?->nama }}</td>
+                            <td>{{ $item->jabatans?->divisi->nama }}</td>
+                            <td>{{ $item->jabatans?->nama }}</td>
                             <td>{{ $item->user->no_handphone }}</td>
                             <td>
-                                <button class="btn btn-primary loadEditForm" data-name="panitia" data-route="{{ route('panitia.edit', $item->id) }}">Ubah</button>
+                                <button class="btn btn-primary edit-modal" data-name="panitia" data-route="{{ route('panitia.edit', $item->id) }}">Ubah</button>
                                 <button class="btn btn-outline-danger deleteBtn" data-name="panitia {{ $item->user->name }}" data-action="{{ route('panitia.destroy', $item->id) }}">Hapus</button>
                             </td>
                         </tr>
@@ -256,6 +253,7 @@
                             <th class="text-center">Nama</th>
                             <th class="text-center">Harga</th>
                             <th class="text-center">Terjual/Jumlah</th>
+                            <th class="text-center">Ketersediaan</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -265,18 +263,23 @@
                             <td>{{ $type->nama }}</td>
                             <td>Rp{{ number_format($type->harga, 0, ',', '.') }}</td>
                             <td>{{ $type->terjual }}/{{ $type->jumlah }}</td>
+                            <td>
+                                @if ($type->visibility == 'public')
+                                    Dijual
+                                @elseif ($type->visibility == 'private')
+                                    Tidak Dijual
+                                @endif
+                            </td>
                             <td class="d-flex justify-content-center gap-3">
-                                <button class="btn btn-primary loadEditForm" data-name="ticket-type" data-route="{{ route('ticket-types.edit', $type->id) }}">Ubah</button>
+                                <button class="btn btn-primary edit-modal" data-name="ticket-type" data-route="{{ route('ticket-types.edit', $type->id) }}">Ubah</button>
                                 <button class="btn btn-outline-danger deleteBtn" data-name="tiket {{ $type->nama }}" data-action="{{ route('ticket-types.destroy', $type->id) }}">Hapus</button>
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
-                <button class="btn btn-primary fw-bold" id="loadCreateForm" data-id="{{ $concert->id }}" data-name="concerts-id" data-action="{{ route('ticket-types.create') }}">+ Tambah Jenis</button>
+                <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $concert->id }}" data-name="ticket-type" data-action="{{ route('ticket-types.create') }}">+ Tambah Jenis</button>
             </div>
-
-            <div id="modalContainer"></div>
 
             <form method="POST" action="{{ route('concerts.update', $event->id) }}" class="mb-0" id="form-tiket" enctype="multipart/form-data">
                 @csrf
@@ -636,5 +639,4 @@
         </div>
     @endcan
 </div>
-
-@include('member.seleksi.modal.form-create')
+<div id="modalContainer"></div>

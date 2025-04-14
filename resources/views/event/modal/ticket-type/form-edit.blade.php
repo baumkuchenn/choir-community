@@ -1,8 +1,8 @@
-<div class="modal fade" id="editModal-ticket-type" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+<div class="modal fade" id="editTicketModal" tabindex="-1" aria-labelledby="editTicketModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit Jenis Tiket</h5>
+                <h5 class="modal-title" id="editTicketModalLabel">Edit Jenis Tiket</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -24,6 +24,14 @@
                     <div class="mb-3">
                         <label for="edit-ticket-jumlah" class="form-label">Jumlah</label>
                         <input type="number" class="form-control" id="edit-ticket-jumlah" name="jumlah" value="{{ $ticketType->jumlah }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="visibility" class="form-label">Ketersediaan</label>
+                        <select class="form-select" id="visibility" name="visibility" required>
+                            <option value="public" {{ $ticketType->visibility == 'public' ? 'selected' : '' }}>Dijual</option>
+                            <option value="private" {{ $ticketType->visibility == 'private' ? 'selected' : '' }}>Tidak Dijual</option>
+                        </select>
                     </div>
 
                     <div class="modal-footer border-0">

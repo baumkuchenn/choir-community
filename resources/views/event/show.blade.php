@@ -4,10 +4,15 @@
 @section('content')
 <div class="container">
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @elseif(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
         <h2 class="mb-3 fw-bold text-center">Detail Kegiatan {{ $event->nama }}</h2>
@@ -71,59 +76,113 @@
     @push('js')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            //Tambah penyanyi
-            $('#addMemberModal').on('shown.bs.modal', function () {
-                $('#user_id').select2({
-                    placeholder: 'Cari Pengguna...',
-                    dropdownParent: $('#addMemberModal'),
-                    ajax: {
-                        url: '{{ route("members.search") }}',
-                        dataType: 'json',
-                        delay: 250,
-                        data: function(params) {
-                            return {
-                                search: params.term,
-                                only_choir_members: true
-                            };
-                        },
-                        processResults: function(data) {
-                            return {
-                                results: data
-                            };
-                        }
+            //create modal
+            document.querySelectorAll(".create-modal").forEach((button) => {
+                button.addEventListener("click", function() {
+                    let route = this.dataset.action;
+                    let name = this.dataset.name;
+                    let id = this.dataset.id;
+                    let onlyChoirMembers = true;
+                    if (name == 'panitia'){
+                        onlyChoirMembers = this.dataset.panitiaEksternal;
                     }
+
+                    // Clean up any old modals & backdrops first
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    document.body.classList.remove('modal-open');
+                    
+                    fetch(route)
+                        .then(response => response.text())
+                        .then(html => {
+                            let modalContainer = document.getElementById("modalContainer");
+                            modalContainer.innerHTML = '';
+                            modalContainer.innerHTML = html;
+
+                            let createModal = "";
+                            if (name == 'ticket-type'){
+                                createModal = document.getElementById('createTicketModal');
+                                createModal.querySelector('#concerts_id').value = id;
+                            } else if (name == 'penyanyi'){
+                                createModal = document.getElementById('tambahPenyanyiModal');
+                                createModal.querySelector('#events_id').value = id;
+
+                                createModal.addEventListener('shown.bs.modal', function () {
+                                    $('#members_id').select2({
+                                        placeholder: 'Cari Anggota...',
+                                        dropdownParent: $('#tambahPenyanyiModal'),
+                                        ajax: {
+                                            url: @json(route('penyanyi.search')),
+                                            dataType: 'json',
+                                            delay: 250,
+                                            data: function(params) {
+                                                return {
+                                                    search: params.term,
+                                                    only_choir_members: true
+                                                };
+                                            },
+                                            processResults: function(data) {
+                                                return {
+                                                    results: data
+                                                };
+                                            }
+                                        }
+                                    });
+                                });
+                            } else if (name == 'panitia'){
+                                createModal = document.getElementById('tambahPanitiaModal');
+                                createModal.querySelector('#events_id').value = id;
+
+                                createModal.addEventListener('shown.bs.modal', function () {
+                                    $('#users_id').select2({
+                                        placeholder: 'Cari Pengguna...',
+                                        dropdownParent: $('#tambahPanitiaModal'),
+                                        ajax: {
+                                            url: @json(route('panitia.search')),
+                                            dataType: 'json',
+                                            delay: 250,
+                                            data: function(params) {
+                                                return {
+                                                    search: params.term,
+                                                    only_choir_members: onlyChoirMembers
+                                                };
+                                            },
+                                            processResults: function(data) {
+                                                return {
+                                                    results: data
+                                                };
+                                            }
+                                        }
+                                    });
+                                });
+                            }
+                            new bootstrap.Modal(createModal).show();
+                        });
                 });
             });
 
-
-            //Modal Jenis Tiket
-            document.getElementById('loadCreateForm').addEventListener('click', function() {
-                let route = this.dataset.action;
-                let name = this.dataset.name;
-                let id = this.dataset.id;
-                fetch(route)
-                    .then(response => response.text())
-                    .then(html => {
-                        document.getElementById('modalContainer').innerHTML = html;
-                        if(name === 'concerts-id'){
-                            document.getElementById('createModal').querySelector('#concerts_id').value = id;
-                        }
-                        new bootstrap.Modal(document.getElementById('createModal')).show();
-                    });
-            });
-
-            document.querySelectorAll(".loadEditForm").forEach((button) => {
+            //Edit Modal
+            document.querySelectorAll(".edit-modal").forEach((button) => {
                 button.addEventListener("click", function() {
                     let name = this.dataset.name;
                     let editUrl = this.dataset.route;
+
+                    // Clean up any old modals & backdrops first
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    document.body.classList.remove('modal-open');
                     
                     fetch(editUrl)
                         .then(response => response.text())
                         .then(html => {
                             let modalContainer = document.getElementById("modalContainer");
+                            modalContainer.innerHTML = '';
                             modalContainer.innerHTML = html;
 
-                            let editModal = document.querySelector(`#editModal-${name}`);
+                            let editModal = "";
+                            if (name == 'ticket-type'){
+                                editModal = document.getElementById('editTicketModal');
+                            } else if (name == 'panitia'){
+                                editModal = document.getElementById('editPanitiaModal');
+                            }
                             new bootstrap.Modal(editModal).show();
                         })
                         .catch(error => console.error("Error loading modal:", error));

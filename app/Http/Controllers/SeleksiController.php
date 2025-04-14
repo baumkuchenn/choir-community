@@ -81,7 +81,7 @@ class SeleksiController extends Controller
         $seleksi = Seleksi::find($seleksiId);
         $butir = collect();
 
-        if ($seleksi->tipe == 'event') {
+        if ($seleksi->tipe == 'event' || $seleksi->tipe == 'member') {
             $pendaftar = PendaftarSeleksi::with('user', 'nilais')
                 ->where('seleksis_id', $seleksiId)
                 ->where('users_id', $userId)

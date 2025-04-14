@@ -134,15 +134,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::put('/seleksi/wawancara/', [SeleksiController::class, 'simpanPendaftar'])->name('seleksi.simpan-pendaftar');
                 Route::post('/seleksi/wawancara/lolos', [SeleksiController::class, 'lolos'])->name('seleksi.lolos-pendaftar');
                 Route::resource('seleksi', SeleksiController::class);
+                Route::get('/penyanyi/search', [PenyanyiController::class, 'search'])->name('penyanyi.search');
                 Route::resource('penyanyi', PenyanyiController::class);
 
                 //Kepanitiaan
                 Route::get('/panitia/setting/{event}', [PanitiaController::class, 'setting'])->name('panitia.setting');
-                Route::resource('panitia', PanitiaController::class);
-                Route::get('panitia-jabatan/{event}/create', [PanitiaJabatanController::class, 'create'])->name('panitia-jabatan.create');
+                Route::get('/panitia/search', [PanitiaController::class, 'search'])->name('panitia.search');
+                Route::get('/panitia/create/{event}', [PanitiaController::class, 'create'])->name('panitia.create');
+                Route::resource('panitia', PanitiaController::class)->except(['create']);
+                Route::get('/panitia-jabatan/{event}/create', [PanitiaJabatanController::class, 'create'])->name('panitia-jabatan.create');
                 Route::resource('panitia-jabatan', PanitiaJabatanController::class)->except(['create']);
-                Route::get('panitia-divisi/{event}/create', [PanitiaDivisiController::class, 'create'])->name('panitia-divisi.create');
-                Route::get('panitia-divisi/{event}/{divisi}/edit', [PanitiaDivisiController::class, 'edit'])->name('panitia-divisi.edit');
+                Route::get('/panitia-divisi/{event}/create', [PanitiaDivisiController::class, 'create'])->name('panitia-divisi.create');
+                Route::get('/panitia-divisi/{event}/{divisi}/edit', [PanitiaDivisiController::class, 'edit'])->name('panitia-divisi.edit');
                 Route::resource('panitia-divisi', PanitiaDivisiController::class)->except(['create', 'edit']);
             });
 

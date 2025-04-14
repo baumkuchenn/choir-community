@@ -253,6 +253,7 @@ class EventController extends Controller
             ->get();
 
         $concert = null;
+        $choir = null;
         $penyanyi = collect();
         $panitia = collect();
         $banks = collect();
@@ -275,6 +276,8 @@ class EventController extends Controller
                 ]);
             }
 
+            $choir = Auth::user()->members->first()->choir;
+
             $eventIds = [$event->id];
 
             if (!is_null($event->sub_kegiatan_id)) {
@@ -282,7 +285,8 @@ class EventController extends Controller
             }
 
             $penyanyi = Penyanyi::whereIn('events_id', $eventIds)->get();
-            $panitia = Panitia::whereIn('events_id', $eventIds)->get();
+            $panitia = Panitia::with('jabatans')
+                ->whereIn('events_id', $eventIds)->get();
 
             $purchases = $concert->purchases()
                 ->with('user:id,name,no_handphone', 'invoice.tickets:id,invoices_id,check_in')
@@ -322,7 +326,7 @@ class EventController extends Controller
             $latihan = Latihan::where('events_id', $event->id)->get();
         }
 
-        return view('event.show', compact('event', 'events', 'concert', 'penyanyi', 'panitia', 'purchases', 'ticketTypes', 'donations', 'feedbacks', 'banks', 'seleksi', 'pendaftar', 'hasil', 'latihan'));
+        return view('event.show', compact('event', 'events', 'concert', 'choir', 'penyanyi', 'panitia', 'purchases', 'ticketTypes', 'donations', 'feedbacks', 'banks', 'seleksi', 'pendaftar', 'hasil', 'latihan'));
     }
 
     /**

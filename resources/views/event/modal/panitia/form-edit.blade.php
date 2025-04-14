@@ -1,8 +1,8 @@
-<div class="modal fade" id="editModal-panitia" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+<div class="modal fade" id="editPanitiaModal" tabindex="-1" aria-labelledby="editPanitiaModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit Panitia</h5>
+                <h5 class="modal-title" id="editPanitiaModalLabel">Edit Panitia</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -55,14 +55,14 @@
                 <form id="editForm" method="POST" action="{{ route('panitia.update', $panitia->id) }}" class="mb-0">
                     @csrf
                     @method('PUT')
-                    <div class="col-6">
+                    <div class="mb-3">
                         <label for="jabatan_id" class="form-label">Jabatan Pengurus</label>
-                        <select class="form-select" name="jabatan_id">
+                        <select class="form-select" name="jabatan_id" required>
                             <option value="">Tidak Ada</option>
                             @foreach($position as $divisi)
-                                @if(!empty($divisi['positions']))
+                                @if(!empty($divisi['jabatans']))
                                     <optgroup label="{{ $divisi['nama'] }}">
-                                        @foreach($divisi['positions'] as $pos)
+                                        @foreach($divisi['jabatans'] as $pos)
                                             <option value="{{ $pos['id'] }}" 
                                                 {{ old('jabatan_id', $panitia->jabatan_id ?? '') == $pos['id'] ? 'selected' : '' }}>
                                                 {{ $pos['nama'] }}

@@ -28,7 +28,8 @@ class EticketController extends Controller
             ->whereHas('concert', function ($query) {
                 $query->where('status', 'published')
                     ->whereHas('ticketTypes', function ($ticketQuery) {
-                        $ticketQuery->where('pembelian_terakhir', '>', Carbon::now());
+                        $ticketQuery->where('pembelian_terakhir', '>', Carbon::now())
+                            ->where('visibility', 'public');
                     });
             })
             ->whereHas('choirs', function ($query) {
@@ -44,7 +45,9 @@ class EticketController extends Controller
 
         // Append "hargaMulai" to each concert
         foreach ($konserDekat as $konser) {
-            $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)->min('harga');
+            $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)
+                ->where('visibility', 'public')
+                ->min('harga');
             $konser->hargaMulai = number_format($hargaMulai, 0, ',', '.');
         }
 
@@ -52,7 +55,8 @@ class EticketController extends Controller
             ->whereHas('concert', function ($query) {
                 $query->where('status', 'published')
                     ->whereHas('ticketTypes', function ($ticketQuery) {
-                        $ticketQuery->where('pembelian_terakhir', '>', Carbon::now());
+                        $ticketQuery->where('pembelian_terakhir', '>', Carbon::now())
+                            ->where('visibility', 'public');
                     });
             })
             ->whereHas('choirs', function ($query) {
@@ -66,7 +70,9 @@ class EticketController extends Controller
             });
 
         foreach ($recomEvents as $konser) {
-            $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)->min('harga');
+            $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)
+                ->where('visibility', 'public')
+                ->min('harga');
             $konser->hargaMulai = number_format($hargaMulai, 0, ',', '.');
         }
 
@@ -119,7 +125,7 @@ class EticketController extends Controller
         $event->penyelenggara = $event->choirs->first()->nama;
         $event->logo = $event->choirs->first()->logo;
 
-        $tickets = $concert->ticketTypes;
+        $tickets = $concert->ticketTypes->where('visibility', 'public');
         $hargaMulai = $tickets->min('harga');
 
         return view('eticketing.show', compact('concert', 'event', 'tickets', 'hargaMulai'));

@@ -22,7 +22,6 @@ class TicketTypeController extends Controller
             'harga' => 'required|numeric',
             'jumlah' => 'required|integer',
         ]);
-        
         TicketType::create($request->all());
 
         return redirect()->back()->with('success', 'Jenis tiket berhasil ditambahkan!');

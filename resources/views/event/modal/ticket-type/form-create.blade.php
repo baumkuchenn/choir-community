@@ -1,8 +1,8 @@
-<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+<div class="modal fade" id="createTicketModal" tabindex="-1" aria-labelledby="createTicketModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createModalLabel">Tambah Jenis Tiket</h5>
+                <h5 class="modal-title" id="createTicketModalLabel">Tambah Jenis Tiket</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -24,6 +24,13 @@
                     <div class="mb-3">
                         <label for="pembelian_terakhir" class="form-label">Pembelian Terakhir</label>
                         <input type="datetime-local" class="form-control" id="pembelian_terakhir" name="pembelian_terakhir" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="visibility" class="form-label">Ketersediaan</label>
+                        <select class="form-select" id="visibility" name="visibility" required>
+                            <option value="public">Dijual</option>
+                            <option value="private">Tidak Dijual</option>
+                        </select>
                     </div>
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>

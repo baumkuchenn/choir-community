@@ -58,5 +58,5 @@
         </div>
     @endforeach
     <!-- Pagination -->
-    {{ $eventSelanjutnya->links() }}
+    {{ $eventSelanjutnya->appends(['search' => request('search')])->links() }}
 @endif

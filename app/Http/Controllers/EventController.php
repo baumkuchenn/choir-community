@@ -42,13 +42,13 @@ class EventController extends Controller
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("events.tanggal_selesai >= CURDATE()")
             ->orderBy('tanggal_mulai', 'desc')
-            ->paginate(10);
+            ->paginate(5);
 
         $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
             ->whereRaw("events.tanggal_selesai < CURDATE()")
             ->orderBy('tanggal_mulai', 'desc')
-            ->paginate(10);
+            ->paginate(5);
 
         return view('event.index', compact('eventSelanjutnya', 'eventLalu'));
     }
@@ -57,15 +57,16 @@ class EventController extends Controller
     {
         $searchQuery = $request->input('search');
 
-        $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
+        $eventSelanjutnya = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
-            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) > ?", [now()])
+            ->whereRaw("events.tanggal_selesai >= CURDATE()")
             ->where(function ($query) use ($searchQuery) {
                 $query->where('nama', 'LIKE', "%{$searchQuery}%");
             })
-            ->paginate(10);
+            ->orderBy('tanggal_mulai', 'desc')
+            ->paginate(5);
 
-        return view('event.partials.event_lalu_list', compact('eventLalu'))->render();
+        return view('event.partials.event_selanjutnya_list', compact('eventSelanjutnya'));
     }
 
     public function searchEventLalu(Request $request)
@@ -74,13 +75,14 @@ class EventController extends Controller
 
         $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
             ->where('choirs_id', Auth::user()->members->first()->choirs_id)
-            ->whereRaw("TIMESTAMP(events.tanggal_selesai, events.jam_selesai) < ?", [now()])
+            ->whereRaw("events.tanggal_selesai < CURDATE()")
             ->where(function ($query) use ($searchQuery) {
                 $query->where('nama', 'LIKE', "%{$searchQuery}%");
             })
-            ->paginate(10);
+            ->orderBy('tanggal_mulai', 'desc')
+            ->paginate(5);
 
-        return view('event.partials.event_lalu_list', compact('eventLalu'))->render();
+        return view('event.partials.event_lalu_list', compact('eventLalu'));
     }
 
     public function searchChoir(Request $request)

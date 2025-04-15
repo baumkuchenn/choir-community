@@ -54,5 +54,5 @@
         </div>
     @endforeach
     <!-- Pagination -->
-    {{ $eventLalu->links() }}
+    {{ $eventLalu->appends(['search' => request('search')])->links() }}
 @endif

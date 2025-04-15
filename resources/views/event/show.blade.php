@@ -638,18 +638,26 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             //Modal tambah pendaftar
+            let tipe = @json($seleksi->tipe);
+            let onlyChoirMember = true;
+            let route = @json(route('members.search'));
+            if (tipe == 'panitia'){
+                onlyChoirMember = false;
+                route = @json(route('panitia.search'));
+            }
+            
             $('#addMemberModal').on('shown.bs.modal', function () {
                 $('#users_id').select2({
                     placeholder: 'Cari Pengguna...',
                     dropdownParent: $('#addMemberModal'),
                     ajax: {
-                        url: '{{ route("members.search") }}',
+                        url: route,
                         dataType: 'json',
                         delay: 250,
                         data: function(params) {
                             return {
                                 search: params.term,
-                                only_choir_members: true
+                                only_choir_members: onlyChoirMember
                             };
                         },
                         processResults: function(data) {

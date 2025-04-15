@@ -72,7 +72,7 @@
         // Search function
         document.getElementById('eventSelanjutnyaSearch').addEventListener('keyup', function () {
             let search = this.value;
-            fetchEventLalu(1, search);
+            fetchEventSelanjutnya(1, search);
         });
         document.getElementById('eventLaluSearch').addEventListener('keyup', function () {
             let search = this.value;
@@ -81,7 +81,8 @@
 
         // Handle pagination click
         document.addEventListener('click', function (e) {
-            if (e.target.closest('.pagination a')) {
+            const link = e.target.closest('.pagination a');
+            if (link) {
                 e.preventDefault();
                 let page = new URL(e.target.href).searchParams.get("page");
                 if (link.closest('#eventSelanjutnyaList')) {

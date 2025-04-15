@@ -200,7 +200,7 @@
         </div>
     </div>
 </div>
-@include('member.seleksi.modal.form-create', ['seleksi', $seleksi])
+@include('member.seleksi.modal.form-add', ['seleksi', $seleksi])
 @endsection
 
 @section('js')
@@ -220,6 +220,33 @@
         navLinks.forEach(link => {
             link.addEventListener("shown.bs.tab", function() {
                 updateActiveTab();
+            });
+        });
+
+        //Modal mode
+        document.querySelectorAll('input[name="mode"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const existingSection = document.getElementById('existing-user-section');
+                const newSection = document.getElementById('new-user-section');
+
+                if (this.value === 'existing') {
+                    existingSection.style.display = 'block';
+                    newSection.style.display = 'none';
+
+                    // Enable inputs in existing section
+                    existingSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                    // Disable inputs in new section
+                    newSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+
+                } else {
+                    existingSection.style.display = 'none';
+                    newSection.style.display = 'block';
+
+                    // Enable inputs in new section
+                    newSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                    // Disable inputs in existing section
+                    existingSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                }
             });
         });
 

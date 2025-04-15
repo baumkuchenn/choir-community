@@ -78,7 +78,7 @@
                                 @endforeach
                             </td>
                             <td class="d-flex justify-content-center gap-3">
-                                <button class="btn btn-primary loadEditForm" data-action="{{ route('panitia-jabatan.edit', $item->id) }}">Ubah</button>
+                                <button class="btn btn-primary loadEditForm" data-action="{{ route('panitia-jabatan.edit', ['jabatan' => $item->id, 'event' => $event->id]) }}">Ubah</button>
                                 <button class="btn btn-outline-danger deleteBtn" data-name="jabatan {{ $item->nama }}" data-action="{{ route('panitia-jabatan.destroy', $item->id) }}">Hapus</button>
                             </td>
                         </tr>

@@ -225,8 +225,8 @@
 @section('js')
 <script>
     function savePendaftar(value){
-            document.getElementById('is_lolos').value = value;
-            document.getElementById("lolos-form").submit();
+        document.getElementById('is_lolos').value = value;
+        document.getElementById("lolos-form").submit();
     };
 
     document.addEventListener("DOMContentLoaded", function(){

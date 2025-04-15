@@ -108,7 +108,7 @@
     @can('akses-member')
         <div class="tab-pane fade" id="penyanyi" role="tabpanel">
             <h5>Daftar Penyanyi</h5>
-            <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $event->sub_kegiatan_id ?? $event->id }}" data-name="penyanyi" data-action="{{ route('penyanyi.create') }}">+ Tambah Penyanyi</button>
+            <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $event->id }}" data-name="penyanyi" data-action="{{ route('penyanyi.create', $event->id) }}">+ Tambah Penyanyi</button>
 
             <table id="penyanyiTable" class="table table-bordered shadow text-center">
                 <thead>

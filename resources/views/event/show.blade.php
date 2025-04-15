@@ -127,6 +127,56 @@
                                             }
                                         }
                                     });
+                                    $('#seleksiTable').DataTable({
+                                        "lengthMenu": [5, 10, 20, 40],
+                                        "order": [[1, "asc"]],
+                                        "language": {
+                                            "emptyTable": "Belum ada divisi pengurus komunitas"
+                                        }
+                                    });
+                                    createModal.querySelectorAll('input[name="mode"]').forEach(radio => {
+                                        radio.addEventListener('change', function () {
+                                            const seleksiSection = document.getElementById('penyanyi-seleksi-section');
+                                            const baruSection = document.getElementById('penyanyi-baru-section');
+                                            const eventSection = document.getElementById('event-lain-section');
+
+                                            if (this.value === 'seleksi') {
+                                                seleksiSection.style.display = 'block';
+                                                baruSection.style.display = 'none';
+                                                eventSection.style.display = 'none';
+
+                                                seleksiSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                                                baruSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                eventSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                            } else if (this.value === 'baru') {
+                                                seleksiSection.style.display = 'none';
+                                                baruSection.style.display = 'block';
+                                                eventSection.style.display = 'none';
+
+                                                seleksiSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                baruSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                                                eventSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                            } else if (this.value === 'event') {
+                                                seleksiSection.style.display = 'none';
+                                                baruSection.style.display = 'none';
+                                                eventSection.style.display = 'block';
+
+                                                seleksiSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                baruSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                eventSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                                            }
+                                        });
+                                    });
+                                    document.getElementById('pilihSemuaBtn').addEventListener('click', function () {
+                                        const checkboxes = document.querySelectorAll('.checkbox-penyanyi');
+                                        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+                                        checkboxes.forEach(checkbox => {
+                                            checkbox.checked = !allChecked;
+                                        });
+
+                                        this.textContent = allChecked ? 'Pilih Semua' : 'Batalkan Semua';
+                                    });
                                 });
                             } else if (name == 'panitia'){
                                 createModal = document.getElementById('tambahPanitiaModal');

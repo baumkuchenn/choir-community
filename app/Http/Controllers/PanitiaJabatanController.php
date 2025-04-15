@@ -32,10 +32,10 @@ class PanitiaJabatanController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $event, string $jabatan)
     {
-        $jabatan = PanitiaJabatan::findOrFail($id);
-        $divisi = PanitiaDivisi::where('events_id', $id)->get();
+        $jabatan = PanitiaJabatan::findOrFail($jabatan);
+        $divisi = PanitiaDivisi::where('events_id', $event)->get();
         return view('panitia.modal.jabatan.form-edit', compact('jabatan', 'divisi'));
     }
 
@@ -50,7 +50,12 @@ class PanitiaJabatanController extends Controller
         ]);
 
         $jabatan = PanitiaJabatan::findOrFail($id);
-        $jabatan->update($request->all());
+
+        $data = $request->all();
+        $data['akses_eticket'] = $request->has('akses_eticket') ? '1' : '0';
+        $data['akses_event'] = $request->has('akses_event') ? '1' : '0';
+
+        $jabatan->update($data);
 
         return redirect()->back()->with('success', 'Jabatan panitia berhasil diperbarui!');
     }

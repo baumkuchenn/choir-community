@@ -73,13 +73,11 @@ class PanitiaController extends Controller
     public function setting(string $id)
     {
         $event = Event::find($id);
-        $eventId = $event->sub_kegiatan_id === null ? $id : $event->sub_kegiatan_id;
-        $divisi = PanitiaDivisi::where('events_id', $eventId)
+        $divisi = PanitiaDivisi::where('events_id', $event->id)
             ->with('jabatans')
             ->get();
 
         $jabatan = $divisi->flatMap->jabatans;
-        $event = Event::find($id);
         return view('panitia.setting', compact('divisi', 'jabatan', 'event'));
     }
 

@@ -10,6 +10,8 @@ use App\Models\PanitiaPendaftarSeleksi;
 use App\Models\PendaftarSeleksi;
 use App\Models\Penyanyi;
 use App\Models\Seleksi;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -70,14 +72,48 @@ class SeleksiController extends Controller
 
     public function tambahPendaftar(Request $request)
     {
-        $existingPendaftar = PendaftarSeleksi::where('seleksis_id', $request->seleksis_id)
-            ->where('users_id', $request->user_id)
-            ->get();
-        if ($existingPendaftar) {
-            return back()->with('error', 'Anggota ini sudah terdaftar.');
+        $seleksi = Seleksi::find($request->seleksis_id);
+        $userId = $request->user_id;
+        $data = $request->all();
+        if ($request->mode == 'baru') {
+            $user = $this->createUserWithoutRedirect($request);
+            $userId = $user->id;
+            $data['users_id'] = $userId;
         }
-        PendaftarSeleksi::create($request->all());
+
+        if ($seleksi->tipe == 'member' || $seleksi->tipe == 'event') {
+            $existingPendaftar = PendaftarSeleksi::where('seleksis_id', $request->seleksis_id)
+                ->where('users_id', $userId)
+                ->exists();
+            if ($existingPendaftar) {
+                return back()->with('error', 'Pengguna ini sudah terdaftar.');
+            }
+            PendaftarSeleksi::create($data);
+        } elseif ($seleksi->tipe == 'event') {
+            $existingPendaftar = PanitiaPendaftarSeleksi::where('seleksis_id', $request->seleksis_id)
+                ->where('users_id', $userId)
+                ->exists();
+            if ($existingPendaftar) {
+                return back()->with('error', 'Pengguna ini sudah terdaftar.');
+            }
+            PanitiaPendaftarSeleksi::create($data);
+        }
         return redirect()->back()->with('success', 'Pendaftar berhasil ditambahkan');
+    }
+
+    protected function createUserWithoutRedirect(Request $request): User
+    {
+        $request->validate([
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
+        ]);
+
+        $user = User::create([
+            'email' => $request->email,
+        ]);
+
+        event(new Registered($user));
+
+        return $user;
     }
 
     public function wawancara(string $seleksiId, string $userId)

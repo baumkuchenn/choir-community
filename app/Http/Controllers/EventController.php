@@ -279,15 +279,11 @@ class EventController extends Controller
 
             $choir = Auth::user()->members->first()->choir;
 
-            $eventIds = [$event->id];
-
-            if (!is_null($event->sub_kegiatan_id)) {
-                $eventIds[] = $event->sub_kegiatan_id;
-            }
-
-            $penyanyi = Penyanyi::whereIn('events_id', $eventIds)->get();
+            $penyanyi = Penyanyi::where('events_id', $event->id)
+                ->get();
             $panitia = Panitia::with('jabatans')
-                ->whereIn('events_id', $eventIds)->get();
+                ->where('events_id', $event->id)
+                ->get();
 
             $purchases = $concert->purchases()
                 ->with('user:id,name,no_handphone', 'invoice.tickets:id,invoices_id,check_in')

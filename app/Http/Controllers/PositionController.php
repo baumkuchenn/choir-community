@@ -70,7 +70,15 @@ class PositionController extends Controller
         ]);
 
         $jabatan = Position::findOrFail($id);
-        $jabatan->update($request->all());
+
+        $data = $request->all();
+        $data['akses_member'] = $request->has('akses_member') ? '1' : '0';
+        $data['akses_event'] = $request->has('akses_event') ? '1' : '0';
+        $data['akses_roles'] = $request->has('akses_roles') ? '1' : '0';
+        $data['akses_eticket'] = $request->has('akses_eticket') ? '1' : '0';
+        $data['akses_forum'] = $request->has('akses_forum') ? '1' : '0';
+
+        $jabatan->update($data);
 
         return redirect()->back()->with('success', 'Jabatan pengurus berhasil diperbarui!');
     }

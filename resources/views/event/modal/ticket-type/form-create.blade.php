@@ -25,6 +25,7 @@
                         <label for="pembelian_terakhir" class="form-label">Pembelian Terakhir</label>
                         <input type="datetime-local" class="form-control" id="pembelian_terakhir" name="pembelian_terakhir" required>
                     </div>
+                    @can('akses-admin')
                     <div class="mb-3">
                         <label for="visibility" class="form-label">Ketersediaan</label>
                         <select class="form-select" id="visibility" name="visibility" required>

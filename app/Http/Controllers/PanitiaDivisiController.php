@@ -36,10 +36,7 @@ class PanitiaDivisiController extends Controller
     public function edit(string $event, string $divisi)
     {
         $divisi = PanitiaDivisi::findOrFail($divisi);
-        $eventModel = Event::findOrFail($event);
-
-        // If the sub_kegiatan_id is null, use the event's ID as eventId
-        $eventId = $eventModel->sub_kegiatan_id === null ? $eventModel->id : $eventModel->sub_kegiatan_id;
+        $eventId = $event;
         return view('panitia.modal.divisi.form-edit', compact('divisi', 'eventId'));
     }
 

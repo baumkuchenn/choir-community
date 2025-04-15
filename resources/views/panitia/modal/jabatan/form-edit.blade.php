@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('positions.update', $jabatan->id) }}" method="POST" class="mb-0">
+                <form action="{{ route('panitia-jabatan.update', $jabatan->id) }}" method="POST" class="mb-0">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
@@ -14,12 +14,12 @@
                         <input type="text" class="form-control" id="nama" name="nama" value="{{ $jabatan->nama }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="divisions_id" class="form-label">Divisi</label>
-                        <select id="divisions_id" name="divisions_id" class="form-select" required>
-                            <option value="">-- Pilih Divisi --</option>
+                        <label for="divisi_id" class="form-label">Divisi</label>
+                        <select id="divisi_id" name="divisi_id" class="form-select" required>
+                            <option value="" disabled>-- Pilih Divisi --</option>
                             @foreach($divisi as $item)
                                 <option value="{{ $item->id }}"
-                                {{ ($jabatan->divisions_id ?? '') == $item->id ? 'selected' : '' }}>
+                                {{ ($jabatan->divisi_id ?? '') == $item->id ? 'selected' : '' }}>
                                     {{ $item->nama }}
                                 </option>
                             @endforeach
@@ -30,11 +30,8 @@
                         <div class="row">
                             @php
                                 $akses = [
-                                    'akses_member' => 'Manajemen Anggota',
                                     'akses_event' => 'Manajemen Kegiatan',
-                                    'akses_roles' => 'Manajemen Jabatan',
                                     'akses_eticket' => 'E-ticketing',
-                                    'akses_forum' => 'Forum',
                                 ];
                             @endphp
 

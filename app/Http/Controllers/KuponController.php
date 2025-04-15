@@ -7,9 +7,13 @@ use Illuminate\Http\Request;
 
 class KuponController extends Controller
 {
-    public function create()
+    public function create(string $tipe)
     {
-        return view('event.modal.kupon.form-create');
+        if ($tipe == 'kupon') {
+            return view('event.modal.kupon.form-create');
+        } else if ($tipe == 'referal') {
+            return view('event.modal.referal.form-create');
+        }
     }
 
     /**
@@ -23,14 +27,25 @@ class KuponController extends Controller
             'jumlah' => 'required|integer',
         ]);
         Kupon::create($request->all());
+        $message = "";
+        if ($request->tipe == 'kupon') {
+            $message = "Kupon berhasil ditambahkan.";
+        } elseif ($request->tipe == 'referal') {
+            $message = "Kode referal berhasil ditambahkan.";
+        }
 
-        return redirect()->back()->with('success', 'Kupon berhasil ditambahkan.');
+        return redirect()->back()->with('success', $message);
     }
 
     public function edit(string $id)
     {
         $kupon = Kupon::findOrFail($id);
-        return view('event.modal.ticket-type.form-edit', compact('kupon'));
+        if ($kupon->tipe == 'kupon') {
+            return view('event.modal.kupon.form-edit', compact('kupon'));
+        } else if ($kupon->tipe == 'referal') {
+            $referal = $kupon;
+            return view('event.modal.referal.form-edit', compact('referal'));
+        }
     }
 
     /**
@@ -46,8 +61,14 @@ class KuponController extends Controller
 
         $kupon = Kupon::findOrFail($id);
         $kupon->update($request->all());
+        $message = "";
+        if ($kupon->tipe == 'kupon') {
+            $message = "Kupon berhasil diperbarui.";
+        } elseif ($kupon->tipe == 'referal') {
+            $message = "Kode referal berhasil diperbarui.";
+        }
 
-        return redirect()->back()->with('success', 'Kupon berhasil diperbarui.');
+        return redirect()->back()->with('success', $message);
     }
 
 
@@ -57,8 +78,14 @@ class KuponController extends Controller
     public function destroy(string $id)
     {
         $kupon = Kupon::findOrFail($id);
+        $message = "";
+        if ($kupon->tipe == 'kupon') {
+            $message = "Kupon berhasil dihapus.";
+        } elseif ($kupon->tipe == 'referal') {
+            $message = "Kode referal berhasil dihapus.";
+        }
         $kupon->delete();
 
-        return redirect()->back()->with('success', 'Kupon berhasil dihapus.');
+        return redirect()->back()->with('success', $message);
     }
 }

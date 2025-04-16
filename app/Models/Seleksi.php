@@ -20,4 +20,9 @@ class Seleksi extends Model
     {
         return $this->belongsTo(Choir::class, 'choirs_id');
     }
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'events_id');
+    }
 }

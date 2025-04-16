@@ -65,7 +65,7 @@
                                         @foreach($divisi['jabatans'] as $pos)
                                             <option value="{{ $pos['id'] }}" 
                                                 {{ old('jabatan_id', $panitia->jabatan_id ?? '') == $pos['id'] ? 'selected' : '' }}>
-                                                {{ $pos['nama'] }}
+                                                {{ $divisi['nama'] }} - {{ $pos['nama'] }}
                                             </option>
                                         @endforeach
                                     </optgroup>

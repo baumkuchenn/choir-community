@@ -156,7 +156,7 @@
         <div class="tab-pane fade" id="panitia" role="tabpanel">
             <h5>Daftar Panitia</h5>
 
-            <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $event->sub_kegiatan_id ?? $event->id }}" data-name="panitia" data-panitia-eksternal="{{ $event->panitia_eksternal === 'ya' ? 'false' : 'true' }}" data-action="{{ route('panitia.create', $event->sub_kegiatan_id ?? $event->id) }}">+ Tambah Panitia</button>
+            <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $event->id }}" data-name="panitia" data-panitia-eksternal="{{ $event->panitia_eksternal === 'ya' ? 'false' : 'true' }}" data-action="{{ route('panitia.create', $event->id) }}">+ Tambah Panitia</button>
             <a href="{{ route('panitia.setting', $event->id) }}" class="btn btn-outline-primary fw-bold" >Pengaturan</a>
 
             <table id="panitiaTable" class="table table-bordered shadow text-center">

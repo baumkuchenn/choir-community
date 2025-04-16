@@ -13,14 +13,6 @@ use Illuminate\Support\Facades\Auth;
 
 class PenyanyiController extends Controller
 {
-    public function destroy(string $id)
-    {
-        $penyanyi = Penyanyi::find($id);
-        $penyanyi->delete();
-
-        return redirect()->back()->with('success', 'Penyanyi berhasil dihapus dari kegiatan!');
-    }
-
     public function search(Request $request)
     {
         $search = $request->input('search');
@@ -49,16 +41,21 @@ class PenyanyiController extends Controller
             ->whereNotIn('jenis_kegiatan', ['latihan', 'seleksi', 'gladi'])
             ->where('id', '!=', $event->id)
             ->get();
-        $seleksiEvent = Event::where('sub_kegiatan_id', $event->sub_kegiatan_id)
+        $seleksis = Event::with('seleksi')
+            ->whereHas('seleksi', function ($query) {
+                $query->where('tipe', 'event');
+            })
+            ->where('sub_kegiatan_id', $event->sub_kegiatan_id)
             ->where('jenis_kegiatan', 'seleksi')
-            ->first();
-
-        $seleksi = Seleksi::where('events_id', $seleksiEvent->id)
-            ->first();
-        $pendaftar = PendaftarSeleksi::with('user.members')
-            ->where('seleksis_id', $seleksi->id)
-            ->where('lolos', 'ya')
             ->get();
+
+        foreach ($seleksis as $seleksi) {
+            $pendaftar = PendaftarSeleksi::with('user.members')
+                ->where('seleksis_id', $seleksi->seleksi->id)
+                ->where('lolos', 'ya')
+                ->get();
+        }
+
         return view('event.modal.penyanyi.form-add', compact('choir', 'pendaftar', 'events'));
     }
 
@@ -94,6 +91,7 @@ class PenyanyiController extends Controller
         } elseif ($request->mode == 'baru') {
             $request->validate([
                 'members_id' => 'required',
+                'suara' => 'required',
             ]);
             $existingPenyanyi = Penyanyi::with('member.user')
                 ->where('members_id', $request->members_id)
@@ -122,6 +120,9 @@ class PenyanyiController extends Controller
                 'suara' => $request->suara,
             ]);
         } elseif ($request->mode == 'event') {
+            $request->validate([
+                'event_lain_id' => 'required',
+            ]);
             $penyanyi = Penyanyi::where('events_id', $request->event_lain_id)
                 ->get();
             foreach ($penyanyi as $item) {
@@ -139,5 +140,13 @@ class PenyanyiController extends Controller
         }
 
         return redirect()->back()->with('success', 'Penyanyi berhasil ditambahkan');
+    }
+
+    public function destroy(string $id)
+    {
+        $penyanyi = Penyanyi::find($id);
+        $penyanyi->delete();
+
+        return redirect()->back()->with('success', 'Penyanyi berhasil dihapus dari kegiatan!');
     }
 }

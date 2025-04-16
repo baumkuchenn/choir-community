@@ -43,4 +43,9 @@ class Event extends Model
     {
         return $this->hasMany(PanitiaDivisi::class, 'events_id');
     }
+
+    public function seleksi()
+    {
+        return $this->hasOne(Seleksi::class, 'events_id');
+    }
 }

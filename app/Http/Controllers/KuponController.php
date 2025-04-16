@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\Kupon;
 use Illuminate\Http\Request;
 
 class KuponController extends Controller
 {
-    public function create(string $tipe)
+    public function create(string $event, string $tipe)
     {
+        $event = Event::find($event);
         if ($tipe == 'kupon') {
-            return view('event.modal.kupon.form-create');
+            return view('event.modal.kupon.form-create', compact('event'));
         } else if ($tipe == 'referal') {
-            return view('event.modal.referal.form-create');
+            return view('event.modal.referal.form-create', compact('event'));
         }
     }
 
@@ -21,6 +23,7 @@ class KuponController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request->all());
         $request->validate([
             'nama' => 'required|string|max:255',
             'harga' => 'required|numeric',

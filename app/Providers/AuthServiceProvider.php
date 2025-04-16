@@ -29,6 +29,32 @@ class AuthServiceProvider extends ServiceProvider
                 optional($user->members->first()->position)->akses_event;
         });
 
+        Gate::define('akses-event-panitia', function ($user) {
+            return $user->panitias()
+                ->whereHas('jabatan', function ($query) {
+                    $query->where('akses_event', '1');
+                })
+                ->exists();
+        });
+
+        Gate::define('akses-eticket', function ($user) {
+            return $user->members()->where('admin', 'ya')->exists() ||
+                optional($user->members->first()->position)->akses_eticket;
+        });
+
+        Gate::define('akses-eticket-panitia', function ($user) {
+            return $user->panitias()
+                ->whereHas('jabatan', function ($query) {
+                    $query->where('akses_eticket', '1');
+                })
+                ->exists();
+        });
+
+        Gate::define('akses-eticket-semua', function ($user) {
+            return Gate::forUser($user)->allows('akses-eticket') ||
+                Gate::forUser($user)->allows('akses-eticket-panitia');
+        });
+
         Gate::define('akses-member', function ($user) {
             return $user->members()->where('admin', 'ya')->exists() ||
                 optional($user->members->first()->position)->akses_member;
@@ -37,11 +63,6 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('akses-roles', function ($user) {
             return $user->members()->where('admin', 'ya')->exists() ||
                 optional($user->members->first()->position)->akses_roles;
-        });
-
-        Gate::define('akses-eticket', function ($user) {
-            return $user->members()->where('admin', 'ya')->exists() ||
-                optional($user->members->first()->position)->akses_eticket;
         });
     }
 }

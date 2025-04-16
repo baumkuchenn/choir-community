@@ -158,21 +158,6 @@
                                 @enderror
                             </div>
                         </div>
-
-                        <div id="peran_wrapper">
-                            <div class="row mb-3">
-                                <div class="col-12">
-                                    <label for="panitia_eksternal" class="form-label">Kegiatan Menggunakan Panitia Eksternal</label>
-                                    <select class="form-select" id="panitia_eksternal" name="panitia_eksternal" required>
-                                        <option value="ya" {{ old('panitia_eksternal') == 'ya' ? 'selected' : '' }}>Ya</option>
-                                        <option value="tidak" {{ old('panitia_eksternal', 'tidak') == 'tidak' ? 'selected' : '' }}>Tidak</option>
-                                    </select>
-                                    @error('panitia_eksternal')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

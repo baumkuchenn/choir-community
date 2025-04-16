@@ -26,6 +26,15 @@
                             <i class="fa-solid fa-location-dot fa-fw fs-5"></i>
                             <p class="mb-0">{{ $event->lokasi }}</p>
                         </div>
+                        @if(!empty($concert->link_ebooklet))
+                            <div class="mt-2 d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-bookmark fa-fw fs-5"></i>
+                                <div>
+                                    <p class="mb-0">Link e-booklet :</p>
+                                    <a class="fw-bold">{{ $concert->link_ebooklet }}</a>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                     <hr>
                     <div class="mt-2 d-flex align-items-center gap-2">

@@ -8,6 +8,7 @@ use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EticketController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\KotaController;
+use App\Http\Controllers\KuponController;
 use App\Http\Controllers\LatihanController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\MemberController;
@@ -78,6 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/eticket/{id}/purchase', [EticketController::class, 'purchase'])->name('eticket.purchase');
     Route::post('/eticket/{id}/payment', [EticketController::class, 'payment'])->name('eticket.payment');
     Route::post('/eticket/{id}/invoice', [EticketController::class, 'invoice'])->name('eticket.invoice');
+    Route::post('/eticket/{id}/ticket', [EticketController::class, 'ticket'])->name('eticket.ticket');
     Route::post('/eticket/{id}/feedback', [EticketController::class, 'feedback'])->name('eticket.feedback');
 
     //Rute Manajemen
@@ -102,15 +104,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             //Manajemen Event
             Route::middleware('akses:akses-event')->group(function () {
-                Route::get('events/search-lalu', [EventController::class, 'searchEventLalu'])->name('events.search.lalu');
-                Route::get('events/search-selanjutnya', [EventController::class, 'searchEventSelanjutnya'])->name('events.search.selanjutnya');
                 Route::get('events/search-choir', [EventController::class, 'searchChoir'])->name('events.search.choir');
                 Route::resource('events', EventController::class);
                 Route::resource('latihans', LatihanController::class);
             });
 
             //Manajemen Konser
-            Route::middleware('akses:akses-eticket')->group(function () {
+            Route::middleware('akses:akses-eticket-semua')->group(function () {
                 Route::get('/events', [EventController::class, 'index'])->name('events.index');
                 Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
 
@@ -119,8 +119,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/events/check-in/{id}', [EventController::class, 'checkInShow'])->name('events.checkInShow');
                 Route::post('/tickets/check-in/{id}', [TicketController::class, 'checkIn'])->name('tickets.checkIn');
                 Route::resource('ticket-types', TicketTypeController::class);
+                Route::get('/kupon/create/{event}/{tipe}', [KuponController::class, 'create'])->name('kupon.create');
+                Route::resource('kupon', KuponController::class)->except(['create']);
                 Route::put('/concerts/{id}', [ConcertController::class, 'update'])->name('concerts.update');
             });
+
+            Route::middleware(['akses:akses-event', 'akses:akses-eticket-semua'])->group(function () {
+                Route::get('events/search-lalu', [EventController::class, 'searchEventLalu'])->name('events.search.lalu');
+                Route::get('events/search-selanjutnya', [EventController::class, 'searchEventSelanjutnya'])->name('events.search.selanjutnya');
+            });
+
 
             //Manajemen Anggota
             Route::middleware('akses:akses-member')->group(function () {

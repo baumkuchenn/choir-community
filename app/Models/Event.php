@@ -10,7 +10,7 @@ class Event extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'events';
-    protected $fillable = ['nama', 'parent_kegiatan', 'jenis_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'jam_mulai', 'jam_selesai', 'lokasi', 'peran', 'panitia_eksternal', 'visibility', 'sub_kegiatan_id'];
+    protected $fillable = ['nama', 'parent_kegiatan', 'jenis_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'jam_mulai', 'jam_selesai', 'lokasi', 'peran', 'visibility', 'sub_kegiatan_id'];
 
     public function concert()
     {

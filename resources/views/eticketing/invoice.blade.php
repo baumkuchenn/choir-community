@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="container">
-    <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
     <button class="btn btn-primary" onclick="printSection('print-invoice')">Print</button>
     <div id="print-invoice">
         <div class="row mt-3">
@@ -67,14 +66,6 @@
                             @endforeach
                         </div>
                     </div>
-                    @if(!empty($concerts->link_ebooklet))
-                        <div class="row">
-                            <div class="col-6">
-                                <p class="mb-0">Link e-booklet</p>
-                                <a class="fw-bold">{{ $concerts->link_ebooklet }}</a>
-                            </div>
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>

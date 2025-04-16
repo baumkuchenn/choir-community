@@ -21,7 +21,7 @@ class Panitia extends Model
         return $this->belongsTo(Event::class, 'events_id');
     }
 
-    public function jabatans()
+    public function jabatan()
     {
         return $this->belongsTo(PanitiaJabatan::class, 'jabatan_id');
     }

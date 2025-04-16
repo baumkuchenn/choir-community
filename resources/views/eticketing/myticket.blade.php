@@ -89,9 +89,9 @@
                                             <button class="btn btn-outline-primary">Lihat Detail Transaksi</button>
                                         </form>
                                         @if($purchase->status == 'selesai' && $purchase->check_in == 'tidak')
-                                            <form action="{{ route('eticket.invoice', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
+                                            <form action="{{ route('eticket.ticket', ['id' => $purchase->id]) }}" target="_blank" method="POST" enctype="multipart/form-data">
                                                 @csrf
-                                                <button class="btn btn-primary">Lihat Invoice</button>
+                                                <button class="btn btn-primary">Lihat Tiket</button>
                                             </form>
                                         @endif
                                         @if($purchase->check_in == 'ya' && $purchase->feedbacks == 'belum')
@@ -116,9 +116,9 @@
                                             <button class="btn btn-outline-primary">Lihat Detail Transaksi</button>
                                         </form>
                                         @if($purchase->status == 'selesai' && $purchase->check_in == 'tidak')
-                                            <form action="{{ route('eticket.invoice', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
+                                            <form action="{{ route('eticket.ticket', ['id' => $purchase->id]) }}" target="_blank" method="POST" enctype="multipart/form-data">
                                                 @csrf
-                                                <button class="btn btn-primary">Lihat Invoice</button>
+                                                <button class="btn btn-primary">Lihat Tiket</button>
                                             </form>
                                         @endif
                                         @if($purchase->check_in == 'ya' && $purchase->feedbacks == 'belum')
@@ -192,9 +192,9 @@
                                             <button class="btn btn-outline-primary">Lihat Detail Transaksi</button>
                                         </form>
                                         @if($purchase->status == 'selesai' && $purchase->check_in == 'tidak')
-                                            <form action="{{ route('eticket.invoice', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
+                                            <form action="{{ route('eticket.ticket', ['id' => $purchase->id]) }}" target="_blank" method="POST" enctype="multipart/form-data">
                                                 @csrf
-                                                <button class="btn btn-primary">Lihat Invoice</button>
+                                                <button class="btn btn-primary">Lihat Tiket</button>
                                             </form>
                                         @endif
                                         @if($purchase->check_in == 'ya' && $purchase->feedbacks == 'belum')
@@ -218,9 +218,9 @@
                                             <button class="btn btn-outline-primary">Lihat Detail Transaksi</button>
                                         </form>
                                         @if($purchase->status == 'selesai' && $purchase->check_in == 'tidak')
-                                            <form action="{{ route('eticket.invoice', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
+                                            <form action="{{ route('eticket.ticket', ['id' => $purchase->id]) }}" target="_blank" method="POST" enctype="multipart/form-data">
                                                 @csrf
-                                                <button class="btn btn-primary">Lihat Invoice</button>
+                                                <button class="btn btn-primary">Lihat Tiket</button>
                                             </form>
                                         @endif
                                         @if($purchase->check_in == 'ya' && $purchase->feedbacks == 'belum')

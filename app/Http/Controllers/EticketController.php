@@ -288,6 +288,7 @@ class EticketController extends Controller
             })
             ->whereNotIn('status', ['batal', 'bayar'])
             ->get()
+            ->sortByDesc(fn($purchase) => $purchase->concert->event->tanggal_mulai)
             ->map(function ($purchase) {
                 $purchase->penyelenggara = $purchase->concert->event->choirs->first()->nama;
                 $purchase->logo = $purchase->concert->event->choirs->first()->logo;
@@ -313,6 +314,7 @@ class EticketController extends Controller
             })
             ->whereNotIn('status', ['batal', 'bayar'])
             ->get()
+            ->sortByDesc(fn($purchase) => $purchase->concert->event->tanggal_mulai)
             ->map(function ($purchase) {
                 $purchase->penyelenggara = $purchase->concert->event->choirs->first()->nama;
                 $purchase->logo = $purchase->concert->event->choirs->first()->logo;
@@ -322,7 +324,6 @@ class EticketController extends Controller
 
                 return $purchase;
             });
-        // dd($purchaseBerlangsung);
         return view('eticketing.myticket', compact('purchaseBerlangsung', 'purchaseLalu'));
     }
 
@@ -350,6 +351,25 @@ class EticketController extends Controller
         $purchaseDetail = $purchase->ticketTypes;
 
         return view('eticketing.invoice', compact('user', 'purchase', 'concerts', 'events', 'invoices', 'tickets', 'purchaseDetail'));
+    }
+
+    public function ticket(string $id)
+    {
+        $user = Auth::user()->name;
+
+        $purchase = Purchase::with([
+            'concert.event.choirs',
+            'invoice.tickets.ticket_type',
+            'ticketTypes'
+        ])
+            ->whereHas('concert.event.choirs', function ($query) {
+                $query->where('penyelenggara', 'ya');
+            })
+            ->findOrFail($id);
+
+        $tickets = $purchase->invoice->tickets;
+
+        return view('eticketing.tickets', compact('user', 'purchase', 'tickets'));
     }
 
     public function feedback(Request $request, string $id)

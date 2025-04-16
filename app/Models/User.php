@@ -75,4 +75,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(PendaftarSeleksi::class, 'seleksis_id');
     }
+
+    public function panitias()
+    {
+        return $this->hasMany(Panitia::class, 'users_id');
+    }
 }

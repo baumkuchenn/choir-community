@@ -275,4 +275,4 @@
         @endif
     </div>
 </div>
-@include('member.seleksi.modal.form-add', ['seleksi', $seleksi])
+@include('member.seleksi.modal.form-add', ['seleksi' => $seleksi, 'event' => $event])

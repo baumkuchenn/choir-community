@@ -75,6 +75,7 @@ class SeleksiController extends Controller
         $seleksi = Seleksi::find($request->seleksis_id);
         $userId = $request->user_id;
         $data = $request->all();
+        
         if ($request->mode == 'baru') {
             $user = $this->createUserWithoutRedirect($request);
             $userId = $user->id;
@@ -96,6 +97,7 @@ class SeleksiController extends Controller
             if ($existingPendaftar) {
                 return back()->with('error', 'Pengguna ini sudah terdaftar.');
             }
+
             PanitiaPendaftarSeleksi::create($data);
         }
         return redirect()->back()->with('success', 'Pendaftar berhasil ditambahkan');

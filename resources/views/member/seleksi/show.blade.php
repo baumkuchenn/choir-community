@@ -200,7 +200,7 @@
         </div>
     </div>
 </div>
-@include('member.seleksi.modal.form-add', ['seleksi', $seleksi])
+@include('member.seleksi.modal.form-add', ['seleksi' => $seleksi])
 @endsection
 
 @section('js')
@@ -229,7 +229,7 @@
                 const existingSection = document.getElementById('existing-user-section');
                 const newSection = document.getElementById('new-user-section');
 
-                if (this.value === 'existing') {
+                if (this.value === 'ada') {
                     existingSection.style.display = 'block';
                     newSection.style.display = 'none';
 

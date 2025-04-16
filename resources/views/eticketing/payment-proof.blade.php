@@ -48,12 +48,12 @@
                     <h4 class="fw-bold">Bukti Pembayaran</h4>
                     <img src="{{ asset('storage/' . $purchases->gambar_pembayaran) }}" alt="bukti-pembayaran" class="w-75 d-block mx-auto my-3">
 
-                    @if(!empty($purchases->kode))
+                    @if(!empty($purchases->invoice))
                         <h4 class="fw-bold">Pembayaran Berhasil</h4>
                         <div class="d-flex align-items-center justify-content-between gap-2">
                             <div>
                                 <p class="mb-0">Kode Invoice</p>
-                                <p class="fw-bold">{{ $purchases->kode }}</p>
+                                <p class="fw-bold">{{ $purchases->invoice->kode }}</p>
                             </div>
                             <form action="{{ route('eticket.invoice', ['id' => $purchases->id]) }}" method="POST" enctype="multipart/form-data">
                                 @csrf

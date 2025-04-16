@@ -35,7 +35,9 @@
                 @include('event.partials.show_latihan')
             @endcan
         @elseif ($event->jenis_kegiatan == 'konser')
-            @include('event.partials.show_konser')
+            @if(Gate::allows('akses-event') || Gate::allows('akses-eticket') || Gate::allows('akses-event-panitia') || Gate::allows('akses-eticket-panitia'))
+                @include('event.partials.show_konser')
+            @endif
         @elseif ($event->jenis_kegiatan == 'gladi')
             @can('akses-event')
                 @include('event.partials.show_gladi')
@@ -82,10 +84,6 @@
                     let route = this.dataset.action;
                     let name = this.dataset.name;
                     let id = this.dataset.id;
-                    let onlyChoirMembers = true;
-                    if (name == 'panitia'){
-                        onlyChoirMembers = this.dataset.panitiaEksternal;
-                    }
 
                     // Clean up any old modals & backdrops first
                     document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
@@ -101,6 +99,9 @@
                             let createModal = "";
                             if (name == 'ticket-type'){
                                 createModal = document.getElementById('createTicketModal');
+                                createModal.querySelector('#concerts_id').value = id;
+                            } else if (name == 'kupon'){
+                                createModal = document.getElementById('createKuponModal');
                                 createModal.querySelector('#concerts_id').value = id;
                             } else if (name == 'penyanyi'){
                                 createModal = document.getElementById('tambahPenyanyiModal');
@@ -193,7 +194,7 @@
                                             data: function(params) {
                                                 return {
                                                     search: params.term,
-                                                    only_choir_members: onlyChoirMembers
+                                                    only_choir_members: false,
                                                 };
                                             },
                                             processResults: function(data) {
@@ -282,6 +283,9 @@
                                 editModal = document.getElementById('editTicketModal');
                             } else if (name == 'panitia'){
                                 editModal = document.getElementById('editPanitiaModal');
+                            } else if (name == 'kupon'){
+                                createModal = document.getElementById('editKuponModal');
+                                createModal.querySelector('#concerts_id').value = id;
                             }
                             new bootstrap.Modal(editModal).show();
                         })
@@ -310,6 +314,18 @@
                 "lengthMenu": [5, 10, 20, 40],
                 "language": {
                     "emptyTable": "Belum ada jenis tiket yang dijual"
+                }
+            });
+            $('#kuponTable').DataTable({
+                "lengthMenu": [5, 10, 20, 40],
+                "language": {
+                    "emptyTable": "Belum ada kupon yang dibuat"
+                }
+            });
+            $('#referalTable').DataTable({
+                "lengthMenu": [5, 10, 20, 40],
+                "language": {
+                    "emptyTable": "Belum ada kode referal yang dibuat"
                 }
             });
 
@@ -716,6 +732,31 @@
                             };
                         }
                     }
+                });
+                document.querySelectorAll('input[name="mode"]').forEach(radio => {
+                    radio.addEventListener('change', function () {
+                        const existingSection = document.getElementById('existing-user-section');
+                        const newSection = document.getElementById('new-user-section');
+
+                        if (this.value === 'ada') {
+                            existingSection.style.display = 'block';
+                            newSection.style.display = 'none';
+
+                            // Enable inputs in existing section
+                            existingSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                            // Disable inputs in new section
+                            newSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+
+                        } else {
+                            existingSection.style.display = 'none';
+                            newSection.style.display = 'block';
+
+                            // Enable inputs in new section
+                            newSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                            // Disable inputs in existing section
+                            existingSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                        }
+                    });
                 });
             });
 

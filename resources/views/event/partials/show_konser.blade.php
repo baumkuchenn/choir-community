@@ -6,10 +6,10 @@
                 <a class="nav-link px-3" data-bs-toggle="tab" href="#penyanyi" role="tab" aria-controls="penyanyi" aria-selected="false">Penyanyi</a>
                 <a class="nav-link px-3" data-bs-toggle="tab" href="#panitia" role="tab" aria-controls="panitia" aria-selected="false">Panitia</a>
             @endcan
-            @can('akses-eticket')
+            @if(Gate::allows('akses-eticket') || Gate::allows('akses-eticket-panitia'))
                 <a class="nav-link px-3" data-bs-toggle="tab" href="#tiket" role="tab" aria-controls="tiket" aria-selected="false">Tiket</a>
                 <a class="nav-link px-3" data-bs-toggle="tab" href="#feedback" role="tab" aria-controls="feedback" aria-selected="false">Feedback</a>
-            @endcan
+            @endif
         </div>
     </div>
 </nav>
@@ -99,11 +99,11 @@
             </div>
         </div>
 
-        @can('akses-event')
+        @if(Gate::allows('akses-event') || Gate::allows('akses-event-panitia'))
             <div class="fixed-bottom bg-body-secondary p-3 border-top text-end">
                 <button class="btn btn-primary">Simpan Perubahan</button>
             </div>
-        @endcan
+        @endif
     </form>
     @can('akses-member')
         <div class="tab-pane fade" id="penyanyi" role="tabpanel">
@@ -156,7 +156,7 @@
         <div class="tab-pane fade" id="panitia" role="tabpanel">
             <h5>Daftar Panitia</h5>
 
-            <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $event->id }}" data-name="panitia" data-panitia-eksternal="{{ $event->panitia_eksternal === 'ya' ? 'false' : 'true' }}" data-action="{{ route('panitia.create', $event->id) }}">+ Tambah Panitia</button>
+            <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $event->id }}" data-name="panitia" data-action="{{ route('panitia.create', $event->id) }}">+ Tambah Panitia</button>
             <a href="{{ route('panitia.setting', $event->id) }}" class="btn btn-outline-primary fw-bold" >Pengaturan</a>
 
             <table id="panitiaTable" class="table table-bordered shadow text-center">
@@ -186,7 +186,7 @@
             </table>
         </div>
     @endcan
-    @can('akses-eticket')
+    @if(Gate::allows('akses-eticket') || Gate::allows('akses-eticket-panitia'))
         <div class="tab-pane fade mb-5" id="tiket" role="tabpanel">
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center">
@@ -271,14 +271,18 @@
                                 @endif
                             </td>
                             <td class="d-flex justify-content-center gap-3">
-                                <button class="btn btn-primary edit-modal" data-name="ticket-type" data-route="{{ route('ticket-types.edit', $type->id) }}">Ubah</button>
-                                <button class="btn btn-outline-danger deleteBtn" data-name="tiket {{ $type->nama }}" data-action="{{ route('ticket-types.destroy', $type->id) }}">Hapus</button>
+                                @can('akses-eticket')
+                                    <button class="btn btn-primary edit-modal" data-name="ticket-type" data-route="{{ route('ticket-types.edit', $type->id) }}">Ubah</button>
+                                    <button class="btn btn-outline-danger deleteBtn" data-name="tiket {{ $type->nama }}" data-action="{{ route('ticket-types.destroy', $type->id) }}">Hapus</button>
+                                @endcan
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $concert->id }}" data-name="ticket-type" data-action="{{ route('ticket-types.create') }}">+ Tambah Jenis</button>
+                @can('akses-eticket')
+                    <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $concert->id }}" data-name="ticket-type" data-action="{{ route('ticket-types.create') }}">+ Tambah Jenis</button>
+                @endcan
             </div>
 
             <form method="POST" action="{{ route('concerts.update', $event->id) }}" class="mb-0" id="form-tiket" enctype="multipart/form-data">
@@ -517,40 +521,34 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <p class="mb-1 fw-medium">Kode Kupon</p>
                             </div>
-                            <table class="table table-bordered shadow text-center">
+                            <table id="kuponTable" class="table table-bordered shadow">
                                 <thead>
                                     <tr class="bg-primary">
-                                        <th>Kode</th>
-                                        <th>Nominal</th>
-                                        <th>Terpakai/Jumlah</th>
-                                        <th>Aksi</th>
+                                        <th class="text-center">Kode</th>
+                                        <th class="text-center">Potongan Harga</th>
+                                        <th class="text-center">Terpakai/Jumlah</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if($donations->isNotEmpty())
-                                        @foreach($donations as $donation)
-                                        <tr>
-                                            <td>{{ $donation->user->name }}</td>
-                                            <td>{{ $donation->user->no_handphone }}</td>
-                                            <td>{{ $donation->jumlah }}</td>
-                                            <td class="d-flex justify-content-center gap-3">
-                                                <a href="{{ route('events.edit', $concert->id) }}" class="btn btn-primary">Ubah</a>
-                                                <form action="{{ route('events.destroy', $concert->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-outline-primary">Hapus</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    @else
-                                        <tr>
-                                            <td colspan="4">Belum ada kupon yang dibuat</td>
-                                        </tr>
-                                    @endif
+                                    @foreach($kupon as $item)
+                                    <tr>
+                                        <td>{{ $item->kode }}</td>
+                                        <td>Rp{{ number_format($item->potongan, 0, ',', '.') }}</td>
+                                        <td>incoming/{{ $item->jumlah }}</td>
+                                        <td class="d-flex justify-content-center gap-3">
+                                            @can('akses-eticket')
+                                                <button class="btn btn-primary edit-modal" data-name="kupon" data-route="{{ route('kupon.edit', $item->id) }}">Ubah</button>
+                                                <button class="btn btn-outline-danger deleteBtn" data-name="kupon {{ $item->kode }}" data-action="{{ route('kupon.destroy', $item->id) }}">Hapus</button>
+                                            @endcan
+                                        </td>
+                                    </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
-                            <button class="btn btn-primary fw-bold">+ Tambah Kupon</button>
+                            @can('akses-eticket')
+                                <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $concert->id }}" data-name="kupon" data-action="{{ route('kupon.create', ['event' => $event->id, 'tipe' => 'kupon']) }}">+ Tambah Kupon</button>
+                            @endcan
                         </div>
                     </div>
                     <div class="row mt-1" id="referal_container" style="display: none;">
@@ -558,40 +556,38 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <p class="mb-1 fw-medium">Kode Referal</p>
                             </div>
-                            <table class="table table-bordered shadow text-center">
+                            <table id="referalTable" class="table table-bordered shadow">
                                 <thead>
                                     <tr class="bg-primary">
-                                        <th>Kode</th>
-                                        <th>Anggota Terkait</th>
-                                        <th>Terpakai/Jumlah</th>
-                                        <th>Aksi</th>
+                                        <th class="text-center">Kode</th>
+                                        <th class="text-center">Anggota Terkait</th>
+                                        <th class="text-center">Terpakai/Jumlah</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if($donations->isNotEmpty())
-                                        @foreach($donations as $donation)
-                                        <tr>
-                                            <td>{{ $donation->user->name }}</td>
-                                            <td>{{ $donation->user->no_handphone }}</td>
-                                            <td>{{ $donation->jumlah }}</td>
-                                            <td class="d-flex justify-content-center gap-3">
+                                    @foreach($donations as $donation)
+                                    <tr>
+                                        <td>{{ $donation->user->name }}</td>
+                                        <td>{{ $donation->user->no_handphone }}</td>
+                                        <td>{{ $donation->jumlah }}</td>
+                                        <td class="d-flex justify-content-center gap-3">
+                                            @can('akses-eticket')
                                                 <a href="{{ route('events.edit', $concert->id) }}" class="btn btn-primary">Ubah</a>
                                                 <form action="{{ route('events.destroy', $concert->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="btn btn-outline-primary">Hapus</button>
                                                 </form>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    @else
-                                        <tr>
-                                            <td colspan="4">Belum ada kode referal yang dibuat</td>
-                                        </tr>
-                                    @endif
+                                            @endcan
+                                        </td>
+                                    </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
-                            <button class="btn btn-primary fw-bold">+ Tambah Referal</button>
+                            @can('akses-eticket')
+                                <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $concert->id }}" data-name="kupon" data-action="{{ route('kupon.create', ['event' => $event->id, 'tipe' => 'referal']) }}">+ Tambah Referal</button>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -637,6 +633,6 @@
                 </div>
             @endif
         </div>
-    @endcan
+    @endif
 </div>
 <div id="modalContainer"></div>

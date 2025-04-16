@@ -23,11 +23,11 @@ class Kupon extends Model
 
     public function usedAsKupon()
     {
-        return $this->hasMany(Kupon::class, 'kupons_id');
+        return $this->hasMany(Purchase::class, 'kupons_id');
     }
 
     public function usedAsReferal()
     {
-        return $this->hasMany(Kupon::class, 'referals_id');
+        return $this->hasMany(Purchase::class, 'referals_id');
     }
 }

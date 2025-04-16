@@ -26,13 +26,14 @@
                         <input type="datetime-local" class="form-control" id="pembelian_terakhir" name="pembelian_terakhir" required>
                     </div>
                     @can('akses-admin')
-                    <div class="mb-3">
-                        <label for="visibility" class="form-label">Ketersediaan</label>
-                        <select class="form-select" id="visibility" name="visibility" required>
-                            <option value="public">Dijual</option>
-                            <option value="private">Tidak Dijual</option>
-                        </select>
-                    </div>
+                        <div class="mb-3">
+                            <label for="visibility" class="form-label">Ketersediaan</label>
+                            <select class="form-select" id="visibility" name="visibility" required>
+                                <option value="public">Dijual</option>
+                                <option value="private">Tidak Dijual</option>
+                            </select>
+                        </div>
+                    @endcan
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>

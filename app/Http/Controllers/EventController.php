@@ -38,17 +38,32 @@ class EventController extends Controller
      */
     public function index()
     {
-        $eventSelanjutnya = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
-            ->whereRaw("events.tanggal_selesai >= CURDATE()")
-            ->orderBy('tanggal_mulai', 'desc')
-            ->paginate(5);
+        $user = Auth::user();
+        if ($user->can('akses-eticket-panitia') || $user->can('akses-event-panitia')) {
+            $eventIds = $user->panitias->pluck('events_id');
+            $eventSelanjutnya = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
+                ->whereIn('id', $eventIds)
+                ->whereRaw("events.tanggal_selesai >= CURDATE()")
+                ->orderBy('tanggal_mulai', 'desc')
+                ->paginate(5);
+            $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
+                ->whereIn('id', $eventIds)
+                ->whereRaw("events.tanggal_selesai < CURDATE()")
+                ->orderBy('tanggal_mulai', 'desc')
+                ->paginate(5);
+        } else {
+            $eventSelanjutnya = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
+                ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+                ->whereRaw("events.tanggal_selesai >= CURDATE()")
+                ->orderBy('tanggal_mulai', 'desc')
+                ->paginate(5);
 
-        $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
-            ->whereRaw("events.tanggal_selesai < CURDATE()")
-            ->orderBy('tanggal_mulai', 'desc')
-            ->paginate(5);
+            $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
+                ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+                ->whereRaw("events.tanggal_selesai < CURDATE()")
+                ->orderBy('tanggal_mulai', 'desc')
+                ->paginate(5);
+        }
 
         return view('event.index', compact('eventSelanjutnya', 'eventLalu'));
     }
@@ -157,10 +172,6 @@ class EventController extends Controller
                     if ($request->kegiatan_kolaborasi === 'ya') {
                         $rules['choirs_id'] = 'required';
                     }
-
-                    if (in_array($request->peran, ['panitia', 'keduanya'])) {
-                        $rules['panitia_eksternal'] = 'required|string';
-                    }
                 }
             }
 
@@ -262,6 +273,8 @@ class EventController extends Controller
         $purchases = collect();
         $ticketTypes = collect();
         $donations = collect();
+        $kupon = collect();
+        $referal = collect();
         $feedbacks = collect();
 
         $seleksi = null;
@@ -283,7 +296,7 @@ class EventController extends Controller
 
             $penyanyi = Penyanyi::where('events_id', $event->id)
                 ->get();
-            $panitia = Panitia::with('jabatans')
+            $panitia = Panitia::with('jabatan')
                 ->where('events_id', $event->id)
                 ->get();
 
@@ -301,6 +314,8 @@ class EventController extends Controller
                 }])
                 ->get();
             $donations = $concert->donations()->with('user:id,name,no_handphone')->get();
+            $kupon = $concert->kupons()->where('tipe', 'kupon')->get();
+            $referal = $concert->kupons()->where('tipe', 'referal')->get();
             $feedbacks = $concert->feedbacks()->with('user:id,name')->paginate(10);
             $banks = Bank::all();
         } elseif ($event->jenis_kegiatan == 'seleksi') {
@@ -325,7 +340,7 @@ class EventController extends Controller
             $latihan = Latihan::where('events_id', $event->id)->get();
         }
 
-        return view('event.show', compact('event', 'events', 'concert', 'choir', 'penyanyi', 'panitia', 'purchases', 'ticketTypes', 'donations', 'feedbacks', 'banks', 'seleksi', 'pendaftar', 'hasil', 'latihan'));
+        return view('event.show', compact('event', 'events', 'concert', 'choir', 'penyanyi', 'panitia', 'purchases', 'ticketTypes', 'donations', 'kupon', 'referal', 'feedbacks', 'banks', 'seleksi', 'pendaftar', 'hasil', 'latihan'));
     }
 
     /**
@@ -358,10 +373,6 @@ class EventController extends Controller
 
             if ($request->kegiatan_kolaborasi === 'ya') {
                 $rules['choirs_id'] = 'required';
-            }
-
-            if (in_array($request->peran, ['panitia', 'keduanya'])) {
-                $rules['panitia_eksternal'] = 'required|string';
             }
         }
 

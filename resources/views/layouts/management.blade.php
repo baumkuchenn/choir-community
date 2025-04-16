@@ -122,13 +122,13 @@
                 <!-- Full Navbar Content (Large Screens) -->
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <div class="d-flex flex-wrap align-items-center text-end ms-auto">
-                        @if(Gate::check('akses-event') || Gate::check('akses-member') || Gate::check('akses-roles') || Gate::check('akses-eticket'))
+                        @if(Gate::check('akses-event') || Gate::check('akses-member') || Gate::check('akses-roles') || Gate::check('akses-eticket') || Gate::allows('akses-event-panitia') || Gate::allows('akses-eticket-panitia'))
                             <div class="flex-shrink-0 dropdown">
                                 <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle me-2 pe-2" data-bs-toggle="dropdown">
                                     <i class="fa-solid fa-list-check"></i> Manajemen
                                 </a>
                                 <ul class="dropdown-menu text-small shadow">
-                                @if(Gate::allows('akses-event') || Gate::allows('akses-eticket'))
+                                @if(Gate::allows('akses-event') || Gate::allows('akses-eticket') || Gate::allows('akses-event-panitia') || Gate::allows('akses-eticket-panitia'))
                                     <li><a class="dropdown-item" href="{{ route('events.index') }}">Manajemen Kegiatan</a></li>
                                 @endif
                                 @can('akses-member')
@@ -184,13 +184,13 @@
                     <img src="https://github.com/mdo.png" alt="Profile" width="50" height="50" class="rounded-circle mb-2">
                     <p class="mb-3"><b>{{ Auth::user()->name }}</b></p>
                 </div>
-                @if(Gate::check('akses-event') || Gate::check('akses-member') || Gate::check('akses-roles'))
+                @if(Gate::check('akses-event') || Gate::check('akses-member') || Gate::check('akses-roles') || Gate::allows('akses-event-panitia') || Gate::allows('akses-eticket-panitia'))
                     <div class="dropdown">
                         <button class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2 dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fa-solid fa-list-check" style="width: 20px; text-align: center;"></i> Manajemen
                         </button>
                         <ul class="dropdown-menu text-small shadow w-100">
-                        @if(Gate::allows('akses-event') || Gate::allows('akses-eticket'))
+                        @if(Gate::allows('akses-event') || Gate::allows('akses-eticket') || Gate::allows('akses-event-panitia') || Gate::allows('akses-eticket-panitia'))
                             <li><a class="dropdown-item" href="{{ route('events.index') }}">Manajemen Kegiatan</a></li>
                         @endif
                         @can('akses-member')

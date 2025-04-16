@@ -73,12 +73,20 @@ class PanitiaController extends Controller
     public function setting(string $id)
     {
         $event = Event::find($id);
+        $choirId = Auth::user()->members->first()->choirs_id;
+        $events = Event::with('choirs')
+            ->whereHas('choirs', function ($query) use ($choirId) {
+                $query->where('choirs.id', $choirId);
+            })
+            ->whereNotIn('jenis_kegiatan', ['latihan', 'seleksi', 'gladi'])
+            ->where('id', '!=', $event->id)
+            ->get();
         $divisi = PanitiaDivisi::where('events_id', $event->id)
             ->with('jabatans')
             ->get();
 
         $jabatan = $divisi->flatMap->jabatans;
-        return view('panitia.setting', compact('divisi', 'jabatan', 'event'));
+        return view('panitia.setting', compact('divisi', 'jabatan', 'event', 'events'));
     }
 
     public function search(Request $request)

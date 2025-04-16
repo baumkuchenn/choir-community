@@ -17,6 +17,24 @@
         <h3 class="my-3 fw-bold text-center">Pengaturan Divisi dan Jabatan {{ $event->nama }}</h3>
         <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-3">Kembali</a>
 
+        <form action="{{ route('panitia-divisi.ambil-kegiatan-lain', $event->id) }}" method="POST" class="mb-0">
+            @csrf
+            <div class="mb-3">
+                <label for="event_lain_id" class="form-label">Ambil divisi dan jabatan dari kegiatan lain</label>
+                <select class="form-select" id="event_lain_id" name="event_lain_id" required>
+                    <option value="" disabled selected>Pilih Kegiatan</option>
+                    @foreach ($events as $item)
+                        <option value="{{ $item->id }}">
+                            {{ $item->nama }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+        </form>
+
         <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h5>Divisi Pengurus</h5>

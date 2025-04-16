@@ -148,6 +148,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::resource('panitia-jabatan', PanitiaJabatanController::class)->except(['create', 'edit']);
                 Route::get('/panitia-divisi/{event}/create', [PanitiaDivisiController::class, 'create'])->name('panitia-divisi.create');
                 Route::get('/panitia-divisi/{event}/{divisi}/edit', [PanitiaDivisiController::class, 'edit'])->name('panitia-divisi.edit');
+                Route::post('/panitia-divisi/{event}/ambil-kegiatan-lain', [PanitiaDivisiController::class, 'ambilKegiatanLain'])->name('panitia-divisi.ambil-kegiatan-lain');
                 Route::resource('panitia-divisi', PanitiaDivisiController::class)->except(['create', 'edit']);
             });
 

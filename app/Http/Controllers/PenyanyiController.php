@@ -46,6 +46,8 @@ class PenyanyiController extends Controller
         $choir = Auth::user()->members->first()->choir;
         $event = Event::find($event);
         $events = Event::where('sub_kegiatan_id', $event->sub_kegiatan_id)
+            ->whereNotIn('jenis_kegiatan', ['latihan', 'seleksi', 'gladi'])
+            ->where('id', '!=', $event->id)
             ->get();
         $seleksiEvent = Event::where('sub_kegiatan_id', $event->sub_kegiatan_id)
             ->where('jenis_kegiatan', 'seleksi')

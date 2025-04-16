@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\PanitiaDivisi;
+use App\Models\PanitiaJabatan;
 use Illuminate\Http\Request;
 
 class PanitiaDivisiController extends Controller
@@ -28,6 +29,33 @@ class PanitiaDivisiController extends Controller
         PanitiaDivisi::create($request->all());
 
         return redirect()->back()->with('success', 'Divisi panitia berhasil ditambahkan!');
+    }
+
+    public function ambilKegiatanLain(string $id, Request $request)
+    {
+        $divisiLain = PanitiaDivisi::with('jabatans')
+            ->where('events_id', $request->event_lain_id)
+            ->get();
+        foreach ($divisiLain as $divisi) {
+            $cekDivisi = PanitiaDivisi::where('events_id', $id)
+                ->where('nama', $divisi->nama)
+                ->first();
+            if (!$cekDivisi) {
+                $divisiBaru = PanitiaDivisi::create([
+                    'nama' => $divisi->nama,
+                    'nama_singkat' => $divisi->nama_singkat,
+                    'events_id' => $id,
+                ]);
+                foreach ($divisi->jabatans as $jabatan) {
+                    $data = $jabatan->toArray();
+                    unset($data['id']); // avoid ID duplication
+                    $data['divisi_id'] = $divisiBaru->id;
+                    PanitiaJabatan::create($data);
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Divisi dan jabatan panitia berhasil ditambahkan!');
     }
 
     /**

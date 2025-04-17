@@ -16,10 +16,10 @@ return new class extends Migration
             $table->enum('tipe', ['kupon', 'referal']);
             $table->string('kode', 45);
             $table->integer('potongan')->nullable();
-            $table->integer('jumlah');
+            $table->integer('jumlah')->nullable();
             $table->timestamp('waktu_expired');
 
-            $table->unsignedBigInteger('members_id');
+            $table->unsignedBigInteger('members_id')->nullable();
             $table->foreign('members_id')->references('id')->on('members');
             $table->unsignedBigInteger('concerts_id');
             $table->foreign('concerts_id')->references('id')->on('concerts');

@@ -368,8 +368,7 @@ class EventController extends Controller
         ];
 
         if ($event->jenis_kegiatan === 'konser') {
-            $rules['kegiatan_kolaborasi'] = 'required';
-            $rules['peran'] = 'required';
+            // $rules['kegiatan_kolaborasi'] = 'required';
 
             if ($request->kegiatan_kolaborasi === 'ya') {
                 $rules['choirs_id'] = 'required';
@@ -385,25 +384,19 @@ class EventController extends Controller
 
         $userChoirs = Auth::user()->members->pluck('id')->toArray();
 
-        if ($request->has('all_notification')) {
-            $members = Member::with('user')
-                ->where('choirs_id', $userChoirs[0])
-                ->where('admin', 'tidak')
-                ->get()
-                ->pluck('user')
-                ->filter()
-                ->unique('id');
-            Notification::send($members, new EventUpdatedNotification($event));
-        } elseif ($request->has('parent_notification')) {
-            // $members = Member::with('user')
-            //     ->where('choirs_id', $userChoirs[0])
-            //     ->where('admin', 'tidak')
-            //     ->get()
-            //     ->pluck('user')
-            //     ->filter()
-            //     ->unique('id');
-            // Notification::send($members, new EventUpdatedNotification($event));
-        }
+        $mainEventId = $event->sub_kegiatan_id ?? $event->id;
+        $penyanyiUsers = Penyanyi::with('member.user')
+            ->whereHas('member', function ($query) use ($userChoirs) {
+                $query->where('choirs_id', $userChoirs[0])
+                    ->where('admin', 'tidak');
+            })
+            ->where('events_id', $mainEventId)
+            ->get()
+            ->pluck('member.user')
+            ->filter()
+            ->unique('id');
+
+        Notification::send($penyanyiUsers, new EventUpdatedNotification($event));
 
         return redirect()->route('events.show', $id)
             ->with('success', 'Perubahan detail kegiatan berhasil.');

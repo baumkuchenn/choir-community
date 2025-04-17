@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Concert;
 use App\Models\Event;
 use App\Models\Kupon;
+use App\Models\Member;
+use App\Models\Penyanyi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class KuponController extends Controller
 {
@@ -14,7 +18,10 @@ class KuponController extends Controller
         if ($tipe == 'kupon') {
             return view('event.modal.kupon.form-create', compact('event'));
         } else if ($tipe == 'referal') {
-            return view('event.modal.referal.form-create', compact('event'));
+            $penyanyi = Penyanyi::with('member.user')
+                ->where('events_id', $event->id)
+                ->get();
+            return view('event.modal.referal.form-create', compact('event', 'penyanyi'));
         }
     }
 
@@ -23,13 +30,40 @@ class KuponController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        $concert = Concert::find($request->concerts_id);
+        $event = $concert->event;
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'harga' => 'required|numeric',
-            'jumlah' => 'required|integer',
+            'tipe' => 'required',
         ]);
-        Kupon::create($request->all());
+        if ($request->tipe == 'kupon') {
+            $request->validate([
+                'waktu_expired' => [
+                    'required',
+                    'date',
+                    'after_or_equal:now',
+                    'before_or_equal:' . $event->tanggal_selesai . ' 23:59:59',
+                ],
+                'kode' => 'required|string|max:45',
+                'potongan' => 'required|integer|min:0',
+                'jumlah' => 'required|integer|min:0',
+            ]);
+            Kupon::create($request->all());
+        } elseif ($request->tipe == 'referal') {
+            $request->validate([
+                'members_id' => 'required',
+            ]);
+            foreach ($request->members_id as $memberId) {
+                $member = Member::find($memberId);
+                $referralCode = $this->generateReferralCode($member, $concert);
+                Kupon::create([
+                    'tipe' => 'referal',
+                    'kode' => $referralCode,
+                    'waktu_expired' => $event->tanggal_selesai . ' ' . $event->jam_selesai,
+                    'members_id' => $member->id,
+                    'concerts_id' => $concert->id,
+                ]);
+            }
+        }
         $message = "";
         if ($request->tipe == 'kupon') {
             $message = "Kupon berhasil ditambahkan.";
@@ -40,11 +74,22 @@ class KuponController extends Controller
         return redirect()->back()->with('success', $message);
     }
 
+    function generateReferralCode($member, $concert)
+    {
+        $random = strtoupper(Str::random(6)); // e.g. A9X7KZ
+        $name = strtoupper(substr(Str::slug($member->user->name, ''), 0, 3)); // e.g. RIK
+        $concertId = $concert->id;
+
+        return "{$random}-{$name}{$concertId}";
+    }
+
     public function edit(string $id)
     {
         $kupon = Kupon::findOrFail($id);
         if ($kupon->tipe == 'kupon') {
-            return view('event.modal.kupon.form-edit', compact('kupon'));
+            $event = $kupon->concert->event;
+            dd($event);
+            return view('event.modal.kupon.form-edit', compact('kupon', 'event'));
         } else if ($kupon->tipe == 'referal') {
             $referal = $kupon;
             return view('event.modal.referal.form-edit', compact('referal'));
@@ -56,18 +101,37 @@ class KuponController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $concert = Concert::find($request->concerts_id);
+        $event = $concert->event;
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'harga' => 'required|numeric',
-            'jumlah' => 'required|integer',
+            'tipe' => 'required',
+            'waktu_expired' => [
+                'required',
+                'date',
+                'after_or_equal:now',
+                'before_or_equal:' . $event->tanggal_selesai . ' 23:59:59',
+            ],
         ]);
-
-        $kupon = Kupon::findOrFail($id);
-        $kupon->update($request->all());
+        if ($request->tipe == 'kupon') {
+            $request->validate([
+                'kode' => 'required|string|max:45',
+                'potongan' => 'required|integer|min:0',
+                'jumlah' => 'required|integer|min:0',
+            ]);
+            $kupon = Kupon::findOrFail($id);
+            $kupon->update($request->all());
+        } elseif ($request->tipe == 'referal') {
+            // $request->validate([
+            //     'kode' => 'required|string|max:45',
+            //     'potongan' => 'required|integer|min:0',
+            //     'jumlah' => 'required|integer|min:0',
+            //     'members_id' => 'required',
+            // ]);
+        }
         $message = "";
-        if ($kupon->tipe == 'kupon') {
+        if ($request->tipe == 'kupon') {
             $message = "Kupon berhasil diperbarui.";
-        } elseif ($kupon->tipe == 'referal') {
+        } elseif ($request->tipe == 'referal') {
             $message = "Kode referal berhasil diperbarui.";
         }
 

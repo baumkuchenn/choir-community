@@ -75,9 +75,9 @@ class SeleksiController extends Controller
         $seleksi = Seleksi::find($request->seleksis_id);
         $userId = $request->user_id;
         $data = $request->all();
-        
+
         if ($request->mode == 'baru') {
-            $user = $this->createUserWithoutRedirect($request);
+            $user = $this->createUser($request);
             $userId = $user->id;
             $data['users_id'] = $userId;
         }
@@ -103,10 +103,10 @@ class SeleksiController extends Controller
         return redirect()->back()->with('success', 'Pendaftar berhasil ditambahkan');
     }
 
-    protected function createUserWithoutRedirect(Request $request): User
+    protected function createUser(Request $request): User
     {
         $request->validate([
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
         ]);
 
         $user = User::create([

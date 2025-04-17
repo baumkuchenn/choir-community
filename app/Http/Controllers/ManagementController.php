@@ -20,7 +20,11 @@ class ManagementController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $choir = $user->members->first()->choir;
+        $choir = null;
+        $member = $user->members->first();
+        if ($member) {
+            $choir = $member->choir;
+        }
         $notifications = $user->notifications()->latest()->take(5)->get();
 
         return view('management.index', compact('choir', 'notifications'));

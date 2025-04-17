@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\PersonalInfoController as AuthPersonalInfoController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\ButirPenilaianController;
 use App\Http\Controllers\ChoirController;
 use App\Http\Controllers\ConcertController;
@@ -24,8 +25,12 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SeleksiController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketTypeController;
+use App\Models\User;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -37,29 +42,19 @@ use Illuminate\Support\Facades\Route;
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
 //Debug
-Route::get('/debug', function () {
-    return route('profile.update');
+Route::get('/debug/verification-link', function () {
+    $user = \App\Models\User::find(6); // or your test user
+    return \Illuminate\Support\Facades\URL::temporarySignedRoute(
+        'verification.verify',
+        now()->addMinutes(60),
+        ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())]
+    );
 });
 
 //Tampilan awal
 Route::get('/', [EticketController::class, 'index']);
 
 //Eticketing ----------------------------------------------------------------------------------
-//Email verification waktu registrasi
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
-
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect('/home');
-})->middleware(['auth', 'signed'])->name('verification.verify');
-
-Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('message', 'Verification link sent!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/personal-info', [AuthPersonalInfoController::class, 'showForm'])->name('personal-info.show');
     Route::post('/personal-info', [AuthPersonalInfoController::class, 'store'])->name('personal-info.store');

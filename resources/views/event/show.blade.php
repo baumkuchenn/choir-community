@@ -103,6 +103,29 @@
                             } else if (name == 'kupon'){
                                 createModal = document.getElementById('createKuponModal');
                                 createModal.querySelector('#concerts_id').value = id;
+                            } else if (name == 'referal'){createReferalModal
+                                createModal = document.getElementById('createReferalModal');
+                                createModal.querySelector('#concerts_id').value = id;
+
+                                createModal.addEventListener('shown.bs.modal', function () {
+                                    $('#penyanyiReferalTable').DataTable({
+                                        "lengthMenu": [5, 10, 20, 40],
+                                        "order": [[1, "asc"]],
+                                        "language": {
+                                            "emptyTable": "Belum ada penyanyi"
+                                        }
+                                    });
+                                    document.getElementById('pilihSemuaBtn').addEventListener('click', function () {
+                                        const checkboxes = document.querySelectorAll('.checkbox-penyanyi');
+                                        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+                                        checkboxes.forEach(checkbox => {
+                                            checkbox.checked = !allChecked;
+                                        });
+
+                                        this.textContent = allChecked ? 'Pilih Semua' : 'Batalkan Semua';
+                                    });
+                                });
                             } else if (name == 'penyanyi'){
                                 createModal = document.getElementById('tambahPenyanyiModal');
                                 createModal.querySelector('#events_id').value = id;
@@ -284,8 +307,7 @@
                             } else if (name == 'panitia'){
                                 editModal = document.getElementById('editPanitiaModal');
                             } else if (name == 'kupon'){
-                                createModal = document.getElementById('editKuponModal');
-                                createModal.querySelector('#concerts_id').value = id;
+                                editModal = document.getElementById('editKuponModal');
                             }
                             new bootstrap.Modal(editModal).show();
                         })

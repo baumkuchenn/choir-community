@@ -8,7 +8,8 @@
             <div class="modal-body">
                 <form action="{{ route('kupon.update', $kupon->id) }}" method="POST" class="mb-0">
                     @csrf
-                    <input type="hidden" id="concerts_id" name="concerts_id" value="">
+                    @method('PUT')
+                    <input type="hidden" id="concerts_id" name="concerts_id" value="{{ $kupon->concerts_id }}">
                     <input type="hidden" name="tipe" value="kupon">
                     <div class="mb-3">
                         <label for="kode" class="form-label">Kode Kupon</label>
@@ -16,15 +17,15 @@
                     </div>
                     <div class="mb-3">
                         <label for="potongan" class="form-label">Potongan Harga</label>
-                        <input type="number" class="form-control" id="potongan" name="potongan" value="{{ $kupon->potongan }}" required>
+                        <input type="number" class="form-control" id="potongan" name="potongan" value="{{ $kupon->potongan }}" min="0" required>
                     </div>
                     <div class="mb-3">
                         <label for="jumlah" class="form-label">Jumlah Kupon</label>
-                        <input type="number" class="form-control" id="jumlah" name="jumlah" value="{{ $kupon->jumlah }}" required>
+                        <input type="number" class="form-control" id="jumlah" name="jumlah" value="{{ $kupon->jumlah }}" min="0" required>
                     </div>
                     <div class="mb-3">
                         <label for="waktu_expired" class="form-label">Waktu Kadaluwarsa</label>
-                        <input type="datetime-local" class="form-control" id="waktu_expired" name="waktu_expired" value="{{ $kupon->waktu_expired }}" required>
+                        <input type="datetime-local" class="form-control" id="waktu_expired" name="waktu_expired" value="{{ $kupon->waktu_expired }}" max="{{ \Carbon\Carbon::parse($event->tanggal_mulai)->format('Y-m-d\TH:i') }}" required>
                     </div>
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>

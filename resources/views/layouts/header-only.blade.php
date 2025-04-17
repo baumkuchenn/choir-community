@@ -5,7 +5,7 @@
     <script src="{{asset('js/color-modes.js')}}"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Choir Management: E-ticketing</title>
+    <title>Choir Community: E-ticketing</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
     <link href="{{asset('dist/css/bootstrap.min.css')}}" rel="stylesheet">
@@ -20,7 +20,7 @@
             <div class="container">
                 <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-lg-5">
                     <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none p-1">
-                        <b> Choir Management </b>
+                        <b> Choir Community </b>
                     </a>
                 </div>
             </div>

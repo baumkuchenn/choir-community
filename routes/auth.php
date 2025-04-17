@@ -39,10 +39,6 @@ Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 
-    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
-
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
@@ -57,3 +53,25 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });
+
+Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
+// Route::get('/verify-email/{id}/{hash}', function ($id, $hash) {
+//     $user = User::findOrFail($id);
+
+//     // Check if hash matches (you can skip this temporarily)
+//     if (hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+//         if (!$user->hasVerifiedEmail()) {
+//             $user->markEmailAsVerified();
+//             event(new Verified($user));
+//         }
+
+//         Auth::login($user);
+
+//         return redirect()->route('personal-info.show');
+//     }
+
+//     return abort(403, 'Invalid verification link.');
+// })->name('verification.verify');

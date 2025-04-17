@@ -155,6 +155,13 @@ class EticketController extends Controller
         //
     }
 
+    public function kupon(string $id)
+    {
+        $event = Event::find($id);
+        $kupons = $event->concert->kupons->where('tipe', 'kupon');
+        return view('eticketing.modal.kupon.form-add', compact('kupons'));
+    }
+
     public function order(Request $request, string $id)
     {
         $tiketDipilih = json_decode($request->input('tickets'), true);
@@ -183,10 +190,13 @@ class EticketController extends Controller
             $tiketDipilih = collect($request->input('tickets', []))->map(fn($t) => json_decode($t, true));
 
             $totalHarga = $tiketDipilih->sum(fn($t) => $t['jumlah'] * $t['harga']);
+            $totalHarga = $totalHarga - $request->discount_amount;
 
             $purchase = Purchase::create([
                 'status' => 'bayar',
                 'total_tagihan' => $totalHarga,
+                'kupons_id' => $request->kupons_id,
+                'referals_id' => $request->referals_id,
                 'users_id' => $user->id,
                 'concerts_id' => $id,
             ]);

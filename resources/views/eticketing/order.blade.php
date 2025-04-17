@@ -8,6 +8,9 @@
             <input type="hidden" name="tickets[]" value="{{json_encode($tiket)}}">
         @endforeach
         <input type="hidden" name="purchase-menu" value="purchase">
+        <input type="hidden" name="kupons_id" id="input-coupon-code">
+        <input type="hidden" name="referals_id" id="input-referral-code">
+        <input type="hidden" name="discount_amount" id="input-discount-amount" value="0">
     </form>
     <h3 class="fw-bold">Informasi Tiket yang Dibeli</h3>
     <div class="row mt-3">
@@ -70,7 +73,7 @@
                         </div>
                         <hr>
                     @endforeach
-                    <a href="" class="btn btn-outline-primary w-100">Pakai Kode Promo/Referal</a>
+                    <button type="button" class="btn btn-outline-primary w-100 create-modal" data-action="{{ route('eticket.kupon.use', $event->id) }}">Pakai Kode Promo/Referal</button>
                     <hr>
                     <div class="d-flex align-items-center justify-content-between gap-2">
                         <p class="mb-0">Total <span class="fw-light">({{ $totalTiket }} tiket)</span></p>
@@ -78,12 +81,12 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between gap-2 h-auto">
                         <p class="mb-0">Potongan</p>
-                        <p class="mb-0">Rp{{ number_format('0', 0, ',', '.') }}</p>
+                        <p id="potongan-label" class="mb-0">Rp{{ number_format('0', 0, ',', '.') }}</p>
                     </div>
                     <hr>
                     <div class="d-flex align-items-center justify-content-between gap-2">
                         <p>Total Pembayaran</p>
-                        <p class="fw-bold">Rp{{ number_format($totalHarga, 0, ',', '.') }}</p>
+                        <p id="total-label" class="fw-bold">Rp{{ number_format($totalHarga, 0, ',', '.') }}</p>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 fs-6 fw-bold" onclick="event.preventDefault(); document.getElementById('form-purchase').submit();">Bayar Tiket</button>
                     @if(session('error'))
@@ -98,4 +101,54 @@
         </div>
     </div>
 </div>
+<div id="modalContainer"></div>
+@endsection
+
+@section('js')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".create-modal").forEach((button) => {
+            button.addEventListener("click", function() {
+                let route = this.dataset.action;
+
+                // Clean up any old modals & backdrops first
+                document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                document.body.classList.remove('modal-open');
+                
+                fetch(route)
+                    .then(response => response.text())
+                    .then(html => {
+                        let modalContainer = document.getElementById("modalContainer");
+                        modalContainer.innerHTML = '';
+                        modalContainer.innerHTML = html;
+
+                        let createModal = document.getElementById('addKuponModal');
+                        let modalInstance = bootstrap.Modal.getInstance(createModal)
+                            || new bootstrap.Modal(createModal);
+                        modalInstance.show();
+
+                        document.getElementById('applyCoupon').addEventListener('click', () => {
+                            const selectedOption = document.getElementById('couponSelect').selectedOptions[0];
+                            const couponCode = selectedOption.value;
+                            const discountAmount = parseInt(selectedOption.dataset.discount);
+                            const referralCode = document.getElementById('referralInput').value;
+
+                            // Update hidden form values
+                            document.getElementById('input-coupon-code').value = couponCode;
+                            document.getElementById('input-referral-code').value = referralCode;
+                            document.getElementById('input-discount-amount').value = discountAmount;
+
+                            // Optional: update displayed total in UI (no page reload)
+                            const totalPrice = {{ $totalHarga }};
+                            const newTotal = totalPrice - discountAmount;
+                            document.getElementById('potongan-label').textContent = `Rp${discountAmount.toLocaleString('id-ID')}`;
+                            document.getElementById('total-label').textContent = `Rp${newTotal.toLocaleString('id-ID')}`;
+
+                            modalInstance.hide();
+                        });
+                    });
+            });
+        });
+    });
+</script>
 @endsection

@@ -29,7 +29,8 @@ class TicketTypeController extends Controller
 
     public function edit(string $id)
     {
-        $ticketType = TicketType::findOrFail($id);
+        $ticketType = TicketType::with('concert.event')
+            ->findOrFail($id);
         return view('event.modal.ticket-type.form-edit', compact('ticketType'));
     }
 
@@ -46,7 +47,7 @@ class TicketTypeController extends Controller
 
         $ticketType = TicketType::findOrFail($id);
         $ticketType->update($request->all());
-        
+
         return redirect()->back()->with('success', 'Jenis tiket berhasil diperbarui!');
     }
 
@@ -58,7 +59,7 @@ class TicketTypeController extends Controller
     {
         $ticketType = TicketType::findOrFail($id);
         $ticketType->delete();
-        
+
         return redirect()->back()->with('success', 'Jenis tiket berhasil dihapus!');
     }
 }

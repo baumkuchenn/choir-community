@@ -27,12 +27,19 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="visibility" class="form-label">Ketersediaan</label>
-                        <select class="form-select" id="visibility" name="visibility" required>
-                            <option value="public" {{ $ticketType->visibility == 'public' ? 'selected' : '' }}>Dijual</option>
-                            <option value="private" {{ $ticketType->visibility == 'private' ? 'selected' : '' }}>Tidak Dijual</option>
-                        </select>
+                        <label for="pembelian_terakhir" class="form-label">Pembelian Terakhir</label>
+                        <input type="datetime-local" class="form-control" id="pembelian_terakhir" name="pembelian_terakhir" value="{{ $ticketType->pembelian_terakhir }}" max="{{ \Carbon\Carbon::parse($ticketType->concert->event->tanggal_mulai)->format('Y-m-d\TH:i') }}" required>
                     </div>
+
+                    @can('akses-admin')
+                        <div class="mb-3">
+                            <label for="visibility" class="form-label">Ketersediaan</label>
+                            <select class="form-select" id="visibility" name="visibility" required>
+                                <option value="public" {{ $ticketType->visibility == 'public' ? 'selected' : '' }}>Dijual</option>
+                                <option value="private" {{ $ticketType->visibility == 'private' ? 'selected' : '' }}>Tidak Dijual</option>
+                            </select>
+                        </div>
+                    @endcan
 
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>

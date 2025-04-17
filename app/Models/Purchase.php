@@ -10,7 +10,7 @@ class Purchase extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'purchases';
-    protected $fillable = ['status', 'total_tagihan', 'users_id', 'concerts_id'];
+    protected $fillable = ['status', 'total_tagihan', 'kupons_id', 'referals_id', 'users_id', 'concerts_id'];
 
     public function concert()
     {

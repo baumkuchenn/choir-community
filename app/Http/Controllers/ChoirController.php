@@ -55,14 +55,15 @@ class ChoirController extends Controller
                 ->limit(1);
         }])
             ->whereHas('seleksis', function ($query) {
-                $query->where('pendaftaran_terakhir', '>=', now()->toDateString());
+                $query->where('pendaftaran_terakhir', '>=', now()->toDateString())
+                    ->where('tipe', 'member');
             })
             ->paginate(10);
         $daftar = PendaftarSeleksi::with(['user', 'seleksi.choir'])
             ->whereHas('user', function ($query) {
                 $query->where('id', Auth::id());
             })
-            ->get();
+            ->paginate(10);
         return view('choir.join', compact('choir', 'daftar'));
     }
 

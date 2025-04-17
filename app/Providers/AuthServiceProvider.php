@@ -25,6 +25,9 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('akses-event', function ($user) {
+            if (!$user->members || $user->members->isEmpty()) {
+                return false;
+            }
             return $user->members()->where('admin', 'ya')->exists() ||
                 optional($user->members->first()->position)->akses_event;
         });
@@ -38,6 +41,9 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('akses-eticket', function ($user) {
+            if (!$user->members || $user->members->isEmpty()) {
+                return false;
+            }
             return $user->members()->where('admin', 'ya')->exists() ||
                 optional($user->members->first()->position)->akses_eticket;
         });
@@ -56,11 +62,17 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('akses-member', function ($user) {
+            if (!$user->members || $user->members->isEmpty()) {
+                return false;
+            }
             return $user->members()->where('admin', 'ya')->exists() ||
                 optional($user->members->first()->position)->akses_member;
         });
 
         Gate::define('akses-roles', function ($user) {
+            if (!$user->members || $user->members->isEmpty()) {
+                return false;
+            }
             return $user->members()->where('admin', 'ya')->exists() ||
                 optional($user->members->first()->position)->akses_roles;
         });

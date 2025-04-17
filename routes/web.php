@@ -70,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Rute e-ticketing
     Route::get('/eticket/myticket', [EticketController::class, 'myticket'])->name('eticket.myticket');
     Route::resource('eticket', EticketController::class);
+    Route::get('/eticket/{id}/kupon', [EticketController::class, 'kupon'])->name('eticket.kupon.use');
     Route::post('/eticket/{id}/order', [EticketController::class, 'order'])->name('eticket.order');
     Route::post('/eticket/{id}/purchase', [EticketController::class, 'purchase'])->name('eticket.purchase');
     Route::post('/eticket/{id}/payment', [EticketController::class, 'payment'])->name('eticket.payment');

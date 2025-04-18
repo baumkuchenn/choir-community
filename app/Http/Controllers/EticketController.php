@@ -7,13 +7,18 @@ use App\Models\Concert;
 use App\Models\Donation;
 use App\Models\Event;
 use App\Models\Feedback;
+use App\Models\Kupon;
+use App\Models\Member;
+use App\Models\Panitia;
 use App\Models\Purchase;
 use App\Models\PurchaseDetail;
 use App\Models\TicketType;
+use App\Notifications\BeliTiketNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 use function Laravel\Prompts\table;
 
@@ -158,7 +163,20 @@ class EticketController extends Controller
     public function kupon(string $id)
     {
         $event = Event::find($id);
-        $kupons = $event->concert->kupons->where('tipe', 'kupon');
+        $kupons = $event->concert->kupons
+            ->where('tipe', 'kupon')
+            ->filter(function ($kupon) {
+                $alreadyUsed = $kupon->usedAsKupon()
+                    ->where('users_id', Auth::id())
+                    ->whereIn('status', ['bayar', 'verifikasi', 'selesai']) // or just 'selesai'
+                    ->exists();
+                if (!$alreadyUsed) {
+                    $usedCount = $kupon->usedAsKupon()
+                        ->where('status', 'selesai')
+                        ->count();
+                    return $usedCount < $kupon->jumlah;
+                }
+            });
         return view('eticketing.modal.kupon.form-add', compact('kupons'));
     }
 
@@ -192,21 +210,32 @@ class EticketController extends Controller
             $totalHarga = $tiketDipilih->sum(fn($t) => $t['jumlah'] * $t['harga']);
             $totalHarga = $totalHarga - $request->discount_amount;
 
-            $purchase = Purchase::create([
-                'status' => 'bayar',
-                'total_tagihan' => $totalHarga,
-                'kupons_id' => $request->kupons_id,
-                'referals_id' => $request->referals_id,
-                'users_id' => $user->id,
-                'concerts_id' => $id,
-            ]);
+            $referal = Kupon::where('kode', $request->referals_kode)->first();
 
-            foreach ($tiketDipilih as $tiket) {
-                PurchaseDetail::create([
-                    'purchases_id' => $purchase->id,
-                    'ticket_types_id' => $tiket['id'],
-                    'jumlah' => $tiket['jumlah'],
+            $purchase = Purchase::where('users_id', $user->id)
+                ->where('concerts_id', $id)
+                ->where('created_at', '>=', now()->subMinutes(5))
+                ->first();
+
+            if (!$purchase) {
+                $purchase = Purchase::create([
+                    'status' => 'bayar',
+                    'total_tagihan' => $totalHarga,
+                    'kupons_id' => $request->kupons_id,
+                    'referals_id' => $referal->id,
+                    'users_id' => $user->id,
+                    'concerts_id' => $id,
                 ]);
+                //Bisa ambil waktu_pembelian
+                $purchase->refresh();
+
+                foreach ($tiketDipilih as $tiket) {
+                    PurchaseDetail::create([
+                        'purchases_id' => $purchase->id,
+                        'ticket_types_id' => $tiket['id'],
+                        'jumlah' => $tiket['jumlah'],
+                    ]);
+                }
             }
         } else {
             $purchase = Purchase::findOrFail($id);
@@ -255,9 +284,43 @@ class EticketController extends Controller
                 'gambar_pembayaran' => $path,
                 'waktu_pembayaran' => now(),
             ]);
+
+            //Notifikasi ke admin
+            $concert = Concert::with('event.choirs')->find($purchases->concert->id);
+            $choir = $concert->event->choirs->first();
+            $adminUsers = Member::with('user')
+                ->where('choirs_id', $choir->id)
+                ->where('admin', 'ya')
+                ->get()
+                ->pluck('user')
+                ->filter()
+                ->unique('id');
+
+            $eticketMembers = Member::with(['user', 'position'])
+                ->where('choirs_id', $choir->id)
+                ->whereHas('position', fn($q) => $q->where('akses_eticket', '1'))
+                ->get()
+                ->pluck('user')
+                ->filter()
+                ->unique('id');
+
+            $eticketPanitia = Panitia::with(['user', 'jabatan'])
+                ->where('events_id', $concert->events_id)
+                ->whereHas('jabatan', fn($q) => $q->where('akses_eticket', '1'))
+                ->get()
+                ->pluck('user')
+                ->filter()
+                ->unique('id');
+
+            $notifiableUsers = $adminUsers
+                ->merge($eticketMembers)
+                ->merge($eticketPanitia)
+                ->unique('id');
+
+            Notification::send($notifiableUsers, new BeliTiketNotification($concert));
         }
 
-        $purchases = Purchase::with('invoice:id,purchases_id,kode')
+        $purchases = Purchase::with(['concert', 'invoice:id,purchases_id,kode'])
             ->where('id', $id)
             ->first();
 
@@ -316,13 +379,16 @@ class EticketController extends Controller
             'concert.feedbacks'
         ])
             ->where('users_id', $user->id)
-            ->whereHas('concert.event', function ($query) {
-                $query->whereRaw("TIMESTAMP(tanggal_selesai, jam_selesai) < ?", [now()]);
+            ->where(function ($query) {
+                $query->whereHas('concert.event', fn($subQuery) =>
+                    $subQuery->whereRaw("TIMESTAMP(tanggal_selesai, jam_selesai) < ?", [now()])
+                )
+                ->orWhere('status', 'batal');
             })
             ->whereHas('concert.event.choirs', function ($query) {
                 $query->where('penyelenggara', 'ya');
             })
-            ->whereNotIn('status', ['batal', 'bayar'])
+            ->whereNotIn('status', ['bayar'])
             ->get()
             ->sortByDesc(fn($purchase) => $purchase->concert->event->tanggal_mulai)
             ->map(function ($purchase) {

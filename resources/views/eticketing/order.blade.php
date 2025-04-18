@@ -9,7 +9,7 @@
         @endforeach
         <input type="hidden" name="purchase-menu" value="purchase">
         <input type="hidden" name="kupons_id" id="input-coupon-code">
-        <input type="hidden" name="referals_id" id="input-referral-code">
+        <input type="hidden" name="referals_kode" id="input-referral-code">
         <input type="hidden" name="discount_amount" id="input-discount-amount" value="0">
     </form>
     <h3 class="fw-bold">Informasi Tiket yang Dibeli</h3>

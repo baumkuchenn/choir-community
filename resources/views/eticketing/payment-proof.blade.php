@@ -14,13 +14,12 @@
                     <h4 class="fw-bold">Ringkasan Pembelian</h4>
                     @php
                         $totalTiket = 0;
-                        $totalHarga = 0;
+                        $subtotal = 0;
                     @endphp
                     @foreach ($tiketDibeli as $tiket)
                         @php
-                            $subtotal = $tiket['jumlah'] * $tiket['harga'];
+                            $subtotal += $tiket['jumlah'] * $tiket['harga'];
                             $totalTiket += $tiket['jumlah'];
-                            $totalHarga += $subtotal;
                         @endphp
                         <div class="mt-2 d-flex align-items-center gap-3">
                             <i class="fa-solid fa-ticket fa-fw fs-3"></i>
@@ -33,16 +32,16 @@
                     @endforeach
                     <div class="d-flex align-items-center justify-content-between gap-2">
                         <p class="mb-0">Total <span class="fw-light">({{ $totalTiket }} tiket)</span></p>
-                        <p class="mb-0">Rp{{ number_format($totalHarga, 0, ',', '.') }}</p>
+                        <p class="mb-0">Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
                     </div>
                     <div class="d-flex align-items-center justify-content-between gap-2 h-auto">
                         <p class="mb-0">Potongan</p>
-                        <p class="mb-0">Rp{{ number_format('0', 0, ',', '.') }}</p>
+                        <p class="mb-0">Rp{{ number_format($subtotal - $purchases->total_tagihan, 0, ',', '.') }}</p>
                     </div>
                     <hr>
                     <div class="d-flex align-items-center justify-content-between gap-2">
                         <p>Total Pembayaran</p>
-                        <p class="fw-bold">Rp{{ number_format($totalHarga, 0, ',', '.') }}</p>
+                        <p class="fw-bold">Rp{{ number_format($purchases->total_tagihan, 0, ',', '.') }}</p>
                     </div>
 
                     <h4 class="fw-bold">Bukti Pembayaran</h4>

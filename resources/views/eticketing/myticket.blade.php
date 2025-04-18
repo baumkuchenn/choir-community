@@ -47,6 +47,8 @@
                                     <span class="bg-info fw-bold p-1">Verifikasi Pembayaran</span>
                                 @elseif ($purchase->status == 'selesai')
                                     <span class="bg-success text-white fw-bold p-1">Pembayaran Berhasil</span>
+                                @elseif ($purchase->status == 'batal')
+                                    <span class="bg-danger text-white fw-bold p-1">Pesanan Dibatalkan</span>
                                 @endif
                             </p>
                             <hr>
@@ -150,6 +152,8 @@
                                     <span class="bg-info fw-bold p-1">Verifikasi Pembayaran</span>
                                 @elseif ($purchase->status == 'selesai')
                                     <span class="bg-success text-white fw-bold p-1">Pembayaran Berhasil</span>
+                                @elseif ($purchase->status == 'batal')
+                                    <span class="bg-danger text-white fw-bold p-1">Pesanan Dibatalkan</span>
                                 @endif
                             </p>
                             <hr>

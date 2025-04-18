@@ -15,13 +15,12 @@
                         <h4 class="fw-bold">Ringkasan Pembelian</h4>
                         @php
                             $totalTiket = 0;
-                            $totalHarga = 0;
+                            $subtotal = 0;
                         @endphp
                         @foreach ($tiketDipilih as $tiket)
                             @php
-                                $subtotal = $tiket['jumlah'] * $tiket['harga'];
+                                $subtotal += $tiket['jumlah'] * $tiket['harga'];
                                 $totalTiket += $tiket['jumlah'];
-                                $totalHarga += $subtotal;
                             @endphp
                             <div class="mt-2 d-flex align-items-center gap-3">
                                 <i class="fa-solid fa-ticket fa-fw fs-3"></i>
@@ -34,21 +33,21 @@
                         @endforeach
                         <div class="d-flex align-items-center justify-content-between gap-2">
                             <p class="mb-0">Total <span class="fw-light">({{ $totalTiket }} tiket)</span></p>
-                            <p class="mb-0">Rp{{ number_format($totalHarga, 0, ',', '.') }}</p>
+                            <p class="mb-0">Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
                         </div>
                         <div class="d-flex align-items-center justify-content-between gap-2 h-auto">
                             <p class="mb-0">Potongan</p>
-                            <p class="mb-0">Rp{{ number_format('0', 0, ',', '.') }}</p>
+                            <p class="mb-0">Rp{{ number_format($subtotal - $purchase->total_tagihan, 0, ',', '.') }}</p>
                         </div>
                         <hr>
                         <div class="d-flex align-items-center justify-content-between gap-2">
                             <p>Total Pembayaran</p>
-                            <p class="fw-bold">Rp{{ number_format($totalHarga, 0, ',', '.') }}</p>
+                            <p class="fw-bold">Rp{{ number_format($purchase->total_tagihan, 0, ',', '.') }}</p>
                         </div>
 
                         <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                            <h4 class="mb-0 fw-bold">Transfer Bank {{ $concert->nama_singkatan }}</h4>
-                            <img src="{{ $concert->logo }}" style="width: 25px; height: 25px;">
+                            <h4 class="mb-0 fw-bold">Transfer Bank {{ $concert->bank->nama_singkatan }}</h4>
+                            <img src="{{ $concert->bank->logo }}" style="width: 25px; height: 25px;">
                         </div>
 
                         <p class="mb-0">Nomor Rekening</p>
@@ -62,7 +61,7 @@
 
                         <div class="card shadow bg-body-secondary border-0 mb-3">
                             <div class="card-body">
-                                <p class="mb-0">Setelah melakukan pembayaran, harap upload bukti pembayaran ke kolom dibawah untuk tahap verifikasi pembayaran.</p>
+                                <p class="mb-0">Setelah melakukan pembayaran, harap upload bukti pembayaran ke kolom dibawah untuk tahap verifikasi pembayaran. Harap pastikan upload bukti pembayaran yang benar, karena uang dari pembayaran yang dibatalkan tidak bisa dikembalikan otomatis."</p>
                             </div>
                         </div>
 

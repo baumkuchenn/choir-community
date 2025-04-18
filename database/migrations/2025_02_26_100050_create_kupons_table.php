@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('kupons', function (Blueprint $table) {
             $table->id();
             $table->enum('tipe', ['kupon', 'referal']);
-            $table->string('kode', 45);
+            $table->string('kode', 45)->unique();
             $table->integer('potongan')->nullable();
             $table->integer('jumlah')->nullable();
             $table->timestamp('waktu_expired');

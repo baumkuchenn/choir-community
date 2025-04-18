@@ -193,56 +193,47 @@ class EventController extends Controller
             }
 
             if ($request->has('all_notification')) {
+                $members = Member::with('user')
+                    ->where('choirs_id', $userChoirs[0])
+                    ->where('admin', 'tidak')
+                    ->get()
+                    ->pluck('user')
+                    ->filter()
+                    ->unique('id');
                 if ($request->jenis_kegiatan == 'latihan' || $request->jenis_kegiatan == 'gladi') {
-                    $members = Member::with('user')
-                        ->where('choirs_id', $userChoirs[0])
-                        ->where('admin', 'tidak')
-                        ->get()
-                        ->pluck('user')
-                        ->filter()
-                        ->unique('id');
                     Notification::send($members, new EventNotification($event));
                 } else {
-                    $members = Member::with('user')
-                        ->where('choirs_id', $userChoirs[0])
-                        ->where('admin', 'tidak')
-                        ->get()
-                        ->pluck('user')
-                        ->filter()
-                        ->unique('id');
                     Notification::send($members, new DaftarEventNotification($event));
                 }
             } elseif ($request->has('parent_notification')) {
+                $mainEventId = $event->sub_kegiatan_id ?? $event->id;
+
+                $penyanyi = Penyanyi::with('member.user')
+                    ->whereHas('member', function ($query) use ($userChoirs) {
+                        $query->where('choirs_id', $userChoirs[0])
+                            ->where('admin', 'tidak');
+                    })
+                    ->where('events_id', $mainEventId)
+                    ->get()
+                    ->pluck('member.user')
+                    ->filter()
+                    ->unique('id');
+
+                $panitia = Panitia::with('user')
+                    ->where('events_id', $mainEventId)
+                    ->get()
+                    ->pluck('user')
+                    ->filter()
+                    ->unique('id');
+
+                $allRecipients = $penyanyi->merge($panitia)->unique('id');
+
                 if ($request->jenis_kegiatan == 'latihan' || $request->jenis_kegiatan == 'gladi') {
-                    $mainEventId = $event->sub_kegiatan_id ?? $event->id;
-
-                    $penyanyiUsers = Penyanyi::with('member.user')
-                        ->whereHas('member', function ($query) use ($userChoirs) {
-                            $query->where('choirs_id', $userChoirs[0])
-                                ->where('admin', 'tidak');
-                        })
-                        ->where('events_id', $mainEventId)
-                        ->get()
-                        ->pluck('member.user')
-                        ->filter()
-                        ->unique('id');
-
-                    Notification::send($penyanyiUsers, new EventNotification($event));
+                    Notification::send($penyanyi, new EventNotification($event));
+                } elseif ($request->jenis_kegiatan == 'rapat') {
+                    Notification::send($panitia, new EventNotification($event));
                 } else {
-                    $mainEventId = $event->sub_kegiatan_id ?? $event->id;
-
-                    $penyanyiUsers = Penyanyi::with('member.user')
-                        ->whereHas('member', function ($query) use ($userChoirs) {
-                            $query->where('choirs_id', $userChoirs[0])
-                                ->where('admin', 'tidak');
-                        })
-                        ->where('events_id', $mainEventId)
-                        ->get()
-                        ->pluck('member.user')
-                        ->filter()
-                        ->unique('id');
-
-                    Notification::send($penyanyiUsers, new DaftarEventNotification($event));
+                    Notification::send($allRecipients, new DaftarEventNotification($event));
                 }
             }
         }
@@ -302,8 +293,8 @@ class EventController extends Controller
 
             $purchases = $concert->purchases()
                 ->with('user:id,name,no_handphone', 'invoice.tickets:id,invoices_id,check_in')
-                ->whereIn('status', ['verifikasi', 'selesai'])
-                ->orderByRaw("FIELD(status, 'verifikasi', 'selesai')")
+                ->whereIn('status', ['verifikasi', 'selesai', 'batal'])
+                ->orderByRaw("FIELD(status, 'verifikasi', 'selesai', 'batal')")
                 ->orderBy('waktu_pembayaran', 'desc')
                 ->get();
 
@@ -385,7 +376,8 @@ class EventController extends Controller
         $userChoirs = Auth::user()->members->pluck('id')->toArray();
 
         $mainEventId = $event->sub_kegiatan_id ?? $event->id;
-        $penyanyiUsers = Penyanyi::with('member.user')
+
+        $penyanyi = Penyanyi::with('member.user')
             ->whereHas('member', function ($query) use ($userChoirs) {
                 $query->where('choirs_id', $userChoirs[0])
                     ->where('admin', 'tidak');
@@ -395,8 +387,22 @@ class EventController extends Controller
             ->pluck('member.user')
             ->filter()
             ->unique('id');
+        $panitia = Panitia::with('user')
+            ->where('events_id', $mainEventId)
+            ->get()
+            ->pluck('user')
+            ->filter()
+            ->unique('id');
 
-        Notification::send($penyanyiUsers, new EventUpdatedNotification($event));
+        $allRecipients = $penyanyi->merge($panitia)->unique('id');
+
+        if ($request->jenis_kegiatan == 'latihan' || $request->jenis_kegiatan == 'gladi') {
+            Notification::send($penyanyi, new EventUpdatedNotification($event));
+        } elseif ($request->jenis_kegiatan == 'rapat') {
+            Notification::send($panitia, new EventUpdatedNotification($event));
+        } else {
+            Notification::send($allRecipients, new EventUpdatedNotification($event));
+        }
 
         return redirect()->route('events.show', $id)
             ->with('success', 'Perubahan detail kegiatan berhasil.');
@@ -506,11 +512,16 @@ class EventController extends Controller
         return $imagePath; // Return the image path
     }
 
-    public function verifikasi(string $id)
+    public function verifikasi(Request $request, string $id)
     {
         // Update the purchase status to 'SELESAI'
         $purchase = Purchase::findOrFail($id);
-        $purchase->update(['status' => 'selesai']);
+        $purchase->update(['status' => $request->status_verifikasi == 'terima' ? 'selesai' : 'batal']);
+
+        if ($request->status_verifikasi == 'batal') {
+            return redirect()->route('events.show', $purchase->concert->event->id)
+                ->with('error', 'Pembayaran tiket telah dibatalkan.');
+        }
 
         // Generate and save the invoice
         $invoiceCode = $this->generateInvoiceCode($id);

@@ -173,8 +173,8 @@
                     @foreach($panitia as $item)
                         <tr>
                             <td>{{ $item->user->name }}</td>
-                            <td>{{ $item->jabatans?->divisi->nama }}</td>
-                            <td>{{ $item->jabatans?->nama }}</td>
+                            <td>{{ $item->jabatan?->divisi->nama }}</td>
+                            <td>{{ $item->jabatan?->nama }}</td>
                             <td>{{ $item->user->no_handphone }}</td>
                             <td>
                                 <button class="btn btn-primary edit-modal" data-name="panitia" data-route="{{ route('panitia.edit', $item->id) }}">Ubah</button>
@@ -223,6 +223,8 @@
                                         @endif
                                     @elseif($purchase->status === 'verifikasi')
                                         Verifikasi Pembayaran
+                                    @elseif($purchase->status === 'batal')
+                                        Pembayaran Dibatalkan
                                     @endif
                                 </td>
                                 <td class="d-flex justify-content-center gap-3">
@@ -230,7 +232,7 @@
                                         @if($checkedInCount != $totalTickets && (now()->toDateString() >= $event->tanggal_mulai && now()->toDateString() <= $event->tanggal_selesai))
                                             <button class="btn btn-primary loadCheckInForm" data-purchase-id="{{ $purchase->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
                                         @endif
-                                    @elseif($purchase->status === 'verifikasi')
+                                    @elseif($purchase->status === 'verifikasi' || $purchase->status === 'batal')
                                         <form action="{{ route('events.payment', $purchase->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
                                             @csrf
                                             <button class="btn btn-primary">Lihat Detail</button>
@@ -536,7 +538,7 @@
                                         <tr class="text-center">
                                             <td>{{ $item->kode }}</td>
                                             <td>Rp{{ number_format($item->potongan, 0, ',', '.') }}</td>
-                                            <td>incoming/{{ $item->jumlah }}</td>
+                                            <td>{{ $item->usedAsKupon()->where('status', 'selesai')->count() }}/{{ $item->jumlah }}</td>
                                             <td>{{ \Carbon\Carbon::parse($item->waktu_expired)->format('d-m-Y H:i') }}</td>
                                             <td class="d-flex justify-content-center gap-3">
                                                 @can('akses-eticket')
@@ -572,7 +574,7 @@
                                     <tr class="text-center">
                                         <td>{{ $item->kode }}</td>
                                         <td>{{ $item->member->user->name }}</td>
-                                        <td>incoming</td>
+                                        <td>{{ $item->usedAsReferal()->where('status', 'selesai')->count() }}</td>
                                         <td class="d-flex justify-content-center gap-3">
                                             @can('akses-eticket')
                                                 <button type="button" class="btn btn-outline-danger deleteBtn" data-name="kode referal {{ $item->kode }}" data-action="{{ route('kupon.destroy', $item->id) }}">Hapus</button>

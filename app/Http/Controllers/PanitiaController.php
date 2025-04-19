@@ -86,24 +86,12 @@ class PanitiaController extends Controller
                 ->where('users_id', $request->users_id)
                 ->where('events_id', $event->id)
                 ->first();
-            $existingPanitiaParent = Panitia::with('user')
-                ->where('users_id', $request->users_id)
-                ->where('events_id', $event->sub_kegiatan_id)
-                ->first();
             $member = Member::where('users_id', $request->users_id)
                 ->where('choirs_id', $choirId)
                 ->first();
 
             if ($existingPanitia) {
                 return back()->with('error',  $existingPanitia->user->name . ' sudah terdaftar sebagai panitia.');
-            }
-
-            if (!$existingPanitiaParent) {
-                Panitia::create([
-                    'users_id' => $request->users_id,
-                    'events_id' => $event->sub_kegiatan_id,
-                    'tipe' => $member ? 'internal' : 'eksternal',
-                ]);
             }
 
             Panitia::create([

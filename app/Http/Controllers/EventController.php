@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceMail;
 use App\Models\Bank;
 use App\Models\Choir;
 use App\Models\Concert;
@@ -25,6 +26,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Milon\Barcode\DNS1D;
@@ -251,13 +253,19 @@ class EventController extends Controller
     public function show(string $id)
     {
         $event = Event::with('concert')->find($id);
+        $user = Auth::user();
+        $choir = null;
+        if ($user->members->isNotEmpty()) {
+            $choir = $user->members->first()->choir;
+        } else {
+            $choir = $event->choirs->first();
+        }
         $events = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+            ->where('choirs_id', $choir->id)
             ->where('parent_kegiatan', 'ya')
             ->get();
 
         $concert = null;
-        $choir = null;
         $penyanyi = collect();
         $panitia = collect();
         $banks = collect();
@@ -282,8 +290,6 @@ class EventController extends Controller
                     'status' => 'draft',
                 ]);
             }
-
-            $choir = Auth::user()->members->first()->choir;
 
             $penyanyi = Penyanyi::where('events_id', $event->id)
                 ->get();
@@ -515,7 +521,9 @@ class EventController extends Controller
     public function verifikasi(Request $request, string $id)
     {
         // Update the purchase status to 'SELESAI'
-        $purchase = Purchase::findOrFail($id);
+        $purchase = Purchase::with(['concert.event.choirs', 'ticketTypes', 'invoice.tickets.ticket_type', 'user'])
+            ->findOrFail($id);
+
         $purchase->update(['status' => $request->status_verifikasi == 'terima' ? 'selesai' : 'batal']);
 
         if ($request->status_verifikasi == 'batal') {
@@ -556,6 +564,16 @@ class EventController extends Controller
                 ]);
             }
         }
+
+        $purchase->load([
+            'concert.event.choirs',
+            'ticketTypes',
+            'invoice.tickets.ticket_type',
+            'user'
+        ]);
+
+        Mail::to($purchase->user->email)->send(new InvoiceMail($purchase));
+
 
         return redirect()->route('events.show', $eventId)
             ->with('success', 'Verifikasi berhasil! E-tiket telah dibuat.');

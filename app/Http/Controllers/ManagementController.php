@@ -26,8 +26,9 @@ class ManagementController extends Controller
             $choir = $member->choir;
         }
         $notifications = $user->notifications()->latest()->take(5)->get();
+        $panitia = $user->panitias;
 
-        return view('management.index', compact('choir', 'notifications'));
+        return view('management.index', compact('choir', 'notifications', 'panitia'));
     }
 
     /**

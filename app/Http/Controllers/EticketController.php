@@ -214,7 +214,7 @@ class EticketController extends Controller
 
             $purchase = Purchase::where('users_id', $user->id)
                 ->where('concerts_id', $id)
-                ->where('created_at', '>=', now()->subMinutes(5))
+                ->where('created_at', '>=', now()->subMinutes(10))
                 ->first();
 
             if (!$purchase) {

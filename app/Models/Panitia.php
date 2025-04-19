@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Panitia extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['events_id', 'users_id', 'jabatan_id'];
+    protected $fillable = ['events_id', 'users_id', 'jabatan_id', 'tipe'];
 
     public function user()
     {

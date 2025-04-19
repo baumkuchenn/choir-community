@@ -166,6 +166,7 @@
                         <th class="text-center">Divisi</th>
                         <th class="text-center">Jabatan</th>
                         <th class="text-center">Nomor Handphone</th>
+                        <th class="text-center">Tipe</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -176,6 +177,13 @@
                             <td>{{ $item->jabatan?->divisi->nama }}</td>
                             <td>{{ $item->jabatan?->nama }}</td>
                             <td>{{ $item->user->no_handphone }}</td>
+                            <td>
+                                @if ($item->tipe == 'internal')
+                                    Internal
+                                @elseif ($item->tipe == 'eksternal')
+                                    Eksternal
+                                @endif
+                            </td>
                             <td>
                                 <button class="btn btn-primary edit-modal" data-name="panitia" data-route="{{ route('panitia.edit', $item->id) }}">Ubah</button>
                                 <button class="btn btn-outline-danger deleteBtn" data-name="panitia {{ $item->user->name }}" data-action="{{ route('panitia.destroy', $item->id) }}">Hapus</button>

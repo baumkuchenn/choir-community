@@ -78,6 +78,11 @@
                 <a href="{{ route('choir.join') }}" class="btn btn-outline-primary w-100 fw-bold">Gabung Komunitas Paduan Suara</a>
                 <a href="{{ route('choir.create') }}" class="btn btn-primary w-100 fw-bold">Buat Komunitas Paduan Suara Baru</a>
             </div>
+            @if ($panitia->isNotEmpty())
+                <div class="mt-3">
+                    <a href="{{ route('events.index') }}" class="btn btn-outline-secondary w-100 fw-bold">Kegiatan Sebagai Panitia Eksternal</a>
+                </div>
+            @endif
         </div>
     @endif
 </div>

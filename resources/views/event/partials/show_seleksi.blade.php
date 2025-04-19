@@ -162,6 +162,7 @@
                         <th class="text-center">Nomor Handphone</th>
                         <th class="text-center">Email</th>
                         <th class="text-center">Jenis Kelamin</th>
+                        <th class="text-center">Tipe</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -172,6 +173,13 @@
                             <td>{{ $item->user->no_handphone }}</td>
                             <td>{{ $item->user->email }}</td>
                             <td>{{ $item->user->jenis_kelamin }}</td>
+                            <td>
+                                @if ($item->tipe == 'internal')
+                                    Internal
+                                @elseif ($item->tipe == 'eksternal')
+                                    Eksternal
+                                @endif
+                            </td>
                             <td>
                                 @if (empty($item->hasil_wawancara))
                                     <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
@@ -246,6 +254,7 @@
                         <th class="text-center">Nama Lengkap</th>
                         <th class="text-center">Nomor Handphone</th>
                         <th class="text-center">Email</th>
+                        <th class="text-center">Tipe</th>
                         <th class="text-center">Status</th>
                         <th class="text-center">Aksi</th>
                     </tr>
@@ -256,6 +265,13 @@
                             <td>{{ $item->user->name }}</td>
                             <td>{{ $item->user->no_handphone }}</td>
                             <td>{{ $item->user->email }}</td>
+                            <td>
+                                @if ($item->tipe == 'internal')
+                                    Internal
+                                @elseif ($item->tipe == 'eksternal')
+                                    Eksternal
+                                @endif
+                            </td>
                             <td>
                                 @if($item->lolos == 'belum')
                                     Pending

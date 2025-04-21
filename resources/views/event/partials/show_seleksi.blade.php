@@ -210,35 +210,9 @@
                         <tr>
                             <td>{{ $item->user->name }}</td>
                             <td>{{ $item->user->no_handphone }}</td>
-                            <td>
-                                @if($item->kategori_suara == 'sopran_1')
-                                    Sopran 1
-                                @elseif($item->kategori_suara == 'sopran_2')
-                                    Sopran 2
-                                @elseif($item->kategori_suara == 'alto_1')
-                                    Alto 1
-                                @elseif($item->kategori_suara == 'alto_2')
-                                    Alto 2
-                                @elseif($item->kategori_suara == 'tenor_1')
-                                    Tenor 1
-                                @elseif($item->kategori_suara == 'tenor_2')
-                                    Tenor 2
-                                @elseif($item->kategori_suara == 'bass_1')
-                                    Bass 1
-                                @elseif($item->kategori_suara == 'bass_2')
-                                    Bass 2
-                                @endif
-                            </td>
+                            <td>{{ $item->kategori_suara_label }}</td>
                             <td>{{ $item->nilais->sum('pivot.nilai') }}</td>
-                            <td>
-                                @if($item->lolos == 'belum')
-                                    Pending
-                                @elseif($item->lolos == 'ya')
-                                    Diterima
-                                @elseif($item->lolos == 'tidak')
-                                    Ditolak
-                                @endif
-                            </td>
+                            <td>{{ $item->lolos_label }}</td>
                             <td>
                                 <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
                             </td>
@@ -265,22 +239,8 @@
                             <td>{{ $item->user->name }}</td>
                             <td>{{ $item->user->no_handphone }}</td>
                             <td>{{ $item->user->email }}</td>
-                            <td>
-                                @if ($item->tipe == 'internal')
-                                    Internal
-                                @elseif ($item->tipe == 'eksternal')
-                                    Eksternal
-                                @endif
-                            </td>
-                            <td>
-                                @if($item->lolos == 'belum')
-                                    Pending
-                                @elseif($item->lolos == 'ya')
-                                    Diterima
-                                @elseif($item->lolos == 'tidak')
-                                    Ditolak
-                                @endif
-                            </td>
+                            <td>{{ $item->tipe_label }}</td>
+                            <td>{{ $item->lolos_label }}</td>
                             <td>
                                 <a href="{{ route('seleksi.wawancara', ['seleksi' => $item->seleksi->id, 'user' => $item->user->id]) }}" class="btn btn-primary">Lihat Detail</a>
                             </td>

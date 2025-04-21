@@ -80,4 +80,31 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Panitia::class, 'users_id');
     }
+
+    public function forums()
+    {
+        return $this->hasMany(Forum::class, 'creator_id');
+    }
+
+    public function forumMembers()
+    {
+        return $this->hasMany(ForumMember::class, 'users_id');
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'creator_id');
+    }
+
+    public function postReactions()
+    {
+        return $this->hasMany(PostReaction::class, 'users_id');
+    }
+
+
+    //If else show
+    public function getJenisKelaminLabelAttribute()
+    {
+        return $this->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan';
+    }
 }

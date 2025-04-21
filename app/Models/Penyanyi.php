@@ -20,4 +20,20 @@ class Penyanyi extends Model
     {
         return $this->belongsTo(Event::class, 'events_id');
     }
+    
+    
+    //If else show
+    public function getSuaraLabelAttribute()
+    {
+        return match ($this->suara) {
+            'sopran_1' => 'Sopran 1',
+            'sopran_2' => 'Sopran 2',
+            'alto_1' => 'Alto 1',
+            'alto_2' => 'Alto 2',
+            'tenor_1' => 'Tenor 1',
+            'tenor_2' => 'Tenor 2',
+            'bass_1' => 'Bass 1',
+            'bass_2' => 'Bass 2',
+        };
+    }
 }

@@ -25,13 +25,7 @@
         <div class="row mb-3">
             <div class="col-6">
                 <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-                <div class="form-control" id="jenis_kelamin" name="jenis_kelamin">
-                    @if($member->user->jenis_kelamin == 'L')
-                        Laki-laki
-                    @else
-                        Perempuan
-                    @endif
-                </div>
+                <div class="form-control" id="jenis_kelamin" name="jenis_kelamin">{{ $member->user->jenis_kelamin_label }}</div>
             </div>
             <div class="col-6">
                 <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>

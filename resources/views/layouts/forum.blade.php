@@ -5,7 +5,7 @@
     <script src="{{asset('js/color-modes.js')}}"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Choir Community: E-ticketing</title>
+    <title>Choir Community: Forum</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
     <link href="{{asset('dist/css/bootstrap.min.css')}}" rel="stylesheet">
@@ -209,7 +209,9 @@
                     <div class="d-flex align-items-center text-end ms-3">
                         @if (Route::has('login'))
                             @auth
-                                <a href="{{ route('eticket.myticket') }}" class="btn me-2"><i class="fas fa-ticket fa-fw"></i> Tiket Saya</a>
+                                <a href="{{ route('forum.notification') }}" class="btn me-2">
+                                    <i class="fa-solid fa-bell fa-fw"></i> Notifikasi
+                                </a>
                                 <div class="dropdown">
                                     <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
                                         <img src="https://github.com/mdo.png" alt="Profile" width="32" height="32" class="rounded-circle">
@@ -249,8 +251,8 @@
                         <img src="https://github.com/mdo.png" alt="Profile" width="50" height="50" class="rounded-circle mb-2">
                         <p class="mb-3"><b>{{ Auth::user()->name }}</b></p>
                     </div>
-                    <a href="{{ route('eticket.myticket') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
-                        <i class="fas fa-ticket fa-fw" style="width: 20px; text-align: center;"></i> Tiket Saya
+                    <a href="{{ route('forum.notification') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                        <i class="fa-solid fa-bell fa-fw" style="width: 20px; text-align: center;"></i> Notifikasi
                     </a>
                     <hr>
                     <a href="{{ route('profile.edit') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">

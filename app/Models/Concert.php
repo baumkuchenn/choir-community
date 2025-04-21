@@ -46,4 +46,16 @@ class Concert extends Model
     {
         return $this->hasMany(Kupon::class, 'concerts_id');
     }
+
+    public function postConcerts()
+    {
+        return $this->hasMany(PostConcert::class, 'concerts_id');
+    }
+
+
+    //If else show
+    public function getStatusLabelAttribute()
+    {
+        return $this->status === 'draft' ? 'Upload ke E-ticketing' : 'Simpan Perubahan';
+    }
 }

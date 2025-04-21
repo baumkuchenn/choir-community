@@ -124,25 +124,7 @@
                     @foreach($penyanyi as $item)
                         <tr>
                             <td>{{ $item->member->user->name }}</td>
-                            <td>
-                                @if($item->suara == 'sopran_1')
-                                    Sopran 1
-                                @elseif($item->suara == 'sopran_2')
-                                    Sopran 2
-                                @elseif($item->suara == 'alto_1')
-                                    Alto 1
-                                @elseif($item->suara == 'alto_2')
-                                    Alto 2
-                                @elseif($item->suara == 'tenor_1')
-                                    Tenor 1
-                                @elseif($item->suara == 'tenor_2')
-                                    Tenor 2
-                                @elseif($item->suara == 'bass_1')
-                                    Bass 1
-                                @elseif($item->suara == 'bass_2')
-                                    Bass 2
-                                @endif
-                            </td>
+                            <td>{{ $item->suara_label }}</td>
                             <td>{{ $item->member->user->no_handphone }}</td>
                             <td>{{ $item->member->user->jenis_kelamin }}</td>
                             <td>
@@ -600,13 +582,7 @@
                 </div>
 
                 <div class="fixed-bottom bg-body-secondary p-3 border-top text-end">
-                    <button class="btn btn-primary">
-                        @if($concert->status == 'draft')    
-                            Upload ke E-ticketing
-                        @else
-                            Simpan Perubahan
-                        @endif
-                    </button>
+                    <button class="btn btn-primary">{{ $concert->status_label }}</button>
                 </div>
             </form>
         </div>

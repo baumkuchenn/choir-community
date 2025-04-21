@@ -20,4 +20,23 @@ class PanitiaPendaftarSeleksi extends Model
     {
         return $this->belongsTo(Seleksi::class, 'seleksis_id');
     }
+
+
+    //If else show
+    public function getTipeLabelAttribute()
+    {
+        return match ($this->tipe) {
+            'internal' => 'Internal',
+            'eksternal' => 'Eksternal',
+        };
+    }
+
+    public function getLolosLabelAttribute()
+    {
+        return match ($this->lolos) {
+            'belum' => 'Pending',
+            'ya' => 'Diterima',
+            'tidak' => 'Ditolak',
+        };
+    }
 }

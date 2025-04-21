@@ -63,7 +63,7 @@
                 <div class="col-12">
                     <label for="tipe" class="form-label">Tipe Paduan Suara</label>
                     <select class="form-select" id="tipe" name="tipe" required>
-                        <option value="">Pilih Tipe</option>
+                        <option value="" disabled selected>Pilih Tipe</option>
                         <option value="SSAA" {{ old('tipe') == 'SSAA' ? 'selected' : '' }}>SSAA (Female Choir)</option>
                         <option value="TTBB" {{ old('tipe') == 'TTBB' ? 'selected' : '' }}>TTBB (Male Choir)</option>
                         <option value="SSAATTBB" {{ old('tipe') == 'SSAATTBB' ? 'selected' : '' }}>SSAATTBB (Mixed Choir)</option>

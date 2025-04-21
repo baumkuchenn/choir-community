@@ -8,6 +8,7 @@ use App\Http\Controllers\ConcertController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EticketController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\ForumController;
 use App\Http\Controllers\KotaController;
 use App\Http\Controllers\KuponController;
 use App\Http\Controllers\LatihanController;
@@ -53,6 +54,8 @@ Route::get('/debug/verification-link', function () {
 
 //Tampilan awal
 Route::get('/', [EticketController::class, 'index']);
+Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
+Route::get('/forum/show/{slug}', [ForumController::class, 'show'])->name('forum.show');
 
 //Eticketing ----------------------------------------------------------------------------------
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -66,6 +69,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    //Rute forum
+    Route::resource('forum', ForumController::class)->except(['index', 'show']);
+    Route::get('/forum/notification', [ForumController::class, 'notification'])->name('forum.notification');
+    Route::post('/forum/notifications/read/{id}', [ForumController::class, 'readAndRedirect'])->name('forum.notification.readAndRedirect');
 
     //Rute e-ticketing
     Route::get('/eticket/myticket', [EticketController::class, 'myticket'])->name('eticket.myticket');

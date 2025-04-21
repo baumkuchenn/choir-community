@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="ps-3 pe-3 d-flex flex-nowrap">
-    <div class="d-none d-lg-flex flex-column flex-shrink-0 p-3 border-end" style="width: 20%;">
+    <div class="d-none d-lg-flex flex-column flex-shrink-0 p-3 min-vh-100 border-end" style="width: 20%;">
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
                 <a href="{{ route('eticket.myticket') }}" class="nav-link active">

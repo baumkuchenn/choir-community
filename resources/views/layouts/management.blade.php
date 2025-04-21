@@ -5,7 +5,7 @@
     <script src="{{asset('js/color-modes.js')}}"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Choir Community</title>
+    <title>Choir Community : Management</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
@@ -102,7 +102,7 @@
                 </ul>
                 <ul class="nav">
                     <li class="nav-item"><a href="{{ route('eticket.index') }}" class="nav-link link-body-emphasis px-2">E-ticketing</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link link-body-emphasis px-2">Forum</a></li>
+                    <li class="nav-item"><a href="{{ route('forum.index') }}" class="nav-link link-body-emphasis px-2">Forum</a></li>
                     <li class="nav-item"><a href="{{ route('management.index') }}" class="nav-link link-body-emphasis px-2">Manajemen Komunitas</a></li>
                 </ul>
             </div>

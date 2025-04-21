@@ -37,4 +37,9 @@ class Choir extends Model
     {
         return $this->hasMany(Seleksi::class, 'choirs_id');
     }
+
+    public function postConcerts()
+    {
+        return $this->hasMany(PostConcert::class, 'choirs_id');
+    }
 }

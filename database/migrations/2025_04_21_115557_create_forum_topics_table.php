@@ -19,7 +19,6 @@ return new class extends Migration
 
             $table->string('nama', 45);
             $table->string('slug', 100)->unique();
-            $table->text('deskripsi');
 
             $table->softDeletes();
             $table->timestamps();

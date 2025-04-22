@@ -46,6 +46,12 @@ class Post extends Model
         return $this->hasMany(PostReaction::class, 'posts_id');
     }
 
+    public function userReaction()
+    {
+        return $this->hasOne(PostReaction::class, 'posts_id')
+            ->where('users_id', auth()->id());
+    }
+
     public function postAttachments()
     {
         return $this->hasMany(PostAttachment::class, 'posts_id');

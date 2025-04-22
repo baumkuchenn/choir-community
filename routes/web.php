@@ -21,11 +21,13 @@ use App\Http\Controllers\PanitiaJabatanController;
 use App\Http\Controllers\PenyanyiController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SeleksiController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketTypeController;
+use App\Http\Controllers\TopicController;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -72,8 +74,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //Rute forum
     Route::resource('forum', ForumController::class)->except(['index', 'show']);
+    Route::post('/forum/keluar/{slug}', [ForumController::class, 'keluar'])->name('forum.keluar');
     Route::get('/forum/notification', [ForumController::class, 'notification'])->name('forum.notification');
     Route::post('/forum/notifications/read/{id}', [ForumController::class, 'readAndRedirect'])->name('forum.notification.readAndRedirect');
+    Route::post('/forum/{slug}/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::post('/posts/{post}/react', [PostController::class, 'react'])->name('posts.react');
+    Route::get('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment.show');
+    Route::post('/posts/{post}/comment', [PostController::class, 'commentStore'])->name('posts.comment.store');
+    Route::get('/forum/{slug}/topik', [TopicController::class, 'index'])->name('topik.index');
+    Route::post('/forum/{slug}/topik', [TopicController::class, 'store'])->name('topik.store');
+    Route::delete('/forum/{slug}/topik', [TopicController::class, 'destroy'])->name('topik.destroy');
 
     //Rute e-ticketing
     Route::get('/eticket/myticket', [EticketController::class, 'myticket'])->name('eticket.myticket');

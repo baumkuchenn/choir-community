@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ForumTopic extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['forums_id', 'nama', 'slug', 'deskripsi'];
+    protected $fillable = ['forums_id', 'nama', 'slug'];
 
     public function forum()
     {

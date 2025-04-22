@@ -8,6 +8,7 @@
     <title>Choir Community: Forum</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link href="{{asset('dist/css/bootstrap.min.css')}}" rel="stylesheet">
 
     <style>
@@ -277,14 +278,51 @@
     </header>
     <main>
         @yield('content')
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmModalLabel">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin menghapus <span id="deleteItemName"></span>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                        <form id="deleteForm" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{asset('dist/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
         document.getElementById("searchButton").addEventListener("click", function () {
             document.getElementById("searchBar").classList.remove("d-none");
         });
         document.getElementById("closeSearch").addEventListener("click", function () {
             document.getElementById("searchBar").classList.add("d-none");
+        });
+        //Button hapus
+        document.querySelectorAll('.deleteBtn').forEach(button => {
+            button.addEventListener('click', function() {
+                let itemName = this.dataset.name;
+                let itemAction = this.dataset.action;
+                document.getElementById('deleteItemName').textContent = itemName;
+                let deleteForm = document.getElementById('deleteForm');
+                deleteForm.action = itemAction;
+                let modalElement = document.getElementById('deleteConfirmModal');
+                let deleteModal = new bootstrap.Modal(modalElement);
+                deleteModal.show();
+            });
         });
     </script>
     @yield('js')

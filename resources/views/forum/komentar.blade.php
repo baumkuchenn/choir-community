@@ -11,103 +11,91 @@
             </div>
         @endif
         <div class="col-lg-11 mx-auto position-relative">
-            <div class="position-relative">
-                <img src="{{ asset('storage/' . $forum->foto_banner) }}" alt="Banner" class="w-100 rounded" style="height: 180px; object-fit: cover;">
-            </div>
-
-            <div class="d-flex flex-wrap align-items-center justify-content-between bg-white p-3 rounded-bottom shadow-sm mb-3" style="margin-top: -20px;">
-                <div style="position: absolute; top: 140px; left: 20px;">
-                    <img src="{{ asset('storage/' . $forum->foto_profil) }}" alt="Profile" width="96" height="96" class="rounded-circle border border-white shadow">
-                </div>
-                <div class="mt-2" style="margin-left: 110px;">
-                    <h4 class="mb-0">{{ $forum->nama }}</h4>
+            <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-2">Kembali</a>
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h6 class="mb-1">Topik:
+                        <a href="#">{{ $post->topic->nama }}</a>
+                    </h6>
                     <small class="text-muted">
-                        {{ $forum->visibility_label }} • {{ $forum->members->count() }} anggota
+                        oleh {{ $post->creator->name }} • {{ $post->created_at->diffForHumans() }}
                     </small>
-                </div>
-                @if(Auth::user())
-                    <div class="mt-2">
-                        @if($isMember)
-                            <div class="d-flex gap-2">
-                                @if(in_array($jabatan, ['admin', 'moderator']))
-                                    <button type="button" class="btn btn-outline-primary fw-bold create-modal" data-id="{{ $forum->id }}" data-name="topik" data-action="{{ route('topik.index', $forum->slug) }}">Tambah Topik</button>
-                                    <div id="modalContainer"></div>
-                                @endif
-                                <div class="dropdown">
-                                    <button class="btn btn-light border dropdown-toggle p-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-bars"></i> {{-- Font Awesome hamburger icon --}}
-                                    </button>
+                    <p class="mt-2">{{ $post->isi }}</p>
+                    @foreach ($post->postAttachments as $attachment)
+                        <div class="attachment">
+                            @if (str_contains($attachment->file_type, 'image'))
+                                <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Attachment" class="img-fluid" style="width:360px;">
+                            @elseif (str_contains($attachment->file_type, 'video'))
+                                <video controls>
+                                    <source src="{{ asset('storage/' . $attachment->file_path) }}" type="{{ $attachment->file_type }}">
+                                    Your browser does not support the video tag.
+                                </video>
+                            @endif
+                        </div>
+                    @endforeach
+                    <div class="d-flex gap-1 mt-1">
+                        <!-- Like Button -->
+                        <button class="btn btn-sm text-body react-btn" 
+                                data-id="{{ $post->id }}" 
+                                data-tipe="like">
+                            <i class="fa-{{ $post->userReaction && $post->userReaction->tipe === 'like' ? 'solid' : 'regular' }} fa-thumbs-up"></i>
+                            <span class="like-count">{{ $post->postReactions->where('tipe', 'like')->count() }}</span>
+                        </button>
 
-                                    <ul class="dropdown-menu dropdown-menu-end text-small shadow">
-                                        <li><a class="dropdown-item" href="#">Pengaturan</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <form method="POST" action="{{ route('forum.keluar', $forum->slug) }}" class="mb-0">
-                                                @csrf
-                                                <button type="submit" class="dropdown-item text-danger">Keluar</button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        @else
-                            <button class="btn btn-primary">Gabung</button>
-                        @endif
+                        <!-- Dislike Button -->
+                        <button class="btn btn-sm text-body react-btn" 
+                                data-id="{{ $post->id }}" 
+                                data-tipe="dislike">
+                            <i class="fa-{{ $post->userReaction && $post->userReaction->tipe === 'dislike' ? 'solid' : 'regular' }} fa-thumbs-down"></i>
+                        </button>
+
+                        <!-- Comment Button -->
+                        <a href="{{ route('posts.comment.show', $post->id) }}" class="btn btn-sm text-body">
+                            <i class="fa-regular fa-comment"></i>
+                            {{ $replies->count() }}
+                        </a>
                     </div>
-                @endif
+                </div>
             </div>
+            <p class="fw-bold">Komentar</p>
+            <form method="POST" action="{{ route('posts.store', $forum->slug) }}" enctype="multipart/form-data" class="card border-0 shadow-sm mb-3">
+                @csrf
+                <input type="hidden" name="parent_id" value="{{ $post->id }}">
+                <div class="card-body d-flex">
+                    <!-- User Avatar -->
+                    <img src="https://github.com/mdo.png" alt="Profile" width="32" height="32" class="rounded-circle">
 
-            @if($isMember)
-                <form method="POST" action="{{ route('posts.store', $forum->slug) }}" enctype="multipart/form-data" class="card border-0 shadow-sm mb-3">
-                    @csrf
-                    <div class="card-body d-flex">
-                        <!-- User Avatar -->
-                        <img src="https://github.com/mdo.png" alt="Profile" width="32" height="32" class="rounded-circle">
+                    <!-- Post Input Area -->
+                    <div class="ps-2 flex-grow-1">
+                        <!-- Post Content -->
+                        <textarea name="isi" class="form-control border-0" rows="3" placeholder="Apa yang anda pikirkan?" style="resize: none;" required></textarea>
 
-                        <!-- Post Input Area -->
-                        <div class="ps-2 flex-grow-1">
-                            <!-- Select Topic -->
-                            <select name="topics_id" class="form-select mb-2" required>
-                                <option value="" disabled selected>Pilih Topik</option>
-                                @foreach($forum->topics as $topic)
-                                    <option value="{{ $topic->id }}">{{ $topic->nama }}</option>
-                                @endforeach
-                            </select>
-
-                            <!-- Post Content -->
-                            <textarea name="isi" class="form-control border-0" rows="3" placeholder="Apa yang anda pikirkan?" style="resize: none;" required></textarea>
-
-                            <!-- File Upload -->
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <div class="d-flex gap-2">
-                                    <label class="btn btn-sm btn-outline-secondary mb-0">
-                                        <i class="fa fa-image"></i> Upload foto/video
-                                        <input type="file" name="media[]" class="d-none" multiple accept="image/*,video/*" onchange="previewMedia(event)">
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-md px-4 fw-bold">Unggah</button>
+                        <!-- File Upload -->
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <div class="d-flex gap-2">
+                                <label class="btn btn-sm btn-outline-secondary mb-0">
+                                    <i class="fa fa-image"></i> Upload foto/video
+                                    <input type="file" name="media[]" class="d-none" multiple accept="image/*,video/*" onchange="previewMedia(event)">
+                                </label>
                             </div>
+                            <button type="submit" class="btn btn-primary btn-md px-4 fw-bold">Unggah</button>
+                        </div>
 
-                            <!-- Media Preview -->
-                            <div id="media-preview" class="mt-2" style="display: none;">
-                                <img id="preview-image" src="#" alt="Preview" class="img-fluid rounded shadow-sm" style="max-height: 200px;">
-                            </div>
+                        <!-- Media Preview -->
+                        <div id="media-preview" class="mt-2" style="display: none;">
+                            <img id="preview-image" src="#" alt="Preview" class="img-fluid rounded shadow-sm" style="max-height: 200px;">
                         </div>
                     </div>
-                </form>
-            @endif
-
-            @foreach($posts as $post)
-                <div class="card shadow-sm mb-3">
+                </div>
+            </form>
+            @foreach($replies as $item)
+                <div class="card mb-3">
                     <div class="card-body">
-                        <h6 class="mb-1">Topik:
-                            <a href="#">{{ $post->topic->nama }}</a>
-                        </h6>
                         <small class="text-muted">
-                            oleh {{ $post->creator->name }} • {{ $post->created_at->diffForHumans() }}
+                            oleh {{ $item->creator->name }} • {{ $item->created_at->diffForHumans() }}
                         </small>
-                        <p class="mt-2">{{ $post->isi }}</p>
-                        @foreach ($post->postAttachments as $attachment)
+                        <p class="mt-2">{{ $item->isi }}</p>
+                        @foreach ($item->postAttachments as $attachment)
                             <div class="attachment">
                                 @if (str_contains($attachment->file_type, 'image'))
                                     <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Attachment" class="img-fluid" style="width:360px;">
@@ -122,24 +110,28 @@
                         <div class="d-flex gap-1 mt-1">
                             <!-- Like Button -->
                             <button class="btn btn-sm text-body react-btn" 
-                                    data-id="{{ $post->id }}" 
+                                    data-id="{{ $item->id }}" 
                                     data-tipe="like">
-                                <i class="fa-{{ $post->userReaction && $post->userReaction->tipe === 'like' ? 'solid' : 'regular' }} fa-thumbs-up"></i>
-                                <span class="like-count">{{ $post->postReactions->where('tipe', 'like')->count() }}</span>
+                                <i class="fa-{{ $item->userReaction && $item->userReaction->tipe === 'like' ? 'solid' : 'regular' }} fa-thumbs-up"></i>
+                                <span class="like-count">{{ $item->postReactions->where('tipe', 'like')->count() }}</span>
                             </button>
 
                             <!-- Dislike Button -->
                             <button class="btn btn-sm text-body react-btn" 
-                                    data-id="{{ $post->id }}" 
+                                    data-id="{{ $item->id }}" 
                                     data-tipe="dislike">
-                                <i class="fa-{{ $post->userReaction && $post->userReaction->tipe === 'dislike' ? 'solid' : 'regular' }} fa-thumbs-down"></i>
+                                <i class="fa-{{ $item->userReaction && $item->userReaction->tipe === 'dislike' ? 'solid' : 'regular' }} fa-thumbs-down"></i>
                             </button>
 
                             <!-- Comment Button -->
-                            <a href="{{ route('posts.comment.show', $post->id) }}" class="btn btn-sm text-body">
-                                <i class="fa-regular fa-comment"></i>
-                                {{ $post->replies_count }}
-                            </a>
+                            <form action="{{ route('posts.comment.show', $item->id) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="type" value="comment">
+                                <button class="btn btn-sm text-body">
+                                    <i class="fa-regular fa-comment"></i>
+                                    {{ $item->replies_count }}
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

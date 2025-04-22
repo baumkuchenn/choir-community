@@ -12,12 +12,16 @@ class ForumController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->can('akses-admin')) {
-            $user = Auth::user()->members->first()->choir;
-            $user->name = $user->nama;
+        if ($user) {
+            if ($user->can('akses-admin')) {
+                $choir = Auth::user()->members->first()->choir;
+                $user->name = $choir->nama;
+            }
         }
         $followForums = Forum::with('members')
-            ->where('creator_id', $user->id)
+            ->whereHas('members', function ($query) {
+                $query->where('users_id', Auth::id());
+            })
             ->limit(5)
             ->get();
         $topForums = Forum::withCount('members')
@@ -77,6 +81,11 @@ class ForumController extends Controller
             $forum->update(['foto_banner' => $path]);
         }
 
+        $forum->members()->create([
+            'users_id' => Auth::id(),
+            'jabatan' => 'admin',
+        ]);
+
         return redirect()->route('forum.show', $slug)
             ->with('success', 'Forum berhasil dibuat.');
     }
@@ -86,12 +95,26 @@ class ForumController extends Controller
      */
     public function show(string $slug)
     {
-        $forum = Forum::where('slug', $slug)
+        $forum = Forum::with([
+            'topics.posts' => function ($query) {
+                $query->withCount('replies')
+                    ->with(['creator', 'postAttachments', 'userReaction']);
+            }
+        ])
+            ->where('slug', $slug)
             ->firstOrFail();
+        $posts = $forum->topics->flatMap(function ($topic) {
+            return $topic->posts->map(function ($post) use ($topic) {
+                $post->topic = $topic;
+                return $post;
+            });
+        })->sortByDesc('created_at')->values();
 
         $user = Auth::user();
         $followForums = Forum::with('members')
-            ->where('creator_id', $user->id)
+            ->whereHas('members', function ($query) {
+                $query->where('users_id', Auth::id());
+            })
             ->limit(5)
             ->get();
         $topForums = Forum::withCount('members')
@@ -99,8 +122,14 @@ class ForumController extends Controller
             ->orderByDesc('members_count')
             ->limit(5)
             ->get();
+        $isMember = false;
+        $jabatan = null;
+        if ($user) {
+            $isMember = $forum->members()->where('users_id', $user->id)->exists();
+            $jabatan = $forum->getUserJabatan($user);
+        }
 
-        return view('forum.show', compact('forum', 'followForums', 'topForums'));
+        return view('forum.show', compact('followForums', 'topForums', 'forum', 'posts', 'isMember', 'jabatan'));
     }
 
     /**
@@ -125,5 +154,10 @@ class ForumController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function keluar(string $slug)
+    {
+        dd('tes');
     }
 }

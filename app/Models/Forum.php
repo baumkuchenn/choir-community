@@ -37,4 +37,8 @@ class Forum extends Model
     {
         return $this->visibility === 'private' ? 'Privat' : 'Publik';
     }
+    public function getUserJabatan(User $user)
+    {
+        return $this->members()->where('users_id', $user->id)->value('jabatan');
+    }
 }

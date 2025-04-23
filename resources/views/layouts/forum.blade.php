@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
     <link href="{{asset('dist/css/bootstrap.min.css')}}" rel="stylesheet">
 
     <style>
@@ -191,27 +192,39 @@
 
                 <!-- Search Bar (Hidden by Default, Shows on Icon Click) -->
                 <div id="searchBar" class="d-none w-100 position-absolute top-0 start-0 p-3 bg-light shadow">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fa fa-search"></i></span>
-                        <input type="search" class="form-control" placeholder="Cari konser disini" aria-label="Search">
-                        <button class="btn btn-danger" id="closeSearch"><i class="fa fa-times"></i></button>
-                    </div>
+                    <form method="GET" action="{{ route('forum.search') }}">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa fa-search"></i></span>
+                            <input type="search" class="form-control" name="search_input" placeholder="Cari forum disini" aria-label="Search">
+                            <button class="btn btn-danger" id="closeSearch"><i class="fa fa-times"></i></button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Full Navbar Content (Only Shown on Large Screens) -->
                 <div class="collapse navbar-collapse" id="navbarContent">
-                    <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-auto flex-grow-1 d-none d-lg-block" role="search">
+                    <form method="GET" action="{{ route('forum.search') }}" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-auto flex-grow-1 d-none d-lg-block" role="search">
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                            <input type="search" class="form-control" placeholder="Cari konser disini" aria-label="Search">
+                            <input type="hidden" name="tab" value="posts">
+                            <input type="search" class="form-control" name="search_input" value="{{ old('keyword') }}" placeholder="Cari forum disini" aria-label="Search">
                         </div>
                     </form>
 
                     <div class="d-flex align-items-center text-end ms-3">
                         @if (Route::has('login'))
                             @auth
-                                <a href="{{ route('forum.notification') }}" class="btn me-2">
+                                <a href="{{ route('forum.notification') }}" class="btn position-relative me-2">
                                     <i class="fa-solid fa-bell fa-fw"></i> Notifikasi
+                                    @php
+                                        $unreadNotif = auth()->user()->unreadNotifications->where('data.tipe', 'forum')->count();
+                                    @endphp
+
+                                    @if($unreadNotif > 0)
+                                        <span class="position-absolute translate-middle badge rounded-pill bg-primary" style="font-size: 0.65rem; top: 8px; left: 8px;">
+                                            {{ $unreadNotif }}
+                                        </span>
+                                    @endif
                                 </a>
                                 <div class="dropdown">
                                     <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
@@ -300,10 +313,32 @@
                 </div>
             </div>
         </div>
+        <!-- Leave Confirmation Modal -->
+        <div class="modal fade" id="confirmLeaveModal" tabindex="-1" aria-labelledby="confirmLeaveModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmLeaveModalLabel">Keluar dari Forum</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah kamu yakin ingin keluar dari forum ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <form id="keluarForm" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">Keluar</button>
+                    </form>
+                </div>
+                </div>
+            </div>
+        </div>
     </main>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{asset('dist/js/bootstrap.bundle.min.js')}}"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <script>
         document.getElementById("searchButton").addEventListener("click", function () {
             document.getElementById("searchBar").classList.remove("d-none");
@@ -322,6 +357,17 @@
                 let modalElement = document.getElementById('deleteConfirmModal');
                 let deleteModal = new bootstrap.Modal(modalElement);
                 deleteModal.show();
+            });
+        });
+        //button keluar
+        document.querySelectorAll('.btn-keluar').forEach(button => {
+            button.addEventListener('click', function() {
+                let itemAction = this.dataset.action;
+                let keluarForm = document.getElementById('keluarForm');
+                keluarForm.action = itemAction;
+                let modalElement = document.getElementById('confirmLeaveModal');
+                let keluarModal = new bootstrap.Modal(modalElement);
+                keluarModal.show();
             });
         });
     </script>

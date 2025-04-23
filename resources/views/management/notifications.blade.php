@@ -8,8 +8,8 @@
         <div class="card shadow w-100">
             <div class="card-body">
                 <div class="mt-2">
-                    @if(auth()->user()->notifications->isNotEmpty())
-                        @foreach(auth()->user()->notifications->sortByDesc('created_at') as $notification)
+                    @if($notifications->isNotEmpty())
+                        @foreach($notifications as $notification)
                             @php
                                 $isUnread = is_null($notification->read_at);
                                 $alertClass = $isUnread ? 'alert-info' : 'alert-secondary';

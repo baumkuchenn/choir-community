@@ -23,6 +23,6 @@ class PostConcert extends Model
 
     public function choir()
     {
-        return $this->belongsTo(Concert::class, 'concerts_id');
+        return $this->belongsTo(Choir::class, 'choirs_id');
     }
 }

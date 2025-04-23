@@ -39,19 +39,19 @@
                                     </button>
 
                                     <ul class="dropdown-menu dropdown-menu-end text-small shadow">
-                                        <li><a class="dropdown-item" href="#">Pengaturan</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('forum.pengaturan', $forum->slug) }}">Pengaturan</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
-                                            <form method="POST" action="{{ route('forum.keluar', $forum->slug) }}" class="mb-0">
-                                                @csrf
-                                                <button type="submit" class="dropdown-item text-danger">Keluar</button>
-                                            </form>
+                                            <button type="button" class="dropdown-item text-danger btn-keluar" data-action="{{ route('forum.keluar', $forum->slug) }}">Keluar</button>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         @else
-                            <button class="btn btn-primary">Gabung</button>
+                            <form method="POST" action="{{ route('forum.masuk', $forum->slug) }}" class="mb-0">
+                                @csrf
+                                <button type="submit" class="btn btn-primary fw-medium">Gabung</button>
+                            </form>
                         @endif
                     </div>
                 @endif
@@ -60,6 +60,7 @@
             @if($isMember)
                 <form method="POST" action="{{ route('posts.store', $forum->slug) }}" enctype="multipart/form-data" class="card border-0 shadow-sm mb-3">
                     @csrf
+                    <input type="hidden" name="tipe" value="post">
                     <div class="card-body d-flex">
                         <!-- User Avatar -->
                         <img src="https://github.com/mdo.png" alt="Profile" width="32" height="32" class="rounded-circle">
@@ -98,51 +99,57 @@
             @endif
 
             @foreach($posts as $post)
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <h6 class="mb-1">Topik:
-                            <a href="#">{{ $post->topic->nama }}</a>
-                        </h6>
-                        <small class="text-muted">
-                            oleh {{ $post->creator->name }} • {{ $post->created_at->diffForHumans() }}
-                        </small>
-                        <p class="mt-2">{{ $post->isi }}</p>
-                        @foreach ($post->postAttachments as $attachment)
-                            <div class="attachment">
-                                @if (str_contains($attachment->file_type, 'image'))
-                                    <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Attachment" class="img-fluid" style="width:360px;">
-                                @elseif (str_contains($attachment->file_type, 'video'))
-                                    <video controls>
-                                        <source src="{{ asset('storage/' . $attachment->file_path) }}" type="{{ $attachment->file_type }}">
-                                        Your browser does not support the video tag.
-                                    </video>
-                                @endif
+                <a href="{{ route('posts.show', $post->id) }}" class="text-decoration-none text-body">
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <img src="{{ asset('storage/' . $post->forum->foto_profil) }}" alt="Profile" width="32" height="32" class="rounded-circle">
+                                <div>
+                                    <p class="mb-0 text-muted small"><span class="fw-bold">{{ $post->forum->nama }}</span> • {{ $post->created_at->diffForHumans() }}</p>
+                                    <p class="text-muted mb-0 small">oleh {{ $post->creator->name }}</p>
+                                </div>
                             </div>
-                        @endforeach
-                        <div class="d-flex gap-1 mt-1">
-                            <!-- Like Button -->
-                            <button class="btn btn-sm text-body react-btn" 
-                                    data-id="{{ $post->id }}" 
-                                    data-tipe="like">
-                                <i class="fa-{{ $post->userReaction && $post->userReaction->tipe === 'like' ? 'solid' : 'regular' }} fa-thumbs-up"></i>
-                                <span class="like-count">{{ $post->postReactions->where('tipe', 'like')->count() }}</span>
-                            </button>
+                            <h6 class="mb-2">Topik:
+                                <a href="#">{{ $post->topic->nama }}</a>
+                            </h6>
+                            <p class="mb-2">{{ $post->isi }}</p>
+                            @foreach ($post->postAttachments as $attachment)
+                                <div class="attachment">
+                                    @if (str_contains($attachment->file_type, 'image'))
+                                        <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Attachment" class="img-fluid" style="width:360px;">
+                                    @elseif (str_contains($attachment->file_type, 'video'))
+                                        <video controls>
+                                            <source src="{{ asset('storage/' . $attachment->file_path) }}" type="{{ $attachment->file_type }}">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    @endif
+                                </div>
+                            @endforeach
+                            <div class="d-flex gap-1 mt-1">
+                                <!-- Like Button -->
+                                <button class="btn btn-sm text-body react-btn" 
+                                        data-id="{{ $post->id }}" 
+                                        data-tipe="like">
+                                    <i class="fa-{{ $post->userReaction && $post->userReaction->tipe === 'like' ? 'solid' : 'regular' }} fa-thumbs-up"></i>
+                                    <span class="like-count">{{ $post->postReactions->where('tipe', 'like')->count() }}</span>
+                                </button>
 
-                            <!-- Dislike Button -->
-                            <button class="btn btn-sm text-body react-btn" 
-                                    data-id="{{ $post->id }}" 
-                                    data-tipe="dislike">
-                                <i class="fa-{{ $post->userReaction && $post->userReaction->tipe === 'dislike' ? 'solid' : 'regular' }} fa-thumbs-down"></i>
-                            </button>
+                                <!-- Dislike Button -->
+                                <button class="btn btn-sm text-body react-btn" 
+                                        data-id="{{ $post->id }}" 
+                                        data-tipe="dislike">
+                                    <i class="fa-{{ $post->userReaction && $post->userReaction->tipe === 'dislike' ? 'solid' : 'regular' }} fa-thumbs-down"></i>
+                                </button>
 
-                            <!-- Comment Button -->
-                            <a href="{{ route('posts.comment.show', $post->id) }}" class="btn btn-sm text-body">
-                                <i class="fa-regular fa-comment"></i>
-                                {{ $post->replies_count }}
-                            </a>
+                                <!-- Comment Button -->
+                                <a href="{{ route('posts.show', $post->id) }}" class="btn btn-sm text-body">
+                                    <i class="fa-regular fa-comment"></i>
+                                    {{ $post->allRepliesCount() }}
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             @endforeach
         </div>
     </div>

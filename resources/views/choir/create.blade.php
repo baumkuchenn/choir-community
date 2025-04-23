@@ -120,6 +120,7 @@
         //Selector untuk asal kota
         $('#kotas_id').select2({
             placeholder: 'Cari Kota...',
+            width: '100%',
             ajax: {
                 url: '{{ route("kota.search") }}',
                 dataType: 'json',

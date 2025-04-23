@@ -15,11 +15,13 @@
             <div class="card shadow-sm mb-3">
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-2 mb-2">
-                        <img src="{{ asset('storage/' . $post->forum->foto_profil) }}" alt="Profile" width="32" height="32" class="rounded-circle">
-                        <div>
-                            <p class="mb-0 text-muted small"><span class="fw-bold">{{ $post->forum->nama }}</span> • {{ $post->created_at->diffForHumans() }}</p>
-                            <p class="text-muted mb-0 small">oleh {{ $post->creator->name }}</p>
-                        </div>
+                        @if($post->tipe == 'post')
+                            <img src="{{ asset('storage/' . $post->forum->foto_profil) }}" alt="Profile" width="32" height="32" class="rounded-circle">
+                            <small class="text-muted"><span class="fw-bold">{{ $post->forum->nama }}</span> • {{ $post->created_at->diffForHumans() }}</small>
+                        @elseif($post->tipe == 'thread')
+                            <img src="{{ asset('storage/' . $post->postConcerts->choir->logo) }}" alt="Profile" width="32" height="32" class="rounded-circle">
+                            <small class="text-muted"><span class="fw-bold">{{ $post->postConcerts->choir->nama }}</span> • {{ $post->created_at->diffForHumans() }}</small>
+                        @endif
                     </div>
                     <p class="mb-2">{{ $post->isi }}</p>
                     @foreach ($post->postAttachments as $attachment)
@@ -51,7 +53,7 @@
                         </button>
 
                         <!-- Comment Button -->
-                        <a href="{{ route('posts.comment.show', $post->id) }}" class="btn btn-sm text-body">
+                        <a href="{{ route('posts.show', $post->id) }}" class="btn btn-sm text-body">
                             <i class="fa-regular fa-comment"></i>
                             {{ $post->allRepliesCount() }}
                         </a>
@@ -59,56 +61,16 @@
                 </div>
             </div>
             <p class="fw-bold">Komentar</p>
-            <div class="card shadow-sm mb-3">
-                <div class="card-body">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <img src="{{ asset('storage/' . $reply->forum->foto_profil) }}" alt="Profile" width="32" height="32" class="rounded-circle">
-                        <div>
-                            <p class="mb-0 text-muted small"><span class="fw-bold">{{ $reply->forum->nama }}</span> • {{ $reply->created_at->diffForHumans() }}</p>
-                            <p class="text-muted mb-0 small">oleh {{ $reply->creator->name }}</p>
-                        </div>
-                    </div>
-                    <p class="mb-2">{{ $reply->isi }}</p>
-                    @foreach ($reply->postAttachments as $attachment)
-                        <div class="attachment">
-                            @if (str_contains($attachment->file_type, 'image'))
-                                <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Attachment" class="img-fluid" style="width:360px;">
-                            @elseif (str_contains($attachment->file_type, 'video'))
-                                <video controls>
-                                    <source src="{{ asset('storage/' . $attachment->file_path) }}" type="{{ $attachment->file_type }}">
-                                    Your browser does not support the video tag.
-                                </video>
-                            @endif
-                        </div>
-                    @endforeach
-                    <div class="d-flex gap-1 mt-1">
-                        <!-- Like Button -->
-                        <button class="btn btn-sm text-body react-btn" 
-                                data-id="{{ $reply->id }}" 
-                                data-tipe="like">
-                            <i class="fa-{{ $reply->userReaction && $reply->userReaction->tipe === 'like' ? 'solid' : 'regular' }} fa-thumbs-up"></i>
-                            <span class="like-count">{{ $reply->postReactions->where('tipe', 'like')->count() }}</span>
-                        </button>
-
-                        <!-- Dislike Button -->
-                        <button class="btn btn-sm text-body react-btn" 
-                                data-id="{{ $reply->id }}" 
-                                data-tipe="dislike">
-                            <i class="fa-{{ $reply->userReaction && $reply->userReaction->tipe === 'dislike' ? 'solid' : 'regular' }} fa-thumbs-down"></i>
-                        </button>
-
-                        <!-- Comment Button -->
-                        <a href="{{ route('posts.comment.show', $reply->id) }}" class="btn btn-sm text-body">
-                            <i class="fa-regular fa-comment"></i>
-                            {{ $replies->count() }}
-                        </a>
-                    </div>
-                </div>
-            </div>
             @if(Auth::user())
-                <form method="POST" action="{{ route('posts.store', $forum->slug) }}" enctype="multipart/form-data" class="card border-0 shadow-sm mb-3 ms-5">
+                @php
+                    $slug = 'noslug';
+                    if ($forum){
+                        $slug = $forum->slug;
+                    }
+                @endphp
+                <form method="POST" action="{{ route('posts.store', $slug) }}" enctype="multipart/form-data" class="card border-0 shadow-sm mb-3">
                     @csrf
-                    <input type="hidden" name="parent_id" value="{{ $reply->id }}">
+                    <input type="hidden" name="parent_id" value="{{ $post->id }}">
                     <div class="card-body d-flex">
                         <!-- User Avatar -->
                         <img src="https://github.com/mdo.png" alt="Profile" width="32" height="32" class="rounded-circle">
@@ -138,48 +100,7 @@
                 </form>
             @endif
             @foreach($replies as $item)
-                <div class="card mb-3 ms-5">
-                    <div class="card-body">
-                        <small class="text-muted">
-                            oleh {{ $item->creator->name }} • {{ $item->created_at->diffForHumans() }}
-                        </small>
-                        <p class="mt-2">{{ $item->isi }}</p>
-                        @foreach ($item->postAttachments as $attachment)
-                            <div class="attachment">
-                                @if (str_contains($attachment->file_type, 'image'))
-                                    <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Attachment" class="img-fluid" style="width:360px;">
-                                @elseif (str_contains($attachment->file_type, 'video'))
-                                    <video controls>
-                                        <source src="{{ asset('storage/' . $attachment->file_path) }}" type="{{ $attachment->file_type }}">
-                                        Your browser does not support the video tag.
-                                    </video>
-                                @endif
-                            </div>
-                        @endforeach
-                        <div class="d-flex gap-1 mt-1">
-                            <!-- Like Button -->
-                            <button class="btn btn-sm text-body react-btn" 
-                                    data-id="{{ $item->id }}" 
-                                    data-tipe="like">
-                                <i class="fa-{{ $item->userReaction && $item->userReaction->tipe === 'like' ? 'solid' : 'regular' }} fa-thumbs-up"></i>
-                                <span class="like-count">{{ $item->postReactions->where('tipe', 'like')->count() }}</span>
-                            </button>
-
-                            <!-- Dislike Button -->
-                            <button class="btn btn-sm text-body react-btn" 
-                                    data-id="{{ $item->id }}" 
-                                    data-tipe="dislike">
-                                <i class="fa-{{ $item->userReaction && $item->userReaction->tipe === 'dislike' ? 'solid' : 'regular' }} fa-thumbs-down"></i>
-                            </button>
-
-                            <!-- Comment Button -->
-                            <a href="{{ route('posts.comment.show', $item->id) }}" class="btn btn-sm text-body">
-                                <i class="fa-regular fa-comment"></i>
-                                {{ $item->replies->count() }}
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                @include('forum.partials.reply', ['reply' => $item, 'level' => 0])
             @endforeach
         </div>
     </div>

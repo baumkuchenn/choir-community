@@ -38,7 +38,7 @@ class Post extends Model
 
     public function postConcerts()
     {
-        return $this->hasMany(PostConcert::class, 'posts_id');
+        return $this->hasOne(PostConcert::class, 'posts_id');
     }
 
     public function postReactions()
@@ -55,5 +55,14 @@ class Post extends Model
     public function postAttachments()
     {
         return $this->hasMany(PostAttachment::class, 'posts_id');
+    }
+
+
+    //hitung jumlah reply
+    public function allRepliesCount()
+    {
+        return $this->replies->sum(function ($reply) {
+            return 1 + $reply->allRepliesCount();
+        });
     }
 }

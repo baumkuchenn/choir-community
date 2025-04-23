@@ -12,18 +12,20 @@
                 Buat Forum Baru
             </a>
         </li>
-        <hr>
-        <small>Forum yang diikuti</small>
-        @foreach($followForums as $item)
-            <li>
-                <a href="{{ route('forum.show', $item->slug) }}" class="nav-link text-body d-flex align-items-center gap-2">
-                    <img src="{{ asset('storage/' . $item->foto_profil) }}" alt="Profile" width="32" height="32" class="rounded-circle">
-                    <span class="text-truncate" style="max-width: 150px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        {{ $item->nama }}
-                    </span>
-                </a>
-            </li>
-        @endforeach
+        @if(Auth::user())
+            <hr>
+            <small>Forum yang diikuti</small>
+            @foreach($followForums as $item)
+                <li>
+                    <a href="{{ route('forum.show', $item->slug) }}" class="nav-link text-body d-flex align-items-center gap-2">
+                        <img src="{{ asset('storage/' . $item->foto_profil) }}" alt="Profile" width="32" height="32" class="rounded-circle">
+                        <span class="text-truncate" style="max-width: 150px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ $item->nama }}
+                        </span>
+                    </a>
+                </li>
+            @endforeach
+        @endif
         <hr>
         <small>Forum populer</small>
         @foreach($topForums as $item)

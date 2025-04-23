@@ -325,6 +325,7 @@
         //JS Select2 buat padus kolaborasi
         $('#choirs_id').select2({
             placeholder: 'Cari Komunitas Paduan Suara...',
+            width: '100%',
             ajax: {
                 url: '{{ route("events.search.choir") }}',
                 dataType: 'json',

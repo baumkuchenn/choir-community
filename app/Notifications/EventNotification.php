@@ -33,6 +33,7 @@ class EventNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
+            'tipe' => 'manajemen',
             'title' => 'Kegiatan Baru',
             'message' => 'Terdapat kegiatan baru yaitu ' . $this->event->nama,
             'button_text' => 'Lihat Detail',

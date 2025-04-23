@@ -33,6 +33,7 @@ class BeliTiketNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
+            'tipe' => 'manajemen',
             'title' => 'Pembeli Tiket Baru',
             'message' => 'Terdapat pembeli tiket baru pada kegiatan ' . $this->concert->event->nama,
             'button_text' => 'Lihat Detail',

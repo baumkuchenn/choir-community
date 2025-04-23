@@ -34,6 +34,7 @@ class DaftarEventNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
+            'tipe' => 'manajemen',
             'title' => 'Kegiatan Baru',
             'message' => 'Ada kegiatan baru: ' . $this->event->nama,
             'button_text' => 'Lihat Detail',

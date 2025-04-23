@@ -9,6 +9,7 @@ use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EticketController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\ForumMemberController;
 use App\Http\Controllers\KotaController;
 use App\Http\Controllers\KuponController;
 use App\Http\Controllers\LatihanController;
@@ -58,6 +59,8 @@ Route::get('/debug/verification-link', function () {
 Route::get('/', [EticketController::class, 'index']);
 Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
 Route::get('/forum/show/{slug}', [ForumController::class, 'show'])->name('forum.show');
+Route::get('/posts/show/{post}', [PostController::class, 'show'])->name('posts.show');
+Route::get('/posts/comment/{post}', [PostController::class, 'comment'])->name('posts.comment.show');
 
 //Eticketing ----------------------------------------------------------------------------------
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -73,17 +76,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     //Rute forum
+    //Forum
     Route::resource('forum', ForumController::class)->except(['index', 'show']);
-    Route::post('/forum/keluar/{slug}', [ForumController::class, 'keluar'])->name('forum.keluar');
+    Route::get('/forum/search', [ForumController::class, 'search'])->name('forum.search');
+    Route::post('/forum/{slug}/masuk', [ForumController::class, 'masuk'])->name('forum.masuk');
+    Route::post('/forum/{slug}/keluar', [ForumController::class, 'keluar'])->name('forum.keluar');
+    Route::get('/forum/{slug}/pengaturan', [ForumController::class, 'pengaturan'])->name('forum.pengaturan');
+
+    //Member
+    Route::get('/forum/member/search', [ForumMemberController::class, 'search'])->name('forum-member.search');
+    Route::resource('forum-member', ForumMemberController::class);
+
+    //Notifikasi
     Route::get('/forum/notification', [ForumController::class, 'notification'])->name('forum.notification');
-    Route::post('/forum/notifications/read/{id}', [ForumController::class, 'readAndRedirect'])->name('forum.notification.readAndRedirect');
+    Route::get('/forum/notifications/read/{id}', [ForumController::class, 'readAndRedirect'])->name('forum-notification.readAndRedirect');
+
+    //Postingan
     Route::post('/forum/{slug}/posts', [PostController::class, 'store'])->name('posts.store');
     Route::post('/posts/{post}/react', [PostController::class, 'react'])->name('posts.react');
-    Route::get('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment.show');
-    Route::post('/posts/{post}/comment', [PostController::class, 'commentStore'])->name('posts.comment.store');
     Route::get('/forum/{slug}/topik', [TopicController::class, 'index'])->name('topik.index');
     Route::post('/forum/{slug}/topik', [TopicController::class, 'store'])->name('topik.store');
     Route::delete('/forum/{slug}/topik', [TopicController::class, 'destroy'])->name('topik.destroy');
+
 
     //Rute e-ticketing
     Route::get('/eticket/myticket', [EticketController::class, 'myticket'])->name('eticket.myticket');

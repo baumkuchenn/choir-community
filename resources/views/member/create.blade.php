@@ -21,6 +21,7 @@
     $(document).ready(function() {
         $('#user_id').select2({
             placeholder: 'Cari Pengguna...',
+            width: '100%',
             ajax: {
                 url: '{{ route("members.search") }}',
                 dataType: 'json',

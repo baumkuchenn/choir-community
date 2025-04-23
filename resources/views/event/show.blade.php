@@ -134,6 +134,7 @@
                                     $('#members_id').select2({
                                         placeholder: 'Cari Anggota...',
                                         dropdownParent: $('#tambahPenyanyiModal'),
+                                        width: '100%',
                                         ajax: {
                                             url: @json(route('penyanyi.search')),
                                             dataType: 'json',
@@ -210,6 +211,7 @@
                                     $('#users_id').select2({
                                         placeholder: 'Cari Pengguna...',
                                         dropdownParent: $('#tambahPanitiaModal'),
+                                        width: '100%',
                                         ajax: {
                                             url: @json(route('panitia.search')),
                                             dataType: 'json',
@@ -738,6 +740,7 @@
                 $('#users_id').select2({
                     placeholder: 'Cari Pengguna...',
                     dropdownParent: $('#addMemberModal'),
+                    width: '100%',
                     ajax: {
                         url: route,
                         dataType: 'json',

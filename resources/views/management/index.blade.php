@@ -27,8 +27,8 @@
                         </div>
 
                         <div class="mt-2">
-                            @if(auth()->user()->unreadNotifications->isNotEmpty())
-                                @foreach(auth()->user()->unreadNotifications->sortByDesc('created_at') as $notification)
+                            @if($notifications->isNotEmpty())
+                                @foreach($notifications as $notification)
                                     <div class="alert alert-info mb-2">
                                         <strong>{{ $notification->data['title'] ?? 'Notifikasi' }}</strong><br>
                                         <p>{{ $notification->data['message'] ?? '-' }}</p>

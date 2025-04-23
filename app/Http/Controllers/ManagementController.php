@@ -25,7 +25,7 @@ class ManagementController extends Controller
         if ($member) {
             $choir = $member->choir;
         }
-        $notifications = $user->notifications()->latest()->take(5)->get();
+        $notifications = $user->unreadNotifications->where('data.tipe', 'manajemen')->sortByDesc('created_at');
         $panitia = $user->panitias;
 
         return view('management.index', compact('choir', 'notifications', 'panitia'));
@@ -132,11 +132,9 @@ class ManagementController extends Controller
 
     public function notification()
     {
-        $user = Auth::user();
-        $choir = $user->members->first()->choir;
-        $notifications = $user->notifications()->latest()->take(5)->get();
+        $notifications = auth()->user()->notifications->where('data.tipe', 'manajemen')->sortByDesc('created_at');
 
-        return view('management.notifications', compact('choir', 'notifications'));
+        return view('management.notifications', compact('notifications'));
     }
 
     public function daftar(string $id)

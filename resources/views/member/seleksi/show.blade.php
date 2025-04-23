@@ -229,6 +229,7 @@
             $('#users_id').select2({
                 placeholder: 'Cari Pengguna...',
                 dropdownParent: $('#addMemberModal'),
+                width: '100%',
                 ajax: {
                     url: '{{ route("members.search") }}',
                     dataType: 'json',

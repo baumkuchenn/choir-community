@@ -35,6 +35,7 @@ class LatihanUpdatedNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
+            'tipe' => 'manajemen',
             'title' => 'Perubahan Jadwal Latihan',
             'message' => 'Terdapat perubahan pada jadwal latihan untuk kegiatan ' . $this->event->nama . ' menjadi tanggal ' . $this->latihan->tanggal,
             'button_text' => 'Lihat Detail',

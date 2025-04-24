@@ -137,7 +137,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::post('/events/{id}/payment', [EventController::class, 'payment'])->name('events.payment');
             Route::post('/events/{id}/verification', [EventController::class, 'verifikasi'])->name('events.verification');
-            Route::get('/events/check-in/{id}', [EventController::class, 'checkInShow'])->name('events.checkInShow');
+            Route::get('/events/check-in/{name}/{id}', [EventController::class, 'checkInShow'])->name('events.checkInShow');
 
             Route::post('/tickets/check-in/{id}', [TicketController::class, 'checkIn'])->name('tickets.checkIn');
             Route::get('/ticket-types/{event}/create', [TicketTypeController::class, 'create'])->name('ticket-types.create');

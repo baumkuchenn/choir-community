@@ -33,7 +33,7 @@ class TicketMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Surat Undangan {{ $this->event->nama }}',
+            subject: 'Surat Undangan ' . $this->event->nama,
         );
     }
 

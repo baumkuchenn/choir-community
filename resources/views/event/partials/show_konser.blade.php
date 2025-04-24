@@ -220,7 +220,7 @@
                                 <td class="d-flex justify-content-center gap-3">
                                     @if($totalTickets > 0)
                                         @if($checkedInCount != $totalTickets && (now()->toDateString() >= $event->tanggal_mulai && now()->toDateString() <= $event->tanggal_selesai))
-                                            <button class="btn btn-primary loadCheckInForm" data-purchase-id="{{ $purchase->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
+                                            <button class="btn btn-primary loadCheckInForm" data-name="purchase" data-purchase-id="{{ $purchase->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
                                         @endif
                                     @elseif($purchase->status === 'verifikasi' || $purchase->status === 'batal')
                                         <form action="{{ route('events.payment', $purchase->id) }}" method="POST" enctype="multipart/form-data" class="mb-0">
@@ -253,10 +253,10 @@
                         @foreach($invitations as $item)
                             <tr>
                                 @php
-                                    $checkedInCount = $tickets->where('check_in', 'ya')->count();
-                                    $totalTickets = $tickets->count();
+                                    $checkedInCount = $item->tickets->where('check_in', 'ya')->count();
+                                    $totalTickets = $item->tickets->count();
                                 @endphp
-                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->nama }}</td>
                                 <td>{{ $item->no_handphone }}</td>
                                 <td>{{ $item->email }}</td>
                                 <td>
@@ -271,7 +271,7 @@
                                 <td class="d-flex justify-content-center gap-3">
                                     @if($totalTickets > 0)
                                         @if($checkedInCount != $totalTickets && (now()->toDateString() >= $event->tanggal_mulai && now()->toDateString() <= $event->tanggal_selesai))
-                                            <button class="btn btn-primary loadCheckInForm" data-purchase-id="{{ $item->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
+                                            <button class="btn btn-primary loadCheckInForm" data-name="invite" data-invite-id="{{ $item->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
                                         @endif
                                     @endif
                                 </td>

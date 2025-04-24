@@ -24,12 +24,16 @@
                     <div class="mb-3">
                         <label for="ticket_types_id" class="form-label">Jenis Tiket</label>
                         <select class="form-control" id="ticket_types_id" name="ticket_types_id">
-                        @foreach($ticketTypes as $item)
-                            <option value="{{ $item->id }}">
-                                {{ $item->nama }}
-                            </option>
-                        @endforeach
-                    </select>
+                            @foreach($ticketTypes as $item)
+                                <option value="{{ $item->id }}">
+                                    {{ $item->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="jumlah" class="form-label">Jumlah Tiket</label>
+                        <input type="number" class="form-control" id="jumlah" name="jumlah" required>
                     </div>
                     <div class="modal-footer border-0">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>

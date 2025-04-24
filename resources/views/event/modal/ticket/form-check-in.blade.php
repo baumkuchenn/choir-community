@@ -2,7 +2,11 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="checkInModalLabel">Check-In Invoice {{ $purchase->invoice->kode }} : {{ $purchase->user->name }}</h5>
+                @if($purchase)
+                    <h5 class="modal-title" id="checkInModalLabel">Check-In Invoice {{ $purchase->invoice->kode }} : {{ $purchase->user->name }}</h5>
+                @elseif($invitation)
+                    <h5 class="modal-title" id="checkInModalLabel">Check-In Undangan {{ $invitation->nama }}</h5>
+                @endif
             </div>
             <div class="modal-body">
                 <table class="table table-bordered text-center">

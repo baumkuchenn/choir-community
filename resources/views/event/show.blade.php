@@ -364,8 +364,16 @@
             //Show check in button
             document.querySelectorAll(".loadCheckInForm").forEach((button) => {
                 button.addEventListener("click", function() {
-                    let purchaseId = this.dataset.purchaseId;
-                    let checkInShowUrl = `{{ route('events.checkInShow', ':id') }}`.replace(':id', purchaseId);
+                    let name = this.dataset.name;
+                    let id = null;
+                    if (name === 'invite') {
+                        id = this.dataset.inviteId;
+                    } else if (name === 'purchase') {
+                        id = this.dataset.purchaseId;
+                    }
+                    let checkInShowUrl = `{{ route('events.checkInShow', [':name', ':id']) }}`
+                        .replace(':name', name)
+                        .replace(':id', id);
                     fetch(checkInShowUrl)
                         .then(response => response.text())
                         .then(html => {

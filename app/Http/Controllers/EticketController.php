@@ -56,29 +56,98 @@ class EticketController extends Controller
             $konser->hargaMulai = number_format($hargaMulai, 0, ',', '.');
         }
 
+        //Algoritma rekomendasi
+        $purchasedConcertIds = Purchase::where('users_id', auth()->id())
+            ->whereIn('status', ['verifikasi', 'selesai'])
+            ->with('invoice.tickets.ticket_type.concert')
+            ->get()
+            ->pluck('invoice.tickets')
+            ->flatten()
+            ->pluck('ticket_type.concert.id')
+            ->unique()
+            ->filter();
+
+        $preferredChoirIds = Concert::whereIn('id', $purchasedConcertIds)
+            ->with('event.choirs')
+            ->get()
+            ->pluck('event.choirs')
+            ->flatten()
+            ->where('pivot.penyelenggara', 'ya')
+            ->pluck('id')
+            ->unique();
+
+        function extractCity($lokasi)
+        {
+            // Ambil 2 kata terakhir misalnya
+            $parts = explode(',', $lokasi);
+            return trim(end($parts));
+        }
+
+        $preferredCities = Concert::with('event')
+            ->whereIn('id', $purchasedConcertIds)
+            ->get()
+            ->pluck('event.lokasi') // ini sekarang aman karena sudah diload
+            ->map(fn($lokasi) => extractCity($lokasi))
+            ->unique()
+            ->filter();
+
         $recomEvents = Event::with(['concert', 'choirs'])
             ->whereHas('concert', function ($query) {
                 $query->where('status', 'published')
                     ->whereHas('ticketTypes', function ($ticketQuery) {
-                        $ticketQuery->where('pembelian_terakhir', '>', Carbon::now())
+                        $ticketQuery->where('pembelian_terakhir', '>', now())
                             ->where('visibility', 'public');
                     });
             })
-            ->whereHas('choirs', function ($query) {
-                $query->where('penyelenggara', 'ya');
+            ->where(function ($query) use ($preferredChoirIds, $preferredCities) {
+                if (!empty($preferredChoirIds)) {
+                    $query->whereHas(
+                        'choirs',
+                        fn($q) =>
+                        $q->whereIn('choirs.id', $preferredChoirIds)
+                            ->where('penyelenggara', 'ya')
+                    );
+                }
+
+                if (!empty($preferredCities)) {
+                    $query->orWhere(function ($q) use ($preferredCities) {
+                        foreach ($preferredCities as $city) {
+                            $q->orWhere('lokasi', 'like', "%{$city}%");
+                        }
+                    });
+                }
             })
             ->get()
-            ->map(function ($event) {
-                $event->choir = $event->choirs->first();
-                unset($event->choirs);
-                return $event;
-            });
+            ->map(function ($event) use ($preferredChoirIds, $preferredCities) {
+                // Scoring based on matching choir and city
+                $event->priority_score = 0;
 
-        foreach ($recomEvents as $konser) {
-            $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)
-                ->where('visibility', 'public')
-                ->min('harga');
-            $konser->hargaMulai = number_format($hargaMulai, 0, ',', '.');
+                $choir = $event->choirs->firstWhere('pivot.penyelenggara', 'ya');
+                if ($choir && in_array($choir->id, $preferredChoirIds->toArray())) {
+                    $event->priority_score += 2;
+                }
+
+                foreach ($preferredCities as $city) {
+                    if (stripos($event->lokasi, $city) !== false) {
+                        $event->priority_score += 1;
+                        break;
+                    }
+                }
+
+                return $event;
+            })
+            ->sortByDesc('priority_score')
+            ->values();
+        foreach ($recomEvents as $event) {
+            $event->choir = $event->choirs->first();
+            $event->hargaMulai = number_format(
+                TicketType::where('concerts_id', $event->concert->id ?? null)
+                    ->where('visibility', 'public')
+                    ->min('harga'),
+                0,
+                ',',
+                '.'
+            );
         }
 
         $penyelenggara = Choir::select('choirs.id', 'choirs.nama', 'choirs.logo')

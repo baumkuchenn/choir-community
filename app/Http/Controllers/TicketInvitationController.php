@@ -34,28 +34,33 @@ class TicketInvitationController extends Controller
             'nama' => 'required|string|max:45',
             'no_handphone' => 'required|string|max:15',
             'email' => 'required|string|max:255',
+            'jumlah' => 'required',
         ]);
+        
         $invite = TicketInvitation::create($request->all());
 
         $lastTicketNumber = Ticket::where('ticket_types_id', $request->ticket_types_id)
             ->max('number') ?? 0;
-        $lastTicketNumber++;
+
         $ticketType = TicketType::find($request->ticket_types_id);
         $typeCode = strtoupper(Str::limit(preg_replace('/[^A-Za-z]/', '', $ticketType->nama), 3, ''));
 
-        $barcodeCode = "{$typeCode}{$request->concerts_id}" . str_pad($lastTicketNumber, 4, '0', STR_PAD_LEFT);
-        $barcodeImage = $this->generateBarcodeImage($barcodeCode);
+        for ($i = 0; $i < $request->jumlah; $i++) {
+            $lastTicketNumber++;
+            $barcodeCode = "{$typeCode}{$request->concerts_id}" . str_pad($lastTicketNumber, 4, '0', STR_PAD_LEFT);
+            $barcodeImage = $this->generateBarcodeImage($barcodeCode);
 
-        Ticket::create([
-            'number' => $lastTicketNumber,
-            'barcode_code' => $barcodeCode,
-            'barcode_image' => $barcodeImage,
-            'invitations_id' => $invite->id,
-            'ticket_types_id' => $request->ticket_types_id,
-        ]);
+            Ticket::create([
+                'number' => $lastTicketNumber,
+                'barcode_code' => $barcodeCode,
+                'barcode_image' => $barcodeImage,
+                'invitations_id' => $invite->id,
+                'ticket_types_id' => $request->ticket_types_id,
+            ]);
+        }
 
         $invite->load('tickets.ticket_type.concert.event.choirs');
-        
+
         Mail::to($request->email)->send(new TicketMail($invite));
 
         return redirect()->back()->with('success', 'Tamu undangan berhasil ditambahkan.');

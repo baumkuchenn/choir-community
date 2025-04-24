@@ -18,6 +18,7 @@ use App\Models\Purchase;
 use App\Models\PurchaseDetail;
 use App\Models\Seleksi;
 use App\Models\Ticket;
+use App\Models\TicketInvitation;
 use App\Models\TicketType;
 use App\Notifications\DaftarEventNotification;
 use App\Notifications\EventNotification;
@@ -306,14 +307,16 @@ class EventController extends Controller
                 ->orderBy('waktu_pembayaran', 'desc')
                 ->get();
 
-            $invitations = collect();
-
             $ticketTypes = $concert->ticketTypes()
                 ->withCount(['purchases as terjual' => function ($query) {
                     $query->whereIn('status', ['verifikasi', 'selesai'])
                         ->select(DB::raw("COALESCE(SUM(jumlah), 0)"));
                 }])
                 ->get();
+
+            $invitations = TicketInvitation::whereHas('tickets.ticket_type', function ($query) use ($concert) {
+                $query->where('concerts_id', $concert->id);
+            })->get();
             $donations = $concert->donations()->with('user:id,name,no_handphone')->get();
             $kupon = $concert->kupons()->where('tipe', 'kupon')->get();
             $referal = $concert->kupons()->where('tipe', 'referal')->get();
@@ -430,16 +433,29 @@ class EventController extends Controller
             ->with('success', 'Kegiatan berhasil dihapus.');
     }
 
-    public function checkInShow(string $id)
+    public function checkInShow(string $name, string $id)
     {
-        $purchase = Purchase::with(['invoice', 'user:id,name'])->findOrFail($id);
-        $tickets = Ticket::whereHas('invoice', function ($query) use ($id) {
-            $query->where('purchases_id', $id);
-        })
-            ->with(['ticket_type:id,nama'])
-            ->paginate(5);
+        $purchase = null;
+        $invitation = null;
+        $tickets = collect();
 
-        return view('event.modal.ticket.form-check-in', compact('purchase', 'tickets'));
+        if ($name == 'invite') {
+            $invitation = TicketInvitation::with('tickets')->findOrFail($id);
+            $tickets = Ticket::whereHas('ticketInvitation', function ($query) use ($id) {
+                $query->where('id', $id);
+            })
+                ->with(['ticket_type:id,nama'])
+                ->paginate(5);
+        } elseif ($name == 'purchase') {
+            $purchase = Purchase::with(['invoice', 'user:id,name'])->findOrFail($id);
+            $tickets = Ticket::whereHas('invoice', function ($query) use ($id) {
+                $query->where('purchases_id', $id);
+            })
+                ->with(['ticket_type:id,nama'])
+                ->paginate(5);
+        }
+        
+        return view('event.modal.ticket.form-check-in', compact('purchase', 'invitation', 'tickets'));
     }
 
     public function payment(Request $request, string $id)

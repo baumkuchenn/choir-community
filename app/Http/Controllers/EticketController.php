@@ -101,22 +101,6 @@ class EticketController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(string $id)
@@ -134,30 +118,6 @@ class EticketController extends Controller
         $hargaMulai = $tickets->min('harga');
 
         return view('eticketing.show', compact('concert', 'event', 'tickets', 'hargaMulai'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 
     public function kupon(string $id)
@@ -380,10 +340,12 @@ class EticketController extends Controller
         ])
             ->where('users_id', $user->id)
             ->where(function ($query) {
-                $query->whereHas('concert.event', fn($subQuery) =>
+                $query->whereHas(
+                    'concert.event',
+                    fn($subQuery) =>
                     $subQuery->whereRaw("TIMESTAMP(tanggal_selesai, jam_selesai) < ?", [now()])
                 )
-                ->orWhere('status', 'batal');
+                    ->orWhere('status', 'batal');
             })
             ->whereHas('concert.event.choirs', function ($query) {
                 $query->where('penyelenggara', 'ya');
@@ -517,5 +479,58 @@ class EticketController extends Controller
 
             return view('eticketing.feedback', compact('purchase', 'event', 'concert'));
         }
+    }
+
+    public function search(Request $request)
+    {
+        $keyword = $request->input('search_input');
+        $tab = $request->input('tab');
+
+        $events = collect();
+        $choirs = collect();
+
+        if ($tab === 'events') {
+            $events = Event::with(['concert', 'choirs'])
+                ->whereHas('concert', function ($query) {
+                    $query->where('status', 'published');
+                        // ->whereHas('ticketTypes', function ($ticketQuery) {
+                        //     $ticketQuery->where('pembelian_terakhir', '>', Carbon::now())
+                        //         ->where('visibility', 'public');
+                        // });
+                })
+                ->whereHas('choirs', function ($query) {
+                    $query->where('penyelenggara', 'ya');
+                })
+                // ->where(function ($query) use ($keyword) {
+                //     $query->where('nama', 'like', "%$keyword%")
+                //         ->orWhereHas('choirs', function ($choirQuery) use ($keyword) {
+                //             $choirQuery->where('nama', 'like', "%$keyword%");
+                //         });
+                // })
+                ->latest()
+                ->get()
+                ->map(function ($event) {
+                    $event->choir = $event->choirs->first();
+                    unset($event->choirs);
+                    return $event;
+                });
+                
+            // Append "hargaMulai" to each concert
+            foreach ($events as $konser) {
+                $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)
+                    ->where('visibility', 'public')
+                    ->min('harga');
+                $konser->hargaMulai = number_format($hargaMulai, 0, ',', '.');
+            }
+        } elseif ($tab === 'choirs') {
+            $choirs = Choir::select('choirs.id', 'choirs.nama', 'choirs.logo')
+                // ->whereHas('events.concert', function ($query) {
+                //     $query->where('status', 'published');
+                // })
+                // ->where('nama', 'like', "%$keyword%")
+                ->get();
+        }
+
+        return view('eticketing.search-results', compact('keyword', 'tab', 'events', 'choirs'));
     }
 }

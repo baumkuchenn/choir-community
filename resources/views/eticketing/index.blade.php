@@ -208,9 +208,9 @@
                 } else {
                     eventCard.classList.add("col-lg-3", "col-6", "col-md-4");
                     eventCard.innerHTML = `
-                        <a href="/eticket/${item.concert.id}" class="text-decoration-none">
+                        <a href="/eticket/show/${item.concert.id}" class="text-decoration-none">
                             <div class="card h-100">
-                                <img src="{{ asset('storage/') }}/${item.concert.gambar}" class="card-img-top img-fluid" alt="${item.nama}" style="aspect-ratio: 16/9; object-fit: cover;">
+                                <img src="/storage/${item.concert.gambar}" class="card-img-top img-fluid" alt="${item.nama}" style="aspect-ratio: 16/9; object-fit: cover;">
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title text-truncate">${item.nama}</h5>
                                     <p class="card-text mb-0">${item.tanggal_mulai}</p>

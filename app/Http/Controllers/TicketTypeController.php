@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\TicketType;
 use Illuminate\Http\Request;
 
 class TicketTypeController extends Controller
 {
-    public function create()
+    public function create(string $id)
     {
-        return view('event.modal.ticket-type.form-create');
+        $event = Event::find($id);
+        return view('event.modal.ticket-type.form-create', compact('event'));
     }
 
     /**

@@ -190,19 +190,23 @@
 
                 <!-- Search Bar (Hidden by Default, Shows on Icon Click) -->
                 <div id="searchBar" class="d-none w-100 position-absolute top-0 start-0 p-3 bg-light shadow">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fa fa-search"></i></span>
-                        <input type="search" class="form-control" placeholder="Cari konser disini" aria-label="Search">
-                        <button class="btn btn-danger" id="closeSearch"><i class="fa fa-times"></i></button>
-                    </div>
+                    <form method="GET" action="{{ route('eticket.search') }}">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa fa-search"></i></span>
+                            <input type="hidden" name="tab" value="events">
+                            <input type="search" class="form-control" name="search_input" value="{{ old('search_input') }}" placeholder="Cari konser disini" aria-label="Search">
+                            <button class="btn btn-danger" id="closeSearch"><i class="fa fa-times"></i></button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Full Navbar Content (Only Shown on Large Screens) -->
                 <div class="collapse navbar-collapse" id="navbarContent">
-                    <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-auto flex-grow-1 d-none d-lg-block" role="search">
+                    <form method="GET" action="{{ route('eticket.search') }}" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-auto flex-grow-1 d-none d-lg-block" role="search">
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                            <input type="search" class="form-control" placeholder="Cari konser disini" aria-label="Search">
+                            <input type="hidden" name="tab" value="events">
+                            <input type="search" class="form-control" name="search_input" value="{{ old('search_input') }}" placeholder="Cari konser disini" aria-label="Search">
                         </div>
                     </form>
 

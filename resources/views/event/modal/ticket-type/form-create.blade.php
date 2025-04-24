@@ -23,7 +23,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="pembelian_terakhir" class="form-label">Pembelian Terakhir</label>
-                        <input type="datetime-local" class="form-control" id="pembelian_terakhir" name="pembelian_terakhir" required>
+                        <input type="datetime-local" class="form-control" id="pembelian_terakhir" name="pembelian_terakhir" max="{{ \Carbon\Carbon::parse($event->tanggal_mulai)->format('Y-m-d\TH:i') }}" required>
                     </div>
                     @can('akses-admin')
                         <div class="mb-3">

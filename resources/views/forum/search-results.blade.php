@@ -14,13 +14,13 @@
             <ul class="nav nav-tabs mb-3">
                 <li class="nav-item">
                     <a class="nav-link {{ request('tab', 'posts') === 'posts' ? 'active' : '' }}" 
-                    href="{{ route('forum.search', ['keyword' => request('keyword'), 'tab' => 'posts']) }}">
+                    href="{{ route('forum.search', ['tab' => 'posts', 'search_input' => $keyword]) }}">
                     Posts
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request('tab') === 'forums' ? 'active' : '' }}" 
-                    href="{{ route('forum.search', ['keyword' => request('keyword'), 'tab' => 'forums']) }}">
+                    href="{{ route('forum.search', ['tab' => 'forums', 'search_input' => $keyword]) }}">
                     Forums
                     </a>
                 </li>

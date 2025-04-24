@@ -18,18 +18,7 @@ class ForumController extends Controller
         $concerts = collect();
         $thread = collect();
         $choir = null;
-        if ($user) {
-            if ($user->can('akses-admin')) {
-                $choir = Auth::user()->members->first()->choir;
-                $user->name = $choir->nama;
-                $concerts = Concert::with('event.choirs')
-                    ->whereHas('event.choirs', function ($query) use ($choir) {
-                        $query->where('choirs.id', $choir->id);
-                    })
-                    ->latest()
-                    ->get();
-            }
-        }
+
         $followForums = Forum::with('members')
             ->whereHas('members', function ($query) {
                 $query->where('users_id', Auth::id());
@@ -73,21 +62,33 @@ class ForumController extends Controller
                 });
             })->sortByDesc('created_at')->values();
 
-            $thread = Post::with('postConcerts.choir')
-                ->where('tipe', 'thread')
-                ->when($choir, function ($query) use ($choir) {
-                    // Choir admin: show threads created by their choir
-                    $query->whereHas('postConcerts', function ($sub) use ($choir) {
-                        $sub->where('choirs_id', $choir->id);
-                    });
-                }, function ($query) use ($user) {
-                    // Ticket buyer: show threads for concerts they bought
-                    $query->whereHas('postConcerts.concert.purchases', function ($sub) use ($user) {
-                        $sub->where('users_id', $user->id);
-                    });
-                })
-                ->latest()
-                ->get();
+            if ($user) {
+                if ($user->can('akses-admin')) {
+                    $choir = Auth::user()->members->first()->choir;
+                    $user->name = $choir->nama;
+                    $concerts = Concert::with('event.choirs')
+                        ->whereHas('event.choirs', function ($query) use ($choir) {
+                            $query->where('choirs.id', $choir->id);
+                        })
+                        ->latest()
+                        ->get();
+                }
+                $thread = Post::with('postConcerts.choir')
+                    ->where('tipe', 'thread')
+                    ->when($choir, function ($query) use ($choir) {
+                        // Choir admin: show threads created by their choir
+                        $query->whereHas('postConcerts', function ($sub) use ($choir) {
+                            $sub->where('choirs_id', $choir->id);
+                        });
+                    }, function ($query) use ($user) {
+                        // Ticket buyer: show threads for concerts they bought
+                        $query->whereHas('postConcerts.concert.purchases', function ($sub) use ($user) {
+                            $sub->where('users_id', $user->id);
+                        });
+                    })
+                    ->latest()
+                    ->get();
+            }
 
             $posts = $posts->merge($thread)->sortByDesc('created_at')->values();
         }
@@ -325,8 +326,13 @@ class ForumController extends Controller
         $forums = collect();
 
         if ($tab === 'posts') {
-            $posts = Post::with('creator')
-                ->where('isi', 'like', "%$keyword%")
+            $posts = Post::with(['creator', 'forum'])
+                ->where(function ($query) use ($keyword) {
+                    $query->where('isi', 'like', "%$keyword%")
+                        ->orWhereHas('forum', function ($forumQuery) use ($keyword) {
+                            $forumQuery->where('nama', 'like', "%$keyword%");
+                        });
+                })
                 ->where('parent_id')
                 ->where('tipe', 'post')
                 ->latest()

@@ -273,7 +273,7 @@
                     </tbody>
                 </table>
                 @can('akses-eticket')
-                    <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $concert->id }}" data-name="ticket-type" data-action="{{ route('ticket-types.create') }}">+ Tambah Jenis</button>
+                    <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $concert->id }}" data-name="ticket-type" data-action="{{ route('ticket-types.create', $event->id) }}">+ Tambah Jenis</button>
                 @endcan
             </div>
 

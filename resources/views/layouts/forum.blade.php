@@ -195,7 +195,8 @@
                     <form method="GET" action="{{ route('forum.search') }}">
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa fa-search"></i></span>
-                            <input type="search" class="form-control" name="search_input" placeholder="Cari forum disini" aria-label="Search">
+                            <input type="hidden" name="tab" value="posts">
+                            <input type="search" class="form-control" name="search_input" value="{{ old('search_input') }}" placeholder="Cari forum disini" aria-label="Search">
                             <button class="btn btn-danger" id="closeSearch"><i class="fa fa-times"></i></button>
                         </div>
                     </form>
@@ -207,7 +208,7 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa fa-search"></i></span>
                             <input type="hidden" name="tab" value="posts">
-                            <input type="search" class="form-control" name="search_input" value="{{ old('keyword') }}" placeholder="Cari forum disini" aria-label="Search">
+                            <input type="search" class="form-control" name="search_input" value="{{ old('search_input') }}" placeholder="Cari forum disini" aria-label="Search">
                         </div>
                     </form>
 

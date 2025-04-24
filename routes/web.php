@@ -55,14 +55,20 @@ Route::get('/debug/verification-link', function () {
     );
 });
 
-//Tampilan awal
+//Tampilan awal dan eticket
 Route::get('/', [EticketController::class, 'index']);
+Route::get('/eticket', [EticketController::class, 'index'])->name('eticket.index');
+Route::get('/eticket/show/{id}', [EticketController::class, 'show'])->name('eticket.show');
+Route::get('/eticket/search', [EticketController::class, 'search'])->name('eticket.search');
+
+//Forum
 Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
+Route::get('/forum/search', [ForumController::class, 'search'])->name('forum.search');
 Route::get('/forum/show/{slug}', [ForumController::class, 'show'])->name('forum.show');
 Route::get('/posts/show/{post}', [PostController::class, 'show'])->name('posts.show');
 Route::get('/posts/comment/{post}', [PostController::class, 'comment'])->name('posts.comment.show');
 
-//Eticketing ----------------------------------------------------------------------------------
+//Isi Profil setelah buat akun ----------------------------------------------------------------------------------
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/personal-info', [AuthPersonalInfoController::class, 'showForm'])->name('personal-info.show');
     Route::post('/personal-info', [AuthPersonalInfoController::class, 'store'])->name('personal-info.store');
@@ -78,7 +84,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Rute forum
     //Forum
     Route::resource('forum', ForumController::class)->except(['index', 'show']);
-    Route::get('/forum/search', [ForumController::class, 'search'])->name('forum.search');
     Route::post('/forum/{slug}/masuk', [ForumController::class, 'masuk'])->name('forum.masuk');
     Route::post('/forum/{slug}/keluar', [ForumController::class, 'keluar'])->name('forum.keluar');
     Route::get('/forum/{slug}/pengaturan', [ForumController::class, 'pengaturan'])->name('forum.pengaturan');
@@ -101,7 +106,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //Rute e-ticketing
     Route::get('/eticket/myticket', [EticketController::class, 'myticket'])->name('eticket.myticket');
-    Route::resource('eticket', EticketController::class);
+    Route::resource('eticket', EticketController::class)->except(['index', 'show']);
     Route::get('/eticket/{id}/kupon', [EticketController::class, 'kupon'])->name('eticket.kupon.use');
     Route::post('/eticket/{id}/order', [EticketController::class, 'order'])->name('eticket.order');
     Route::post('/eticket/{id}/purchase', [EticketController::class, 'purchase'])->name('eticket.purchase');
@@ -132,7 +137,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/events/{id}/verification', [EventController::class, 'verifikasi'])->name('events.verification');
             Route::get('/events/check-in/{id}', [EventController::class, 'checkInShow'])->name('events.checkInShow');
             Route::post('/tickets/check-in/{id}', [TicketController::class, 'checkIn'])->name('tickets.checkIn');
-            Route::resource('ticket-types', TicketTypeController::class);
+            Route::get('/ticket-types/{event}/create', [TicketTypeController::class, 'create'])->name('ticket-types.create');
+            Route::resource('ticket-types', TicketTypeController::class)->except(['create']);
             Route::get('/kupon/create/{event}/{tipe}', [KuponController::class, 'create'])->name('kupon.create');
             Route::resource('kupon', KuponController::class)->except(['create']);
             Route::put('/concerts/{id}', [ConcertController::class, 'update'])->name('concerts.update');

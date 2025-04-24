@@ -12,6 +12,16 @@ class Event extends Model
     protected $table = 'events';
     protected $fillable = ['nama', 'parent_kegiatan', 'jenis_kegiatan', 'tanggal_mulai', 'tanggal_selesai', 'jam_mulai', 'jam_selesai', 'lokasi', 'peran', 'visibility', 'sub_kegiatan_id'];
 
+    public function subEvents()
+    {
+        return $this->hasMany(Event::class, 'parent_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Event::class, 'parent_id');
+    }
+
     public function concert()
     {
         return $this->hasOne(Concert::class, 'events_id');

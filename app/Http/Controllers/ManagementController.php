@@ -86,44 +86,72 @@ class ManagementController extends Controller
 
     public function calendarShow()
     {
-        $events = Event::select(
-            'nama as title',
-            'tanggal_mulai as start',
-            'tanggal_selesai as end',
-            'jam_mulai',
-            'jam_selesai',
-            'lokasi'
-        )
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+        $choirId = Auth::user()->members->first()->choirs_id;
+        $events = Event::with('choirs')
+            ->whereHas('choirs', function ($query) use ($choirId) {
+                $query->where('choirs.id', $choirId);
+            })
             ->where('jenis_kegiatan', '!=', 'latihan')
+            ->where(function ($q) {
+                $q->where('visibility', '!=', 'inherited')
+                    ->orWhere(function ($nested) {
+                        $nested->where('visibility', 'inherited')
+                            ->whereHas('parent', function ($parentQuery) {
+                                $parentQuery->where(function ($q2) {
+                                    $q2->whereHas('panitias.user', function ($panitiaQuery) {
+                                        $panitiaQuery->where('users.id', Auth::id());
+                                    })->orWhereHas('penyanyis.member.user', function ($penyanyiQuery) {
+                                        $penyanyiQuery->where('users.id', Auth::id());
+                                    });
+                                });
+                            });
+                    });
+            })
             ->get()
             ->map(function ($event) {
                 return [
-                    'title' => $event->title,
-                    'start' => $event->start,
-                    'end'   => Carbon::parse($event->start)->eq(Carbon::parse($event->end))
-                        ? $event->end // one-day event
-                        : Carbon::parse($event->end)->addDay()->toDateString(), // add +1
+                    'title' => $event->nama,
+                    'start' => $event->tanggal_mulai,
+                    'end'   => Carbon::parse($event->tanggal_mulai)->eq(Carbon::parse($event->tanggal_selesai))
+                        ? $event->tanggal_selesai // one-day event
+                        : Carbon::parse($event->tanggal_selesai)->addDay()->toDateString(), // add +1
                     'jam_mulai' => $event->jam_mulai,
                     'jam_selesai' => $event->jam_selesai,
                     'lokasi' => $event->lokasi,
-                    'allDay' => true,
                 ];
             });
 
-        $latihans = Latihan::select(
-            'events.nama as title',
-            'latihans.tanggal as start',
-            'latihans.tanggal as end',
-            'latihans.jam_mulai',
-            'latihans.jam_selesai',
-            'latihans.lokasi'
-        )
-            ->join('events', 'latihans.events_id', '=', 'events.id')
-            ->join('collabs', 'events.id', '=', 'collabs.events_id')
-            ->where('collabs.choirs_id', Auth::user()->members->first()->choirs_id)
-            ->get();
+        $latihans = Latihan::with(['event.choirs', 'event.parent.panitias', 'event.parent.penyanyis'])
+            ->whereHas('event', function ($eventQuery) use ($choirId) {
+                $eventQuery->whereHas('choirs', function ($choirQuery) use ($choirId) {
+                    $choirQuery->where('choirs.id', $choirId);
+                })->where(function ($q) {
+                    $q->where('visibility', '!=', 'inherited')
+                        ->orWhere(function ($nested) {
+                            $nested->where('visibility', 'inherited')
+                                ->whereHas('parent', function ($parentQuery) {
+                                    $parentQuery->where(function ($q2) {
+                                        $q2->whereHas('panitias.user', function ($panitiaQuery) {
+                                            $panitiaQuery->where('users.id', Auth::id());
+                                        })->orWhereHas('penyanyis.member.user', function ($penyanyiQuery) {
+                                            $penyanyiQuery->where('users.id', Auth::id());
+                                        });
+                                    });
+                                });
+                        });
+                });
+            })
+            ->get()
+            ->map(function ($latihan) {
+                return [
+                    'title' => $latihan->event->nama,
+                    'start' => $latihan->tanggal,
+                    'end' => $latihan->tanggal,
+                    'jam_mulai' => $latihan->jam_mulai,
+                    'jam_selesai' => $latihan->jam_selesai,
+                    'lokasi' => $latihan->lokasi,
+                ];
+            });
         // Merge and return as one collection
         $combined = $events->concat($latihans);
 

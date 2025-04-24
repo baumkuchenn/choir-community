@@ -196,11 +196,15 @@
                 if (itemsType === "penyelenggara") {
                     eventCard.classList.add("col-lg-2", "col-6", "col-md-4");
                     eventCard.innerHTML = `
-                        <a href="" class="text-decoration-none">
-                            <div class="card border-0 text-center">
-                                <div class="card-body">
-                                    <img src="{{ asset('storage/') }}/${item.logo}" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="${item.nama}">
-                                    <h5 class="card-title mt-3">${item.nama}</h5>
+                        <a href="/eticket/show/choir/${item.id}" class="text-decoration-none w-100">
+                            <div class="card text-center border-0 h-100 p-3">
+                                <div class="d-flex justify-content-center">
+                                    <img src="/storage/${item.logo}" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="${item.nama}">
+                                </div>
+                                <div class="mt-3">
+                                    <h6 class="card-title truncate-2-lines">
+                                        ${item.nama}
+                                    </h6>
                                 </div>
                             </div>
                         </a>

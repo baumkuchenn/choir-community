@@ -22,7 +22,7 @@
                 <div class="card shadow w-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="fw-bold">Notifikasi <span class="badge bg-primary">{{ auth()->user()->unreadNotifications->count() }}</span></h4>
+                            <h4 class="fw-bold">Notifikasi <span class="badge bg-primary">{{ $notifications->count() }}</span></h4>
                             <a href="{{ route('management.notification') }}" class="btn btn-outline-primary">Lihat Semua</a>
                         </div>
 

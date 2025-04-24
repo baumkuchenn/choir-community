@@ -120,6 +120,60 @@ class EticketController extends Controller
         return view('eticketing.show', compact('concert', 'event', 'tickets', 'hargaMulai'));
     }
 
+    public function showChoir(string $id, Request $request)
+    {
+        $choir = Choir::find($id);
+        $tab = $request->tab ?? 'berlangsung';
+
+        $konserBerlangsung = collect();
+        $konserLalu = collect();
+
+        if ($tab == 'berlangsung') {
+            $konserBerlangsung = Event::with('concert')
+                ->whereHas('concert', function ($query) {
+                    $query->where('status', 'published')
+                        ->whereHas('ticketTypes', function ($ticketQuery) {
+                            $ticketQuery->where('pembelian_terakhir', '>', Carbon::now())
+                                ->where('visibility', 'public');
+                        });
+                })
+                ->whereHas('choirs', function ($query) use ($id) {
+                    $query->where('choirs.id', $id);
+                })
+                ->latest()
+                ->get();
+
+            foreach ($konserBerlangsung as $konser) {
+                $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)
+                    ->where('visibility', 'public')
+                    ->min('harga');
+                $konser->hargaMulai = number_format($hargaMulai, 0, ',', '.');
+            }
+        } elseif ($tab == 'lalu') {
+            $konserLalu = Event::with('concert')
+                ->whereHas('concert', function ($query) {
+                    $query->where('status', 'published')
+                        ->whereHas('ticketTypes', function ($ticketQuery) {
+                            $ticketQuery->where('pembelian_terakhir', '<', Carbon::now())
+                                ->where('visibility', 'public');
+                        });
+                })
+                ->whereHas('choirs', function ($query) use ($id) {
+                    $query->where('choirs.id', $id);
+                })
+                ->latest()
+                ->get();
+            foreach ($konserLalu as $konser) {
+                $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)
+                    ->where('visibility', 'public')
+                    ->min('harga');
+                $konser->hargaMulai = number_format($hargaMulai, 0, ',', '.');
+            }
+        }
+
+        return view('eticketing.show-choir', compact('choir', 'tab', 'konserBerlangsung', 'konserLalu'));
+    }
+
     public function kupon(string $id)
     {
         $event = Event::find($id);
@@ -492,21 +546,21 @@ class EticketController extends Controller
         if ($tab === 'events') {
             $events = Event::with(['concert', 'choirs'])
                 ->whereHas('concert', function ($query) {
-                    $query->where('status', 'published');
-                        // ->whereHas('ticketTypes', function ($ticketQuery) {
-                        //     $ticketQuery->where('pembelian_terakhir', '>', Carbon::now())
-                        //         ->where('visibility', 'public');
-                        // });
+                    $query->where('status', 'published')
+                        ->whereHas('ticketTypes', function ($ticketQuery) {
+                            $ticketQuery->where('pembelian_terakhir', '>', Carbon::now())
+                                ->where('visibility', 'public');
+                        });
                 })
                 ->whereHas('choirs', function ($query) {
                     $query->where('penyelenggara', 'ya');
                 })
-                // ->where(function ($query) use ($keyword) {
-                //     $query->where('nama', 'like', "%$keyword%")
-                //         ->orWhereHas('choirs', function ($choirQuery) use ($keyword) {
-                //             $choirQuery->where('nama', 'like', "%$keyword%");
-                //         });
-                // })
+                ->where(function ($query) use ($keyword) {
+                    $query->where('nama', 'like', "%$keyword%")
+                        ->orWhereHas('choirs', function ($choirQuery) use ($keyword) {
+                            $choirQuery->where('nama', 'like', "%$keyword%");
+                        });
+                })
                 ->latest()
                 ->get()
                 ->map(function ($event) {
@@ -514,7 +568,7 @@ class EticketController extends Controller
                     unset($event->choirs);
                     return $event;
                 });
-                
+
             // Append "hargaMulai" to each concert
             foreach ($events as $konser) {
                 $hargaMulai = TicketType::where('concerts_id', $konser->concert->id ?? null)
@@ -524,10 +578,10 @@ class EticketController extends Controller
             }
         } elseif ($tab === 'choirs') {
             $choirs = Choir::select('choirs.id', 'choirs.nama', 'choirs.logo')
-                // ->whereHas('events.concert', function ($query) {
-                //     $query->where('status', 'published');
-                // })
-                // ->where('nama', 'like', "%$keyword%")
+                ->whereHas('events.concert', function ($query) {
+                    $query->where('status', 'published');
+                })
+                ->where('nama', 'like', "%$keyword%")
                 ->get();
         }
 

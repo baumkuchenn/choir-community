@@ -59,6 +59,7 @@ Route::get('/debug/verification-link', function () {
 Route::get('/', [EticketController::class, 'index']);
 Route::get('/eticket', [EticketController::class, 'index'])->name('eticket.index');
 Route::get('/eticket/show/{id}', [EticketController::class, 'show'])->name('eticket.show');
+Route::get('/eticket/show/choir/{id}', [EticketController::class, 'showChoir'])->name('eticket.show-choir');
 Route::get('/eticket/search', [EticketController::class, 'search'])->name('eticket.search');
 
 //Forum

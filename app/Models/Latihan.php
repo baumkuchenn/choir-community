@@ -13,6 +13,6 @@ class Latihan extends Model
 
     public function event()
     {
-        return $this->hasOne(Event::class, 'events_id');
+        return $this->belongsTo(Event::class, 'events_id');
     }
 }

@@ -24,8 +24,8 @@ return new class extends Migration
             $table->enum('peran', ['panitia', 'penyanyi', 'keduanya'])->nullable();
             $table->enum('visibility', ['public', 'inherited'])->nullable();
 
-            $table->unsignedBigInteger('sub_kegiatan_id')->nullable();
-            $table->foreign('sub_kegiatan_id')->references('id')->on('events');
+            $table->unsignedBigInteger('parent_id')->nullable();
+            $table->foreign('parent_id')->references('id')->on('events');
 
             $table->softDeletes();
             $table->timestamps();

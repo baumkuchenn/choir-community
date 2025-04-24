@@ -57,38 +57,51 @@
         <div class="col-12 col-lg-4 mt-3 mt-lg-0">
             <div class="card shadow position-sticky" style="top: 8rem;">
                 <div class="card-body">
-                    @foreach($tickets as $ticket)
-                    <div class="mb-2 ticket-item" data-id="{{ $ticket->id }}" data-price="{{ $ticket->harga }}">
-                        <h5>{{ $ticket->nama }}</h5>
-                        <div class="d-flex align-items-center">
-                            <p class="text-primary fs-6">Berakhir pada {{ \Carbon\Carbon::parse($ticket->pembelian_terakhir)->translatedFormat('d F Y H:i') }} WIB</p>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <button class="btn circle-btn btn-minus me-2">-</button>
-                                <span class="fs-6 ticket-quantity">0</span>
-                                <button class="btn circle-btn btn-plus ms-2">+</button>
-                            </div>
-                            <span class="fw-bold fs-6">Rp{{ number_format($ticket->harga, 0, ',', '.') }}</span>
-                        </div>
-                    </div>
-                    @endforeach
-                    <hr>
-                    <div class="d-flex justify-content-between align-items-center my-3">
-                        <h6>Total <span id="total-tickets">0</span> tiket</h6>
-                        <h6 class="fw-bold">Rp<span id="total-price">0</span></h6>
-                    </div>
-                    <form action="{{ route('eticket.order', ['id' => $event->concert->id]) }}" id="form-beli" method="POST">
-                        @csrf
-                        <input type="hidden" name="tickets" id="selected-tickets">
-                        <button type="submit" onclick="event.preventDefault(); beliTiket();" class="btn btn-primary w-100 fs-6 fw-bold">Beli Tiket</button>
-                    </form>
-                    @if(session('error'))
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function() {
-                            alert("{{ session('error') }}");
+                    @php
+                        $ticketClosed = $tickets->every(function ($ticket) {
+                            return \Carbon\Carbon::parse($ticket->pembelian_terakhir)->isPast();
                         });
-                    </script>
+                    @endphp
+
+                    @if($ticketClosed)
+                        <div>
+                            <p>Mohon maaf pembelian tiket sudah ditutup, silahkan temukan konser menarik lainnya.</p>
+                            <a href="{{ route('eticket.index') }}" class="btn btn-primary">Cari Event</a>
+                        </div>
+                    @else
+                        @foreach($tickets as $ticket)
+                            <div class="mb-2 ticket-item" data-id="{{ $ticket->id }}" data-price="{{ $ticket->harga }}">
+                                <h5>{{ $ticket->nama }}</h5>
+                                <div class="d-flex align-items-center">
+                                    <p class="text-primary fs-6">Berakhir pada {{ \Carbon\Carbon::parse($ticket->pembelian_terakhir)->translatedFormat('d F Y H:i') }} WIB</p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <button class="btn circle-btn btn-minus me-2">-</button>
+                                        <span class="fs-6 ticket-quantity">0</span>
+                                        <button class="btn circle-btn btn-plus ms-2">+</button>
+                                    </div>
+                                    <span class="fw-bold fs-6">Rp{{ number_format($ticket->harga, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+                        @endforeach
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center my-3">
+                            <h6>Total <span id="total-tickets">0</span> tiket</h6>
+                            <h6 class="fw-bold">Rp<span id="total-price">0</span></h6>
+                        </div>
+                        <form action="{{ route('eticket.order', ['id' => $event->concert->id]) }}" id="form-beli" method="POST">
+                            @csrf
+                            <input type="hidden" name="tickets" id="selected-tickets">
+                            <button type="submit" onclick="event.preventDefault(); beliTiket();" class="btn btn-primary w-100 fs-6 fw-bold">Beli Tiket</button>
+                        </form>
+                        @if(session('error'))
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    alert("{{ session('error') }}");
+                                });
+                            </script>
+                        @endif
                     @endif
                 </div>
             </div>

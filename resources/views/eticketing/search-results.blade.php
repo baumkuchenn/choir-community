@@ -14,7 +14,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request('tab', 'events') === 'events' ? 'active' : '' }}" 
                     href="{{ route('eticket.search', ['search_input' => $keyword, 'tab' => 'events']) }}">
-                    Events
+                    Konser
                     </a>
                 </li>
                 <li class="nav-item">
@@ -51,23 +51,13 @@
                         <div class="row">
                             @foreach($choirs as $item)
                                 <div class="col-6 col-md-4 col-lg-2 mb-4 d-flex">
-                                    <a href="#" class="text-decoration-none w-100">
-                                        <div class="card text-center h-100 p-3">
+                                    <a href="{{ route('eticket.show-choir', $item->id) }}" class="text-decoration-none w-100">
+                                        <div class="card text-center border-0 h-100 p-3">
                                             <div class="d-flex justify-content-center">
-                                                <img src="{{ asset('storage/' . $item->logo) }}"
-                                                    class="rounded-circle img-fluid"
-                                                    style="width: 120px; height: 120px; object-fit: cover;"
-                                                    alt="{{ $item->nama }}">
+                                                <img src="{{ asset('storage/' . $item->logo) }}" class="rounded-circle img-fluid" style="width: 120px; height: 120px; object-fit: cover;" alt="{{ $item->nama }}">
                                             </div>
                                             <div class="mt-3">
-                                                <h6 class="card-title" style="
-                                                    display: -webkit-box;
-                                                    -webkit-line-clamp: 2;
-                                                    -webkit-box-orient: vertical;
-                                                    overflow: hidden;
-                                                    text-overflow: ellipsis;
-                                                    max-height: 3.3em;
-                                                ">
+                                                <h6 class="card-title truncate-2-lines">
                                                     {{ $item->nama }}
                                                 </h6>
                                             </div>

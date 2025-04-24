@@ -24,6 +24,7 @@ use App\Notifications\EventNotification;
 use App\Notifications\EventUpdatedNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -270,6 +271,7 @@ class EventController extends Controller
         $panitia = collect();
         $banks = collect();
         $purchases = collect();
+        $invitations = collect();
         $ticketTypes = collect();
         $donations = collect();
         $kupon = collect();
@@ -304,6 +306,8 @@ class EventController extends Controller
                 ->orderBy('waktu_pembayaran', 'desc')
                 ->get();
 
+            $invitations = collect();
+
             $ticketTypes = $concert->ticketTypes()
                 ->withCount(['purchases as terjual' => function ($query) {
                     $query->whereIn('status', ['verifikasi', 'selesai'])
@@ -337,7 +341,7 @@ class EventController extends Controller
             $latihan = Latihan::where('events_id', $event->id)->get();
         }
 
-        return view('event.show', compact('event', 'events', 'concert', 'choir', 'penyanyi', 'panitia', 'purchases', 'ticketTypes', 'donations', 'kupon', 'referal', 'feedbacks', 'banks', 'seleksi', 'pendaftar', 'hasil', 'latihan'));
+        return view('event.show', compact('event', 'events', 'concert', 'choir', 'penyanyi', 'panitia', 'purchases', 'invitations', 'ticketTypes', 'donations', 'kupon', 'referal', 'feedbacks', 'banks', 'seleksi', 'pendaftar', 'hasil', 'latihan'));
     }
 
     /**
@@ -549,10 +553,12 @@ class EventController extends Controller
         foreach ($purchaseDetails as $detail) {
             $lastTicketNumber = Ticket::where('ticket_types_id', $detail->ticket_types_id)
                 ->max('number') ?? 0;
+            $ticketType = TicketType::find($detail->ticket_types_id);
+            $typeCode = strtoupper(Str::limit(preg_replace('/[^A-Za-z]/', '', $ticketType->name), 3, ''));
 
             for ($i = 0; $i < $detail->jumlah; $i++) {
                 $lastTicketNumber++;
-                $barcodeCode = "TKT{$concertId}{$detail->ticket_types_id}" . str_pad($lastTicketNumber, 4, '0', STR_PAD_LEFT);
+                $barcodeCode = "{$typeCode}{$concertId}" . str_pad($lastTicketNumber, 4, '0', STR_PAD_LEFT);
                 $barcodeImage = $this->generateBarcodeImage($barcodeCode);
 
                 Ticket::create([

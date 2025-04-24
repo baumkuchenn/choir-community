@@ -237,6 +237,55 @@
 
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center">
+                    <h5>Daftar Tamu Undangan</h5>
+                </div>
+                <table id="invitationTable" class="table table-bordered shadow text-center">
+                    <thead>
+                        <tr class="bg-primary">
+                            <th class="text-center">Nama</th>
+                            <th class="text-center">Nomor Handphone</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($invitations as $item)
+                            <tr>
+                                @php
+                                    $checkedInCount = $tickets->where('check_in', 'ya')->count();
+                                    $totalTickets = $tickets->count();
+                                @endphp
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->no_handphone }}</td>
+                                <td>{{ $item->email }}</td>
+                                <td>
+                                    @if($totalTickets > 0)
+                                        @if($checkedInCount > 0)
+                                            Tiket Checked In {{ $checkedInCount }}/{{ $totalTickets }}
+                                        @else
+                                            E-ticket Terkirim ({{ $totalTickets }} tiket)
+                                        @endif
+                                    @endif
+                                </td>
+                                <td class="d-flex justify-content-center gap-3">
+                                    @if($totalTickets > 0)
+                                        @if($checkedInCount != $totalTickets && (now()->toDateString() >= $event->tanggal_mulai && now()->toDateString() <= $event->tanggal_selesai))
+                                            <button class="btn btn-primary loadCheckInForm" data-purchase-id="{{ $item->id }}" data-concert-id="{{ $concert->id }}">Check In</button>
+                                        @endif
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                @can('akses-admin')
+                    <button type="button" class="btn btn-primary fw-bold create-modal" data-id="{{ $concert->id }}" data-name="ticket-invites" data-action="{{ route('ticket-invites.create', $concert->id) }}">+ Tambah Tamu</button>
+                @endcan
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
                     <h5>Jenis Tiket</h5>
                 </div>
                 <table id="ticketTypeTable" class="table table-bordered shadow text-center">

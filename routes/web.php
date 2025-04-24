@@ -27,6 +27,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SeleksiController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TicketInvitationController;
 use App\Http\Controllers\TicketTypeController;
 use App\Http\Controllers\TopicController;
 use App\Models\User;
@@ -137,11 +138,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/events/{id}/payment', [EventController::class, 'payment'])->name('events.payment');
             Route::post('/events/{id}/verification', [EventController::class, 'verifikasi'])->name('events.verification');
             Route::get('/events/check-in/{id}', [EventController::class, 'checkInShow'])->name('events.checkInShow');
+
             Route::post('/tickets/check-in/{id}', [TicketController::class, 'checkIn'])->name('tickets.checkIn');
             Route::get('/ticket-types/{event}/create', [TicketTypeController::class, 'create'])->name('ticket-types.create');
             Route::resource('ticket-types', TicketTypeController::class)->except(['create']);
+
             Route::get('/kupon/create/{event}/{tipe}', [KuponController::class, 'create'])->name('kupon.create');
             Route::resource('kupon', KuponController::class)->except(['create']);
+
             Route::put('/concerts/{id}', [ConcertController::class, 'update'])->name('concerts.update');
         });
 
@@ -156,6 +160,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('choir/profile/{choir}', [ChoirController::class, 'show'])->name('choir.profile');
                 Route::put('choir/{choir}', [ChoirController::class, 'update'])->name('choir.update');
                 Route::delete('choir/{choir}', [ChoirController::class, 'destroy'])->name('choir.update');
+
+                Route::get('/ticket-invites/{event}/create', [TicketInvitationController::class, 'create'])->name('ticket-invites.create');
+                Route::post('/ticket-invites/create', [TicketInvitationController::class, 'store'])->name('ticket-invites.store');
             });
 
             //Manajemen Event

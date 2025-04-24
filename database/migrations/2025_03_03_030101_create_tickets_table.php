@@ -19,8 +19,10 @@ return new class extends Migration
             $table->enum('check_in', ['ya', 'tidak'])->default('tidak');
             $table->timestamp('waktu_check_in')->nullable();
 
-            $table->unsignedBigInteger('invoices_id');
+            $table->unsignedBigInteger('invoices_id')->nullable();
             $table->foreign('invoices_id')->references('id')->on('invoices');
+            $table->unsignedBigInteger('invitations_id')->nullable();
+            $table->foreign('invitations_id')->references('id')->on('ticket_invitations');
             $table->unsignedBigInteger('ticket_types_id');
             $table->foreign('ticket_types_id')->references('id')->on('ticket_types');
 

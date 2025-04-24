@@ -210,6 +210,13 @@
                         </a>
                     `;
                 } else {
+                    const tanggal = new Date(item.tanggal_mulai);
+                    const formattedTanggal = new Intl.DateTimeFormat('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    }).format(tanggal);
+
                     eventCard.classList.add("col-lg-3", "col-6", "col-md-4");
                     eventCard.innerHTML = `
                         <a href="/eticket/show/${item.concert.id}" class="text-decoration-none">
@@ -217,7 +224,7 @@
                                 <img src="/storage/${item.concert.gambar}" class="card-img-top img-fluid" alt="${item.nama}" style="aspect-ratio: 16/9; object-fit: cover;">
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title text-truncate">${item.nama}</h5>
-                                    <p class="card-text mb-0">${item.tanggal_mulai}</p>
+                                    <p class="card-text mb-0">${formattedTanggal}</p>
                                     <p class="card-text"><b>Rp${item.hargaMulai}</b></p>
                                     <h6 class="card-title border-top pt-2 text-truncate">${item.choir.nama}</h6>
                                 </div>

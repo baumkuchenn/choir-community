@@ -51,7 +51,7 @@
                                             <img src="{{ asset('storage/' . $item->concert->gambar) }}" class="card-img-top img-fluid" alt="{{ $item->nama }}" style="aspect-ratio: 16/9; object-fit: cover;">
                                             <div class="card-body d-flex flex-column">
                                                 <h5 class="card-title text-truncate">{{ $item->nama }}</h5>
-                                                <p class="card-text mb-0">{{ $item->tanggal_mulai }}</p>
+                                                <p class="card-text mb-0">{{ \Carbon\Carbon::parse($item->tanggal_mulai)->translatedFormat('d M Y') }}</p>
                                                 <p class="card-text"><b>Rp{{ $item->hargaMulai }}</b></p>
                                                 <h6 class="card-title border-top pt-2 text-truncate">{{ $choir->nama }}</h6>
                                             </div>

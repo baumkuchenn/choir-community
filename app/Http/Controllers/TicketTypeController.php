@@ -26,7 +26,7 @@ class TicketTypeController extends Controller
         ]);
         TicketType::create($request->all());
 
-        return redirect()->back()->with('success', 'Jenis tiket berhasil ditambahkan!');
+        return redirect()->back()->with('success', 'Jenis tiket berhasil ditambahkan.');
     }
 
     public function edit(string $id)
@@ -50,7 +50,7 @@ class TicketTypeController extends Controller
         $ticketType = TicketType::findOrFail($id);
         $ticketType->update($request->all());
 
-        return redirect()->back()->with('success', 'Jenis tiket berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Jenis tiket berhasil diperbarui.');
     }
 
 
@@ -62,6 +62,6 @@ class TicketTypeController extends Controller
         $ticketType = TicketType::findOrFail($id);
         $ticketType->delete();
 
-        return redirect()->back()->with('success', 'Jenis tiket berhasil dihapus!');
+        return redirect()->back()->with('success', 'Jenis tiket berhasil dihapus.');
     }
 }

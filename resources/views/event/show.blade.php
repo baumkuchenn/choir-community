@@ -100,6 +100,9 @@
                             if (name == 'ticket-type'){
                                 createModal = document.getElementById('createTicketModal');
                                 createModal.querySelector('#concerts_id').value = id;
+                            } else if (name == 'ticket-invites'){
+                                createModal = document.getElementById('createTicketInviteModal');
+                                createModal.querySelector('#concerts_id').value = id;
                             } else if (name == 'kupon'){
                                 createModal = document.getElementById('createKuponModal');
                                 createModal.querySelector('#concerts_id').value = id;
@@ -332,6 +335,11 @@
             $('#purchaseTable').DataTable({
                 "language": {
                     "emptyTable": "Belum ada pembeli"
+                }
+            });
+            $('#invitationTable').DataTable({
+                "language": {
+                    "emptyTable": "Belum ada tamu undangan"
                 }
             });
             $('#ticketTypeTable').DataTable({

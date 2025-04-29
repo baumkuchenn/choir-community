@@ -34,16 +34,16 @@
 
         <div class="row mb-3">
             <div class="col-12">
-                <label for="sub_kegiatan_id" class="form-label">Sub Kegiatan Dari</label>
-                <select class="form-select" id="sub_kegiatan_id" name="sub_kegiatan_id">
+                <label for="parent_id" class="form-label">Sub Kegiatan Dari</label>
+                <select class="form-select" id="parent_id" name="parent_id">
                     <option value="" disabled selected>Pilih kegiatan utama</option>
                     @foreach ($events as $subEvent)
-                        <option value="{{ $subEvent->id }}" {{ old('sub_kegiatan_id', $event->sub_kegiatan_id) == $subEvent->id ? 'selected' : '' }}>
+                        <option value="{{ $subEvent->id }}" {{ old('parent_id', $event->parent_id) == $subEvent->id ? 'selected' : '' }}>
                             {{ $subEvent->nama }}
                         </option>
                     @endforeach
                 </select>
-                @error('sub_kegiatan_id')
+                @error('parent_id')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
             </div>

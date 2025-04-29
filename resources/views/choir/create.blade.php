@@ -108,7 +108,7 @@
                 </div>
             </div>
             
-            <button class="btn btn-primary w-100 fw-bold mt-2">Simpan Seleksi Baru</button>
+            <button class="btn btn-primary w-100 fw-bold mt-2">Simpan Komunitas Paduan Suara Baru</button>
         </form>
     </div>
 </div>

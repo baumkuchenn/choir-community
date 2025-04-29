@@ -25,6 +25,8 @@ class PersonalInfoController extends Controller
             'no_handphone' => 'required|string|max:255|regex:/^\d+$/',
             'tanggal_lahir' => 'required|date',
             'jenis_kelamin' => 'required|in:L,P',
+            'alamat' => 'required|string|max:255',
+            'kota' => 'required|string|max:45',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -33,6 +35,8 @@ class PersonalInfoController extends Controller
             'no_handphone' => $request->no_handphone,
             'tanggal_lahir' => $request->tanggal_lahir,
             'jenis_kelamin' => $request->jenis_kelamin,
+            'alamat' => $request->alamat,
+            'kota' => $request->kota,
             'password' => Hash::make($request->password),
         ]);
 

@@ -45,16 +45,16 @@
             <div id="parent_wrapper">
                 <div class="row mb-3">
                     <div class="col-12">
-                        <label for="sub_kegiatan_id" class="form-label">Sub Kegiatan Dari</label>
-                        <select class="form-select" id="sub_kegiatan_id" name="sub_kegiatan_id">
+                        <label for="parent_id" class="form-label">Sub Kegiatan Dari</label>
+                        <select class="form-select" id="parent_id" name="parent_id">
                             <option value="" disabled selected>Pilih kegiatan utama</option>
                             @foreach ($events as $subEvent)
-                                <option value="{{ $subEvent->id }}" {{ old('sub_kegiatan_id') == $subEvent->id ? 'selected' : '' }}>
+                                <option value="{{ $subEvent->id }}" {{ old('parent_id') == $subEvent->id ? 'selected' : '' }}>
                                     {{ $subEvent->nama }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('sub_kegiatan_id')
+                        @error('parent_id')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
@@ -232,6 +232,7 @@
             tidak: [
                 { value: "seleksi", text: "Seleksi" },
                 { value: "latihan", text: "Latihan" },
+                { value: "rapat", text: "Rapat" },
                 { value: "konser", text: "Konser" },
                 { value: "gladi", text: "Gladi Kegiatan" },
                 { value: "event", text: "Hari H Kegiatan (Lomba/Job/Event Lain)" },
@@ -268,58 +269,53 @@
         jenisKegiatanSelect.value = "";
     }
 
+
+    function updateInsideWrapper(parent){
+        if(parent.value === 'tidak'){
+            //Wrapper jenis konser dan non latihan
+            const jenis = document.getElementById("jenis_kegiatan");
+            const nonLatihanWrapper = document.getElementById("non_latihan_wrapper");
+            toggleWrapper(jenis, nonLatihanWrapper, ["seleksi", "konser", "gladi", "event"]);
+            jenis.addEventListener("change", function () {
+                toggleWrapper(jenis, nonLatihanWrapper, ["seleksi", "konser", "gladi", "event"]);
+            });
+
+            const seleksiWrapper = document.getElementById("seleksi_wrapper");
+            toggleWrapper(jenis, seleksiWrapper, ["seleksi"]);
+            jenis.addEventListener("change", function () {
+                toggleWrapper(jenis, seleksiWrapper, ["seleksi"]);
+            });
+            
+            const konserWrapper = document.getElementById("konser_wrapper");
+            toggleWrapper(jenis, konserWrapper, ["konser", "event"]);
+            jenis.addEventListener("change", function () {
+                toggleWrapper(jenis, konserWrapper, ["konser", "event"]);
+            });
+
+
+            //Wrapper kolaborasi
+            const kolaborasi = document.getElementById("kegiatan_kolaborasi");
+            const kolaborasiWrapper = document.getElementById("kolaborasi_wrapper");
+            toggleWrapper(kolaborasi, kolaborasiWrapper, ["ya"]);
+            kolaborasi.addEventListener("change", function () {
+                toggleWrapper(kolaborasi, kolaborasiWrapper, ["ya"]);
+            });
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
+        //Ubah value jenis kegiatan sesuai parent
+        updateJenisKegiatanOptions();
+
         //Wrapper parent kegiatan
         const parent = document.getElementById("parent_kegiatan");
         const parentWrapper = document.getElementById("parent_wrapper");
         toggleWrapper(parent, parentWrapper, ["tidak"]);
         parent.addEventListener("change", function () {
             toggleWrapper(parent, parentWrapper, ["tidak"]);
+            updateJenisKegiatanOptions();
+            updateInsideWrapper(parent);
         });
-
-
-        //Wrapper jenis konser dan non latihan
-        const jenis = document.getElementById("jenis_kegiatan");
-        const nonLatihanWrapper = document.getElementById("non_latihan_wrapper");
-        toggleWrapper(jenis, nonLatihanWrapper, ["seleksi", "konser", "gladi", "event"]);
-        jenis.addEventListener("change", function () {
-            toggleWrapper(jenis, nonLatihanWrapper, ["seleksi", "konser", "gladi", "event"]);
-        });
-
-        const seleksiWrapper = document.getElementById("seleksi_wrapper");
-        toggleWrapper(jenis, seleksiWrapper, ["seleksi"]);
-        jenis.addEventListener("change", function () {
-            toggleWrapper(jenis, seleksiWrapper, ["seleksi"]);
-        });
-        
-        const konserWrapper = document.getElementById("konser_wrapper");
-        toggleWrapper(jenis, konserWrapper, ["konser"]);
-        jenis.addEventListener("change", function () {
-            toggleWrapper(jenis, konserWrapper, ["konser"]);
-        });
-
-
-        //Wrapper kolaborasi
-        const kolaborasi = document.getElementById("kegiatan_kolaborasi");
-        const kolaborasiWrapper = document.getElementById("kolaborasi_wrapper");
-        toggleWrapper(kolaborasi, kolaborasiWrapper, ["ya"]);
-        kolaborasi.addEventListener("change", function () {
-            toggleWrapper(kolaborasi, kolaborasiWrapper, ["ya"]);
-        });
-
-
-        //Wrapper peran
-        const peran = document.getElementById("peran");
-        const peranWrapper = document.getElementById("peran_wrapper");
-        toggleWrapper(peran, peranWrapper, ["panitia", "keduanya"]);
-        peran.addEventListener("change", function () {
-            toggleWrapper(peran, peranWrapper, ["panitia", "keduanya"]);
-        });
-
-
-        //Ubah value jenis kegiatan sesuai parent
-        updateJenisKegiatanOptions();
-        document.getElementById("parent_kegiatan").addEventListener("change", updateJenisKegiatanOptions);
 
 
         //JS Select2 buat padus kolaborasi

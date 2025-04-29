@@ -18,7 +18,7 @@ class PanitiaController extends Controller
     public function create(string $id)
     {
         $event = Event::find($id);
-        $events = Event::where('sub_kegiatan_id', $event->sub_kegiatan_id)
+        $events = Event::where('parent_id', $event->parent_id)
             ->whereNotIn('jenis_kegiatan', ['latihan', 'seleksi', 'gladi'])
             ->where('id', '!=', $event->id)
             ->get();
@@ -27,7 +27,7 @@ class PanitiaController extends Controller
             ->whereHas('seleksi', function ($query) {
                 $query->where('tipe', 'panitia');
             })
-            ->where('sub_kegiatan_id', $event->sub_kegiatan_id)
+            ->where('parent_id', $event->parent_id)
             ->where('jenis_kegiatan', 'seleksi')
             ->get();
 
@@ -62,7 +62,7 @@ class PanitiaController extends Controller
                     ->first();
                 $existingPanitiaParent = Panitia::with('user')
                     ->where('users_id', $userId)
-                    ->where('events_id', $event->sub_kegiatan_id)
+                    ->where('events_id', $event->parent_id)
                     ->first();
                 $pendaftar = PanitiaPendaftarSeleksi::where('users_id', $existingPanitiaParent->user->id)
                     ->first();

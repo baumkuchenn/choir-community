@@ -120,7 +120,7 @@ class LatihanController extends Controller
         if ($request->has('parent_notification')) {
             $event = Event::find($request->events_id);
             $userChoirs = Auth::user()->members->pluck('id')->toArray();
-            $mainEventId = $event->sub_kegiatan_id ?? $event->id;
+            $mainEventId = $event->parent_id ?? $event->id;
 
             $penyanyiUsers = Penyanyi::with('member.user')
                 ->whereHas('member', function ($query) use ($userChoirs) {
@@ -160,7 +160,7 @@ class LatihanController extends Controller
         if ($request->has('parent_notification')) {
             $event = Event::find($request->events_id);
             $userChoirs = Auth::user()->members->pluck('id')->toArray();
-            $mainEventId = $event->sub_kegiatan_id ?? $event->id;
+            $mainEventId = $event->parent_id ?? $event->id;
 
             $penyanyiUsers = Penyanyi::with('member.user')
                 ->whereHas('member', function ($query) use ($userChoirs) {

@@ -179,13 +179,13 @@ class SeleksiController extends Controller
             if ($pendaftar->lolos == 'ya') {
                 if ($seleksi->tipe == 'event') {
                     Penyanyi::create([
-                        'events_id' => $event->sub_kegiatan_id,
+                        'events_id' => $event->parent_id,
                         'members_id' => Member::where('users_id', $request->users_id)->first()->id,
                         'suara' => $pendaftar->kategori_suara,
                     ]);
                 } elseif ($seleksi->tipe == 'panitia') {
                     Panitia::create([
-                        'events_id' => $event->sub_kegiatan_id,
+                        'events_id' => $event->parent_id,
                         'users_id' => $request->users_id,
                     ]);
                 }

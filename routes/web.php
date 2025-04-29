@@ -132,9 +132,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         //Manajemen Event untuk panit eksternal juga
         //Manajemen Konser
         Route::middleware('akses:akses-eticket-semua')->group(function () {
-            Route::get('/events', [EventController::class, 'index'])->name('events.index');
-            Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
-
             Route::post('/events/{id}/payment', [EventController::class, 'payment'])->name('events.payment');
             Route::post('/events/{id}/verification', [EventController::class, 'verifikasi'])->name('events.verification');
             Route::get('/events/check-in/{name}/{id}', [EventController::class, 'checkInShow'])->name('events.checkInShow');
@@ -149,7 +146,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/concerts/{id}', [ConcertController::class, 'update'])->name('concerts.update');
         });
 
-        Route::middleware(['akses:akses-event', 'akses:akses-eticket-semua'])->group(function () {
+        Route::middleware('akses:akses-event-eticket-semua')->group(function () {
+            Route::get('/events', [EventController::class, 'index'])->name('events.index');
+            Route::get('/events/show/{event}', [EventController::class, 'show'])->name('events.show');
+
             Route::get('events/search-lalu', [EventController::class, 'searchEventLalu'])->name('events.search.lalu');
             Route::get('events/search-selanjutnya', [EventController::class, 'searchEventSelanjutnya'])->name('events.search.selanjutnya');
         });

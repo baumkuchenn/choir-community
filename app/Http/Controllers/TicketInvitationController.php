@@ -36,7 +36,14 @@ class TicketInvitationController extends Controller
             'email' => 'required|string|max:255',
             'jumlah' => 'required',
         ]);
-        
+
+        $ticketType = TicketType::find($request->ticket_types_id);
+        $typeCount = $ticketType->tickets->count();
+
+        if ($typeCount + $request->jumlah > $ticketType->jumlah) {
+            return redirect()->back()->with('error', 'Total tiket undangan yang digunakan melebihi ' . $ticketType->jumlah);
+        }
+
         $invite = TicketInvitation::create($request->all());
 
         $lastTicketNumber = Ticket::where('ticket_types_id', $request->ticket_types_id)

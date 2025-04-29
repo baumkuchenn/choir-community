@@ -37,7 +37,7 @@ class PenyanyiController extends Controller
     {
         $choir = Auth::user()->members->first()->choir;
         $event = Event::find($event);
-        $events = Event::where('sub_kegiatan_id', $event->sub_kegiatan_id)
+        $events = Event::where('parent_id', $event->parent_id)
             ->whereNotIn('jenis_kegiatan', ['latihan', 'seleksi', 'gladi'])
             ->where('id', '!=', $event->id)
             ->get();
@@ -45,7 +45,7 @@ class PenyanyiController extends Controller
             ->whereHas('seleksi', function ($query) {
                 $query->where('tipe', 'event');
             })
-            ->where('sub_kegiatan_id', $event->sub_kegiatan_id)
+            ->where('parent_id', $event->parent_id)
             ->where('jenis_kegiatan', 'seleksi')
             ->get();
 
@@ -74,7 +74,7 @@ class PenyanyiController extends Controller
                     ->first();
                 $existingPenyanyiParent = Penyanyi::with('member.user')
                     ->where('members_id', $memberId)
-                    ->where('events_id', $event->sub_kegiatan_id)
+                    ->where('events_id', $event->parent_id)
                     ->first();
                 $pendaftar = PendaftarSeleksi::where('users_id', $existingPenyanyiParent->member->user->id)
                     ->first();
@@ -99,7 +99,7 @@ class PenyanyiController extends Controller
                 ->first();
             $existingPenyanyiParent = Penyanyi::with('member.user')
                 ->where('members_id', $request->members_id)
-                ->where('events_id', $event->sub_kegiatan_id)
+                ->where('events_id', $event->parent_id)
                 ->first();
 
             if ($existingPenyanyi) {
@@ -109,7 +109,7 @@ class PenyanyiController extends Controller
             if (!$existingPenyanyiParent) {
                 Penyanyi::create([
                     'members_id' => $request->members_id,
-                    'events_id' => $event->sub_kegiatan_id,
+                    'events_id' => $event->parent_id,
                     'suara' => $request->suara,
                 ]);
             }

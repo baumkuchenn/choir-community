@@ -6,6 +6,7 @@ use App\Models\Choir;
 use App\Models\PendaftarSeleksi;
 use App\Models\Seleksi;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 class ChoirController extends Controller
@@ -49,28 +50,74 @@ class ChoirController extends Controller
 
     public function join()
     {
-        $choir = Choir::with(['seleksis' => function ($query) {
+        //Algoritma rekomendasi
+        function extractCity($lokasi)
+        {
+            // Ambil 2 kata terakhir misalnya
+            $parts = explode(',', $lokasi);
+            return trim(end($parts));
+        }
+        $user = auth()->user();
+        if ($user) {
+            $userLocation = $user->kota;
+
+            $preferredCities = collect([extractCity($userLocation)]);
+        }
+
+        $recomChoirs = Choir::with(['seleksis' => function ($query) {
             $query->whereRaw("TIMESTAMP(tanggal_mulai, jam_mulai) > ?", [now()])
                 ->orderByRaw("TIMESTAMP(tanggal_mulai, jam_mulai) DESC")
+                ->limit(1);
+            $query->orderByRaw("TIMESTAMP(tanggal_mulai, jam_mulai) DESC")
                 ->limit(1);
         }])
             ->whereHas('seleksis', function ($query) {
                 $query->where('pendaftaran_terakhir', '>=', now()->toDateString())
                     ->where('tipe', 'member');
+                $query->where('tipe', 'member');
             })
-            ->paginate(10);
+            ->get() // get all first, then prioritize manually
+            ->map(function ($choir) use ($preferredCities) {
+                $choir->priority_score = 0;
+
+                foreach ($preferredCities as $city) {
+                    if (stripos($choir->alamat, $city) !== false) {
+                        $choir->priority_score += 1;
+                        break;
+                    }
+                }
+
+                return $choir;
+            })
+            ->sortByDesc('priority_score')
+            ->values();
+
+        // Now paginate manually after sorting
+        $page = request()->get('page', 1);
+        $perPage = 10;
+        $paginatedChoirs = new LengthAwarePaginator(
+            $recomChoirs->forPage($page, $perPage),
+            $recomChoirs->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
         $daftar = PendaftarSeleksi::with(['user', 'seleksi.choir'])
             ->whereHas('user', function ($query) {
                 $query->where('id', Auth::id());
             })
             ->paginate(10);
-        return view('choir.join', compact('choir', 'daftar'));
+        return view('choir.join', compact('paginatedChoirs', 'daftar'));
     }
 
     public function detail(string $id)
     {
         $seleksi = Seleksi::with('choir')->findOrFail($id);
-        return view('choir.detail', compact('seleksi'));
+        $pendaftar = PendaftarSeleksi::where('seleksis_id', $id)
+            ->where('users_id', Auth::id())
+            ->exists();
+        return view('choir.detail', compact('seleksi', 'pendaftar'));
     }
 
     public function register(string $id)

@@ -61,6 +61,16 @@ class AuthServiceProvider extends ServiceProvider
                 Gate::forUser($user)->allows('akses-eticket-panitia');
         });
 
+        Gate::define('akses-event-semua', function ($user) {
+            return Gate::forUser($user)->allows('akses-event') ||
+                Gate::forUser($user)->allows('akses-event-panitia');
+        });
+
+        Gate::define('akses-event-eticket-semua', function ($user) {
+            return Gate::forUser($user)->allows('akses-eticket-semua') ||
+                Gate::forUser($user)->allows('akses-event-semua');
+        });
+
         Gate::define('akses-member', function ($user) {
             if (!$user->members || $user->members->isEmpty()) {
                 return false;

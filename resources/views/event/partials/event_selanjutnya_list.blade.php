@@ -41,14 +41,14 @@
                             </div>
                         </div>
                         <div class="col-md-5 text-end d-none d-md-block">
-                            <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
+                            <a href="{{ route('events.show', $event->id) }}" class="btn btn-primary">Lihat Detail</a>
                             @can('akses-event')
                                 <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
                             @endcan
                         </div>
                     </div>
                     <div class="col-12 text-end d-block d-md-none">
-                        <a href="events/{{ $event->id }}" class="btn btn-primary">Lihat Detail</a>
+                        <a href="{{ route('events.show', $event->id) }}" class="btn btn-primary">Lihat Detail</a>
                         @can('akses-event')
                             <button class="btn btn-outline-danger deleteBtn" data-name="kegiatan {{ $event->nama }}" data-action="{{ route('events.destroy', $event->id) }}">Hapus</button>
                         @endcan

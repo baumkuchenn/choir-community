@@ -50,7 +50,7 @@
             <span class="spinner-border text-primary" role="status"></span>
         </div>
         <div id="choirList"> 
-            @include('choir.partials.choir_list', ['choir' => $choir])
+            @include('choir.partials.choir_list', ['choir' => $paginatedChoirs])
         </div>
     </div>
 </div>

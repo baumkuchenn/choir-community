@@ -23,8 +23,8 @@ class TicketType extends Model
             ->withPivot('jumlah');
     }
 
-    public function ticket()
+    public function tickets()
     {
-        return $this->hasOne(Ticket::class, 'ticket_types_id');
+        return $this->hasMany(Ticket::class, 'ticket_types_id');
     }
 }

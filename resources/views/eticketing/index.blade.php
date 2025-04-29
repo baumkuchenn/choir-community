@@ -44,20 +44,22 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-        <h3><b>Rekomendasi Konser Untukmu</b></h3>
-        <div id="rekomCarousel" class="carousel slide mb-4 p-0" data-bs-ride="false">
-            <div class="carousel-inner carousel-container" data-name="rekomKonser" data-events='@json($recomEvents)'>
+        @if(Auth::user())
+            <h3><b>Rekomendasi Konser Untukmu</b></h3>
+            <div id="rekomCarousel" class="carousel slide mb-4 p-0" data-bs-ride="false">
+                <div class="carousel-inner carousel-container" data-name="rekomKonser" data-events='@json($recomEvents)'>
 
+                </div>
+                <button class="carousel-control-prev w-auto ps-2 opacity-100" type="button" data-bs-target="#rekomCarousel" data-bs-slide="prev">
+                    <i class="fa-solid fa-arrow-left text-body bg-body border fs-5 p-1 rounded-circle"></i>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next w-auto pe-2 opacity-100" type="button" data-bs-target="#rekomCarousel" data-bs-slide="next">
+                    <i class="fa-solid fa-arrow-right text-body bg-body border fs-5 p-1 rounded-circle"></i>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
-            <button class="carousel-control-prev w-auto ps-2 opacity-100" type="button" data-bs-target="#rekomCarousel" data-bs-slide="prev">
-                <i class="fa-solid fa-arrow-left text-body bg-body border fs-5 p-1 rounded-circle"></i>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next w-auto pe-2 opacity-100" type="button" data-bs-target="#rekomCarousel" data-bs-slide="next">
-                <i class="fa-solid fa-arrow-right text-body bg-body border fs-5 p-1 rounded-circle"></i>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
+        @endif
         <h3><b>Penyelenggara Favorit</b></h3>
         <div id="penyelenggaraCarousel" class="carousel slide mb-4 p-0" data-bs-ride="false">
             <div class="carousel-inner carousel-container" data-name="penyelenggara" data-events='@json($penyelenggara)'>

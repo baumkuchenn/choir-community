@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->string('kode');
+            $table->string('kode')->unique();
             $table->unsignedBigInteger('purchases_id');
             $table->foreign('purchases_id')->references('id')->on('purchases');
 

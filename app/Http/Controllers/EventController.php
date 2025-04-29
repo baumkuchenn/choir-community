@@ -156,7 +156,7 @@ class EventController extends Controller
                 'nama' => 'required|string|max:255',
                 'parent_kegiatan' => 'required',
                 'jenis_kegiatan' => 'required|string',
-                'sub_kegiatan_id' => 'required',
+                'parent_id' => 'required',
                 'tanggal_mulai' => 'required|date',
                 'tanggal_selesai' => 'required|date',
             ];
@@ -210,7 +210,7 @@ class EventController extends Controller
                     Notification::send($members, new DaftarEventNotification($event));
                 }
             } elseif ($request->has('parent_notification')) {
-                $mainEventId = $event->sub_kegiatan_id ?? $event->id;
+                $mainEventId = $event->parent_id ?? $event->id;
 
                 $penyanyi = Penyanyi::with('member.user')
                     ->whereHas('member', function ($query) use ($userChoirs) {
@@ -363,7 +363,7 @@ class EventController extends Controller
         $event = Event::findOrFail($id);
         $rules = [
             'nama' => 'required|string|max:255',
-            'sub_kegiatan_id' => 'required',
+            'parent_id' => 'required',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date',
             'jam_mulai' => 'required',
@@ -388,7 +388,7 @@ class EventController extends Controller
 
         $userChoirs = Auth::user()->members->pluck('id')->toArray();
 
-        $mainEventId = $event->sub_kegiatan_id ?? $event->id;
+        $mainEventId = $event->parent_id ?? $event->id;
 
         $penyanyi = Penyanyi::with('member.user')
             ->whereHas('member', function ($query) use ($userChoirs) {

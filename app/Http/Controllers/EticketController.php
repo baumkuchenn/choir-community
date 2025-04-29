@@ -57,6 +57,13 @@ class EticketController extends Controller
         }
 
         //Algoritma rekomendasi
+        function extractCity($lokasi)
+        {
+            // Ambil 2 kata terakhir misalnya
+            $parts = explode(',', $lokasi);
+            return trim(end($parts));
+        }
+
         $purchasedConcertIds = Purchase::where('users_id', auth()->id())
             ->whereIn('status', ['verifikasi', 'selesai'])
             ->with('invoice.tickets.ticket_type.concert')
@@ -67,29 +74,34 @@ class EticketController extends Controller
             ->unique()
             ->filter();
 
-        $preferredChoirIds = Concert::whereIn('id', $purchasedConcertIds)
-            ->with('event.choirs')
-            ->get()
-            ->pluck('event.choirs')
-            ->flatten()
-            ->where('pivot.penyelenggara', 'ya')
-            ->pluck('id')
-            ->unique();
+        $preferredChoirIds = collect();
+        $preferredCities = collect();
 
-        function extractCity($lokasi)
-        {
-            // Ambil 2 kata terakhir misalnya
-            $parts = explode(',', $lokasi);
-            return trim(end($parts));
+        if ($purchasedConcertIds->isNotempty()) {
+            $preferredChoirIds = Concert::whereIn('id', $purchasedConcertIds)
+                ->with('event.choirs')
+                ->get()
+                ->pluck('event.choirs')
+                ->flatten()
+                ->where('pivot.penyelenggara', 'ya')
+                ->pluck('id')
+                ->unique();
+
+            $preferredCities = Concert::with('event')
+                ->whereIn('id', $purchasedConcertIds)
+                ->get()
+                ->pluck('event.lokasi') // ini sekarang aman karena sudah diload
+                ->map(fn($lokasi) => extractCity($lokasi))
+                ->unique()
+                ->filter();
+        } else {
+            $user = auth()->user();
+            if ($user) {
+                $userLocation = $user->kota; // Assuming 'location' field exists on user
+
+                $preferredCities = collect([extractCity($userLocation)]);
+            }
         }
-
-        $preferredCities = Concert::with('event')
-            ->whereIn('id', $purchasedConcertIds)
-            ->get()
-            ->pluck('event.lokasi') // ini sekarang aman karena sudah diload
-            ->map(fn($lokasi) => extractCity($lokasi))
-            ->unique()
-            ->filter();
 
         $recomEvents = Event::with(['concert', 'choirs'])
             ->whereHas('concert', function ($query) {

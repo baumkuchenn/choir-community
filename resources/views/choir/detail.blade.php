@@ -49,11 +49,13 @@
             </div>
         </div>
     </div>
-    <div class="row mt-3">
-        <form action="{{ route('choir.register', $seleksi->id) }}" method="POST" enctype="multipart/form-data" class="mb-0 d-flex justify-content-center">
-            @csrf
-            <button class="btn btn-primary w-75 fw-bold">Daftar Seleksi</button>
-        </form>
-    </div>
+    @if(!$pendaftar)
+        <div class="row mt-3">
+            <form action="{{ route('choir.register', $seleksi->id) }}" method="POST" enctype="multipart/form-data" class="mb-0 d-flex justify-content-center">
+                @csrf
+                <button class="btn btn-primary w-75 fw-bold">Daftar Seleksi</button>
+            </form>
+        </div>
+    @endif
 </div>
 @endsection

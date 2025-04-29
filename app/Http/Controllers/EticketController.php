@@ -163,10 +163,31 @@ class EticketController extends Controller
         }
 
         $penyelenggara = Choir::select('choirs.id', 'choirs.nama', 'choirs.logo')
-            ->whereHas('events.concert', function ($query) {
-                $query->where('status', 'published');
-            })
-            ->get();
+            ->withSum(['events as total_tickets_sold' => function ($eventQuery) {
+                $eventQuery->where('penyelenggara', 'ya')
+                    ->whereHas('concert', function ($concertQuery) {
+                        $concertQuery->where('status', 'published');
+                    })
+                    ->join('concerts', 'events.id', '=', 'concerts.events_id')
+                    ->join('ticket_types', 'concerts.id', '=', 'ticket_types.concerts_id')
+                    ->join('purchase_details', 'ticket_types.id', '=', 'purchase_details.ticket_types_id')
+                    ->join('purchases', 'purchases.id', '=', 'purchase_details.purchases_id')
+                    ->whereIn('purchases.status', ['verifikasi', 'selesai']);
+            }], 'purchase_details.jumlah')
+            ->get()
+            ->filter(fn($choir) => $choir->total_tickets_sold !== null)
+            ->sortByDesc('total_tickets_sold')
+            ->values()
+            ->take(10);
+
+        // $penyelenggara = Choir::select('choirs.id', 'choirs.nama', 'choirs.logo')
+        //     ->whereHas('events', function ($query) {
+        //         $query->where('penyelenggara', 'ya')
+        //             ->whereHas('concert', function ($concertQuery) {
+        //                 $concertQuery->where('status', 'published');
+        //             });
+        //     })
+        //     ->get();
 
         $purchases = null;
         if (Auth::check()) {

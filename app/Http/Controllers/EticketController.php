@@ -102,7 +102,6 @@ class EticketController extends Controller
                 $preferredCities = collect([extractCity($userLocation)]);
             }
         }
-
         $recomEvents = Event::with(['concert', 'choirs'])
             ->whereHas('concert', function ($query) {
                 $query->where('status', 'published')
@@ -197,6 +196,16 @@ class EticketController extends Controller
                 ->where('status', 'bayar')
                 ->withCount('ticketTypes as jumlah_tiket')
                 ->get();
+            // Expiration check
+            foreach ($purchases as $purchase) {
+                $expiredAt = Carbon::parse($purchase->waktu_pembelian)->addHours(24);
+                $isExpired = now()->greaterThan($expiredAt);
+
+                if ($isExpired && $purchase->status === 'bayar') {
+                    $purchase->update(['status' => 'batal']);
+                }
+            }
+            $purchases = $purchases->where('status', 'bayar')->values();
         }
 
         return view('eticketing.index', compact('konserDekat', 'recomEvents', 'penyelenggara', 'purchases'));
@@ -326,7 +335,10 @@ class EticketController extends Controller
             $totalHarga = $tiketDipilih->sum(fn($t) => $t['jumlah'] * $t['harga']);
             $totalHarga = $totalHarga - $request->discount_amount;
 
-            $referal = Kupon::where('kode', $request->referals_kode)->first();
+            $referal = null;
+            if ($request->referals_kode) {
+                $referal = Kupon::where('kode', $request->referals_kode)->first();
+            }
 
             $purchase = Purchase::where('users_id', $user->id)
                 ->where('concerts_id', $id)
@@ -337,8 +349,8 @@ class EticketController extends Controller
                 $purchase = Purchase::create([
                     'status' => 'bayar',
                     'total_tagihan' => $totalHarga,
-                    'kupons_id' => $request->kupons_id,
-                    'referals_id' => $referal->id,
+                    'kupons_id' => $request->kupons_id ?? null,
+                    'referals_id' => isset($referal) ? $referal->id : null,
                     'users_id' => $user->id,
                     'concerts_id' => $id,
                 ]);
@@ -395,11 +407,14 @@ class EticketController extends Controller
             $filename = time() . '_purchaseId_' . $id . '.jpg';
             $path = $image->storeAs('bukti_pembayaran', $filename, 'public');
 
-            Purchase::where('id', $id)->update([
+            $purchases = Purchase::find($id);
+            $purchases->update([
                 'status' => 'verifikasi',
                 'gambar_pembayaran' => $path,
                 'waktu_pembayaran' => now(),
             ]);
+
+            $purchases->refresh();
 
             //Notifikasi ke admin
             $concert = Concert::with('event.choirs')->find($purchases->concert->id);
@@ -483,11 +498,9 @@ class EticketController extends Controller
                 $purchase->logo = $purchase->concert->event->choirs->first()->logo;
                 $purchase->jumlah_tiket = $purchase->ticketTypes->pluck('pivot.jumlah')->sum();
                 $purchase->check_in = $purchase->invoice?->tickets?->where('check_in', 'ya')->isNotEmpty() ? 'ya' : 'tidak';
-                $purchase->feedbacks = $purchase->concert->feedback ? 'sudah' : 'belum';
-
+                $purchase->feedbacks = $purchase->concert->feedbacks->where('users_id', $purchase->users_id) ? 'sudah' : 'belum';
                 return $purchase;
             });
-
         $purchaseLalu = Purchase::with([
             'concert.event.choirs',
             'ticketTypes',
@@ -514,7 +527,7 @@ class EticketController extends Controller
                 $purchase->logo = $purchase->concert->event->choirs->first()->logo;
                 $purchase->jumlah_tiket = $purchase->ticketTypes->pluck('pivot.jumlah')->sum();
                 $purchase->check_in = $purchase->invoice?->tickets?->where('check_in', 'ya')->isNotEmpty() ? 'ya' : 'tidak';
-                $purchase->feedbacks = $purchase->concert->feedback ? 'sudah' : 'belum';
+                $purchase->feedbacks = $purchase->concert->feedbacks->where('users_id', $purchase->users_id) ? 'sudah' : 'belum';
 
                 return $purchase;
             });
@@ -568,73 +581,90 @@ class EticketController extends Controller
 
     public function feedback(Request $request, string $id)
     {
-        if ($request->input('feedback-menu') === 'save-feedback') {
-            $user = Auth::user();
+        // Retrieve Event Details with Eloquent Relationships
+        $purchase = Purchase::with([
+            'concert.event.choirs',
+            'concert.bank',
+        ])
+            ->findOrFail($id);
 
-            // Validate Feedback Input
+        $concert = $purchase->concert;
+        $event = $purchase->concert->event;
+        $event->penyelenggara = $event->choirs->first()->nama;
+        $event->logo = $event->choirs->first()->logo;
+
+        return view('eticketing.feedback', compact('purchase', 'event', 'concert'));
+    }
+
+    public function saveFeedback(Request $request, string $id)
+    {
+        $user = Auth::user();
+
+        // Validate Feedback Input
+        $request->validate([
+            'feedback' => 'required|string|max:1000',
+            'gambar-feedback' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Get Concert ID using Eloquent
+        $purchase = Purchase::findOrFail($id);
+        $concertId = $purchase->concerts_id;
+
+        // Handle Donation
+        if ($request->input('donasi') === 'ya') {
             $request->validate([
-                'feedback' => 'required|string|max:1000',
-                'gambar-feedback' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'nama' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                    function ($attribute, $value, $fail) use ($request) {
+                        if ($value && !$request->filled('jumlah')) {
+                            $fail('Jumlah harus diisi jika nama diisi.');
+                        }
+                    },
+                ],
+                'nominal' => [
+                    'nullable',
+                    'numeric',
+                    function ($attribute, $value, $fail) use ($request) {
+                        if ($value && !$request->filled('nama')) {
+                            $fail('Nama harus diisi jika jumlah diisi.');
+                        }
+                    },
+                ],
             ]);
-
-            // Get Concert ID using Eloquent
-            $purchase = Purchase::findOrFail($id);
-            $concertId = $purchase->concerts_id;
-
-            // Handle Donation
-            if ($request->input('donasi') === 'ya') {
-                $request->validate([
-                    'nama' => 'nullable|string|max:255',
-                    'nominal' => 'nullable|numeric',
+            if ($request->filled('nama') && $request->filled('jumlah')) {
+                Donation::create([
+                    'nama' => $request->input('nama'),
+                    'jumlah' => $request->input('jumlah'),
+                    'concerts_id' => $concertId,
+                    'users_id' => $user->id,
                 ]);
-
-                if ($request->filled('nama') && $request->filled('jumlah')) {
-                    Donation::create([
-                        'nama' => $request->input('nama'),
-                        'jumlah' => $request->input('jumlah'),
-                        'concerts_id' => $concertId,
-                        'users_id' => $user->id,
-                    ]);
-                }
             }
-
-            // Prepare Feedback Data
-            $feedbackData = [
-                'isi' => $request->input('feedback'),
-                'concerts_id' => $concertId,
-                'users_id' => $user->id,
-            ];
-
-            // Handle Image Upload
-            if ($request->hasFile('gambar-feedback')) {
-                $image = $request->file('gambar-feedback');
-                $filename = 'feedback_purchaseId_' . $id . '.' . $image->extension();
-                $path = $image->storeAs('feedback', $filename, 'public');
-                $feedbackData['gambar'] = $path;
-            }
-
-            // Save Feedback
-            Feedback::create($feedbackData);
-
-            return redirect()->route('eticket.myticket')->with([
-                'status' => 'success',
-                'message' => 'Feedback berhasil dikirim!'
-            ]);
-        } else {
-            // Retrieve Event Details with Eloquent Relationships
-            $purchase = Purchase::with([
-                'concert.event.choirs',
-                'concert.bank',
-            ])
-                ->findOrFail($id);
-
-            $concert = $purchase->concert;
-            $event = $purchase->concert->event;
-            $event->penyelenggara = $event->choirs->first()->nama;
-            $event->logo = $event->choirs->first()->logo;
-
-            return view('eticketing.feedback', compact('purchase', 'event', 'concert'));
         }
+
+        // Prepare Feedback Data
+        $feedbackData = [
+            'isi' => $request->input('feedback'),
+            'concerts_id' => $concertId,
+            'users_id' => $user->id,
+        ];
+
+        // Handle Image Upload
+        if ($request->hasFile('gambar-feedback')) {
+            $image = $request->file('gambar-feedback');
+            $filename = 'feedback_purchaseId_' . $id . '.' . $image->extension();
+            $path = $image->storeAs('feedback', $filename, 'public');
+            $feedbackData['gambar'] = $path;
+        }
+
+        // Save Feedback
+        Feedback::create($feedbackData);
+
+        return redirect()->route('eticket.myticket')->with([
+            'status' => 'success',
+            'message' => 'Feedback berhasil dikirim!'
+        ]);
     }
 
     public function search(Request $request)

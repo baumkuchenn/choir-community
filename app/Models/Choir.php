@@ -10,7 +10,7 @@ class Choir extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'choirs';
-    protected $fillable = ['nama', 'nama_singkat', 'logo', 'profil', 'tipe', 'alamat', 'deskripsi', 'jenis_rekrutmen', 'kotas_id'];
+    protected $fillable = ['nama', 'nama_singkat', 'logo', 'profil', 'tipe', 'alamat', 'deskripsi', 'jenis_rekrutmen'];
 
     public function members()
     {

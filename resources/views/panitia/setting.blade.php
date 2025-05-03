@@ -37,7 +37,7 @@
 
         <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center">
-                <h5>Divisi Pengurus</h5>
+                <h5>Divisi Panitia</h5>
             </div>
             <table id="divisiTable" class="table table-bordered shadow text-center">
                 <thead>
@@ -65,7 +65,7 @@
 
         <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center">
-                <h5>Jabatan Pengurus</h5>
+                <h5>Jabatan Panitia</h5>
             </div>
             <table id="jabatanTable" class="table table-bordered shadow text-center">
                 <thead class="text-center">

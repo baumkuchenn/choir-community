@@ -43,17 +43,21 @@
                     <div class="col-12">
                         <label for="nama" class="form-label">Nama Lengkap</label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="" value="{{ old('name', $user->name) }}" required>
-                        <div class="invalid-feedback">
-                            Tolong isi nama lengkap anda.
-                        </div>
+                        @error('name')
+                            <div class="text-danger">
+                                Tolong isi nama lengkap anda.
+                            </div>
+                        @enderror
                     </div>
 
                     <div class="col-12">
                         <label for="tanggalLahir" class="form-label">Tanggal Lahir</label>
                         <input type="date" class="form-control" id="tanggalLahir" name="tanggal_lahir" placeholder="" value="{{ old('tanggal_lahir', $user->tanggal_lahir) }}" required>
-                        <div class="invalid-feedback">
-                            Tolong isi tanggal lahir anda.
-                        </div>
+                        @error('tanggal_lahir')
+                            <div class="text-danger">
+                                Tolong isi tanggal lahir anda.
+                            </div>
+                        @enderror
                     </div>
 
                     <div class="col-12">
@@ -62,57 +66,67 @@
                             <option value="L" {{ old('jenis_kelamin', $user->jenis_kelamin) == 'L' ? 'selected' : '' }}>Laki-laki</option>
                             <option value="P" {{ old('jenis_kelamin', $user->jenis_kelamin) == 'P' ? 'selected' : '' }}>Perempuan</option>
                         </select>
-                        <div class="invalid-feedback">
-                            Tolong isi jenis kelamin anda.
-                        </div>
+                        @error('jenis_kelamin')
+                            <div class="text-danger">
+                                Tolong isi jenis kelamin anda.
+                            </div>
+                        @enderror
                     </div>
 
                     <div class="col-12">
                         <label for="noHP" class="form-label">Nomor Handphone</label>
                         <input type="text" class="form-control" id="noHP" name="no_handphone" placeholder="" value="{{ old('no_handphone', $user->no_handphone) }}">
-                        <div class="invalid-feedback">
-                            Tolong isi nomor HP anda yang valid.
-                        </div>
+                        @error('no_handphone')
+                            <div class="text-danger">
+                                Tolong isi nomor HP anda yang valid.
+                            </div>
+                        @enderror
                     </div>
 
                     <div class="col-12">
                         <label for="kota" class="form-label">Asal Kota</label>
                         <input type="text" class="form-control" id="kota" name="kota" placeholder="" value="{{ old('kota', $user->kota) }}">
-                        <div class="invalid-feedback">
-                            Tolong isi asal kota anda yang valid.
-                        </div>
+                        @error('kota')
+                            <div class="text-danger">
+                                Tolong isi asal kota anda yang valid.
+                            </div>
+                        @enderror
                     </div>
 
                     <div class="col-12">
                         <label for="alamat" class="form-label">Alamat</label>
                         <input type="text" class="form-control" id="alamat" name="alamat" placeholder="" value="{{ old('alamat', $user->alamat) }}">
-                        <div class="invalid-feedback">
-                            Tolong isi alamat anda yang valid.
-                        </div>
+                        @error('alamat')
+                            <div class="text-danger">
+                                Tolong isi alamat anda yang valid.
+                            </div>
+                        @enderror
                     </div>
 
                     <div class="col-12">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}" placeholder="contoh@mail.com">
-                        <div class="invalid-feedback">
-                            Tolong isi email anda yang valid.
-                        </div>
+                        @error('email')
+                            <div class="text-danger">
+                                Tolong isi email anda yang valid.
+                            </div>
+                        @enderror
                         @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                        <div>
-                            @if (session('status') === 'verification-link-sent')
-                            <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
-                                {{ __('Link verifikasi sudah dikirim ke email anda') }}
-                            </p>
-                            @else
-                            <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
-                                {{ __('Email anda belum diverifikasi') }}
+                            <div>
+                                @if (session('status') === 'verification-link-sent')
+                                <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
+                                    {{ __('Link verifikasi sudah dikirim ke email anda') }}
+                                </p>
+                                @else
+                                <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
+                                    {{ __('Email anda belum diverifikasi') }}
 
-                                <button form="send-verification" class="btn btn-outline-primary me-2">
-                                    {{ __('Klik disini untuk verifikasi email anda') }}
-                                </button>
-                            </p>
-                            @endif
-                        </div>
+                                    <button form="send-verification" class="btn btn-outline-primary me-2">
+                                        {{ __('Klik disini untuk verifikasi email anda') }}
+                                    </button>
+                                </p>
+                                @endif
+                            </div>
                         @endif
                     </div>
                     <button class="ms-2 col-lg-3 btn btn-primary" type="submit">Simpan</button>
@@ -129,23 +143,29 @@
                     <div class="col-12">
                         <label for="update_password_current_password" class="form-label">Password Lama</label>
                         <input type="password" class="form-control" id="update_password_current_password" name="current_password" required>
-                        <div class="invalid-feedback">
-                            Tolong isi password lama anda.
-                        </div>
+                        @error('current_password')
+                            <div class="text-danger">
+                                Tolong isi password lama anda.
+                            </div>
+                        @enderror
                     </div>
                     <div class="col-12">
                         <label for="update_password_password" class="form-label">Password Baru</label>
                         <input type="password" class="form-control" id="update_password_password" name="password" required>
-                        <div class="invalid-feedback">
-                            Tolong isi password baru anda.
-                        </div>
+                        @error('password')
+                            <div class="text-danger">
+                                Tolong isi password baru anda.
+                            </div>
+                        @enderror
                     </div>
                     <div class="col-12">
                         <label for="update_password_password_confirmation" class="form-label">Konfirmasi Password Baru</label>
                         <input type="password" class="form-control" id="update_password_password_confirmation" name="password_confirmation" required>
-                        <div class="invalid-feedback">
-                            Tolong isi konfirmasi password anda.
-                        </div>
+                        @error('password_confirmation')
+                            <div class="text-danger">
+                                Tolong isi konfirmasi password anda.
+                            </div>
+                        @enderror
                     </div>
                     <button class="ms-2 col-lg-3 btn btn-primary" type="submit">Ubah Password</button>
                 </div>

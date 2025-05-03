@@ -24,7 +24,7 @@
             <div class="col-12 mb-3">
                 <label for="nama" class="form-label">Metode Perekrutan Anggota</label>
                 <select name="jenis_rekrutmen" class="form-select">
-                    <option value="open" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'open' ? 'selected' : '' }}>Terbuka</option>
+                    <option value="invite" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'invite' ? 'selected' : '' }}>Hanya Undangan</option>
                     <option value="seleksi" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'seleksi' ? 'selected' : '' }}>Seleksi</option>
                 </select>
             </div>

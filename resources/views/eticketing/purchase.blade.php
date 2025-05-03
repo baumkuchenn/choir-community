@@ -47,7 +47,7 @@
 
                         <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
                             <h4 class="mb-0 fw-bold">Transfer Bank {{ $concert->bank->nama_singkatan }}</h4>
-                            <img src="{{ $concert->bank->logo }}" style="width: 25px; height: 25px;">
+                            <img src="{{ asset('storage/' . $concert->bank->logo) }}" style="width: 45px; object-fit: cover;">
                         </div>
 
                         <p class="mb-0">Nomor Rekening</p>

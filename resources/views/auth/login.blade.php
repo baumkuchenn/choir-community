@@ -35,12 +35,17 @@
                 </div>
 
                 <!-- Forgot Password & Submit Button -->
-                <div class="d-flex justify-content-between align-items-center">
-                    @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="text-decoration-none">Lupa password?</a>
-                    @endif
+                <div class="d-flex justify-content-end align-items-center">
                     <button type="submit" class="btn btn-primary">Masuk</button>
                 </div>
+                {{--
+                    <div class="d-flex justify-content-between align-items-center">
+                        @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" class="text-decoration-none">Lupa password?</a>
+                        @endif
+                        <button type="submit" class="btn btn-primary">Masuk</button>
+                    </div>
+                --}}
             </form>
         </div>
     </div>

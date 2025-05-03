@@ -20,10 +20,7 @@ return new class extends Migration
             $table->enum('tipe', ['SSAATTBB', 'SSAA', 'TTBB']);
             $table->text('alamat');
             $table->text('deskripsi');
-            $table->enum('jenis_rekrutmen', ['open', 'seleksi'])->default('seleksi');
-
-            $table->unsignedBigInteger('kotas_id')->nullable();
-            $table->foreign('kotas_id')->references('id')->on('kotas');
+            $table->enum('jenis_rekrutmen', ['invite', 'seleksi'])->default('seleksi');
 
             $table->softDeletes();
             $table->timestamps();

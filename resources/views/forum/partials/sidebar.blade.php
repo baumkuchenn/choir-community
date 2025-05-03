@@ -6,13 +6,13 @@
                 Home
             </a>
         </li>
-        <li class="mt-2">
-            <a href="{{ route('forum.create') }}" class="btn btn-outline-primary w-100">
-                <i class="fas fa-plus-circle me-1"></i>
-                Buat Forum Baru
-            </a>
-        </li>
         @if(Auth::user())
+            <li class="mt-2">
+                <a href="{{ route('forum.create') }}" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-plus-circle me-1"></i>
+                    Buat Forum Baru
+                </a>
+            </li>
             <hr>
             <small>Forum yang diikuti</small>
             @foreach($followForums as $item)

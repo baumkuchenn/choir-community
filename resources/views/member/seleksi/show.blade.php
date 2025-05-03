@@ -144,14 +144,14 @@
                 <div class="mb-3">
                     <h5>Hasil Seleksi Penyanyi Baru</h5>
                     <table id="hasilTable" class="table table-bordered shadow text-center">
-                        <thead class="text-center">
+                        <thead>
                             <tr class="bg-primary">
-                                <th>Nama Lengkap</th>
-                                <th>Nomor Handphone</th>
-                                <th>Suara</th>
-                                <th>Nilai</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
+                                <th class="text-center">Nama Lengkap</th>
+                                <th class="text-center">Nomor Handphone</th>
+                                <th class="text-center">Suara</th>
+                                <th class="text-center">Nilai</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>

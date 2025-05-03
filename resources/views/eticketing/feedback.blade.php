@@ -5,7 +5,7 @@
     <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
     <div class="row mt-3">
         <div class="col-12 col-lg-8">
-            <img src="{{ asset('storage/' . $concert->gambar) }}" style="width: 100%; max-height: 360px;">
+            <img src="{{ asset('storage/' . $concert->gambar) }}" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
         </div>
         <div class="col-12 col-lg-4">
             <div class="card shadow">
@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    <form action="{{ route('eticket.feedback', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('eticket.save-feedback', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="feedback-menu" value="save-feedback">
         @if($concert->donasi === 'ya')
@@ -62,7 +62,7 @@
                             <div class="col-12 col-md-6">
                                 <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
                                     <h4 class="mb-0 fw-bold">Transfer Bank {{ $concert->bank->nama_singkatan }}</h4>
-                                    <img src="{{ $concert->bank->logo }}" style="width: 25px; height: 25px;">
+                                    <img src="{{ asset('storage/' . $concert->bank->logo) }}" style="width: 45px; object-fit: cover;">
                                 </div>
 
                                 <p class="mb-0">Nomor Rekening</p>
@@ -76,9 +76,9 @@
                                 <div>
                                     <label for="nama" class="form-label">Nama Lengkap</label>
                                     <input type="text" class="form-control" id="nama" name="nama" placeholder="" value="{{ old('nama') }}">
-                                    <div class="invalid-feedback">
-                                        Tolong isi nama lengkap anda.
-                                    </div>
+                                    @error('nama')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="mt-1">
                                     <label for="jumlah" class="form-label">Nominal</label>
@@ -86,9 +86,9 @@
                                         <span class="input-group-text">Rp</span>
                                         <input type="number" class="form-control" id="jumlah" name="jumlah" placeholder="" value="{{ old('jumlah') }}">
                                     </div>
-                                    <div class="invalid-feedback">
-                                        Tolong isi nominal transfer anda.
-                                    </div>
+                                    @error('jumlah')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -98,7 +98,7 @@
         @endif
         <div class="row mt-3 p-2">
             <h4 class="fw-bold p-0">Bagaimana pendapatmu terkait konser ini?</h4>
-            <textarea name="feedback" class="form-control" placeholder="Ceritakan pengalamanmu pada konser ini" rows="5" maxlength="1000" id="feedback-area" required></textarea>
+            <textarea name="feedback" class="form-control" placeholder="Ceritakan pengalamanmu pada konser ini" rows="5" maxlength="1000" id="feedback-area" required>{{ old('feedback') }}</textarea>
             <small class="text-muted d-block mt-1" id="feedback-counter">0/1000 karakter</small>
             <div class="file-drop-area mt-3" id="dropArea">
                 <i class="bi bi-cloud-upload file-drop-icon"></i>

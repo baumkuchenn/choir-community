@@ -142,7 +142,6 @@ class ChoirController extends Controller
             'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'profil' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'tipe' => 'required|string|max:25',
-            'kotas_id' => 'required',
             'alamat' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:1000',
         ]);
@@ -212,7 +211,6 @@ class ChoirController extends Controller
             'logo' => 'image|mimes:jpeg,png,jpg|max:2048',
             'profil' => 'image|mimes:jpeg,png,jpg|max:2048',
             'tipe' => 'required',
-            'kotas_id' => 'required',
             'alamat' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:1000',
         ]);

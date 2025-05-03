@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
             $table->timestamp('waktu_pembelian')->useCurrent();
-            $table->string('gambar_pembayaran', 255)->nullable();
+            $table->text('gambar_pembayaran')->nullable();
             $table->timestamp('waktu_pembayaran')->nullable();
             $table->enum('status', ['bayar', 'verifikasi', 'selesai', 'batal']);
             $table->integer('total_tagihan');

@@ -85,17 +85,6 @@
 
             <div class="row mb-3">
                 <div class="col-12">
-                    <label for="kotas_id" class="form-label">Kota Beroperasi</label>
-                    <select class="form-select" id="kotas_id" name="kotas_id" required></select>
-                    <input type="hidden" name="existing_kotas_id" id="existingKotas" value="{{ $choir->kotas_id ?? '' }}">
-                    @error('kotas_id')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-12">
                     <label for="alamat" class="form-label">Alamat</label>
                     <input type="text" class="form-control" id="alamat" name="alamat" placeholder="" value="{{ old('alamat', $choir->alamat) }}" required>
                     @error('alamat')
@@ -127,41 +116,6 @@
 @section('js')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        //Selector untuk asal kota
-        let selectedKotaId = document.getElementById('existingKotas').value;
-
-        $('#kotas_id').select2({
-            placeholder: 'Cari Kota...',
-            width: '100%',
-            ajax: {
-                url: '{{ route("kota.search") }}',
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        search: params.term
-                    };
-                },
-                processResults: function(data) {
-                    return {
-                        results: data
-                    };
-                }
-            }
-        });
-        if (selectedKotaId) {
-            $.ajax({
-                url: '{{ route("kota.search") }}',
-                data: { id: selectedKotaId },
-                dataType: 'json',
-                success: function(data) {
-                    let existingOption = new Option(data.text, data.id, true, true);
-                    $('#kotas_id').append(existingOption).trigger('change');
-                }
-            });
-        }
-
-
         //Update preview logo dan profil
         document.querySelectorAll(".image-choir").forEach((image) => {
             const fileInput = image.querySelector("input[type='file']");

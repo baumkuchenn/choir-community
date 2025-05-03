@@ -330,7 +330,8 @@ class ForumController extends Controller
                 ->where(function ($query) use ($keyword) {
                     $query->where('isi', 'like', "%$keyword%")
                         ->orWhereHas('forum', function ($forumQuery) use ($keyword) {
-                            $forumQuery->where('nama', 'like', "%$keyword%");
+                            $forumQuery->where('nama', 'like', "%$keyword%")
+                                ->where('visibility', 'public');
                         });
                 })
                 ->where('parent_id')
@@ -339,6 +340,7 @@ class ForumController extends Controller
                 ->get();
         } elseif ($tab === 'forums') {
             $forums = Forum::where('nama', 'like', "%$keyword%")
+                ->where('visibility', 'public')
                 ->latest()
                 ->get();
         }

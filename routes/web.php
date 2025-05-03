@@ -10,7 +10,6 @@ use App\Http\Controllers\EticketController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ForumMemberController;
-use App\Http\Controllers\KotaController;
 use App\Http\Controllers\KuponController;
 use App\Http\Controllers\LatihanController;
 use App\Http\Controllers\ManagementController;
@@ -115,7 +114,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/eticket/{id}/payment', [EticketController::class, 'payment'])->name('eticket.payment');
     Route::post('/eticket/{id}/invoice', [EticketController::class, 'invoice'])->name('eticket.invoice');
     Route::post('/eticket/{id}/ticket', [EticketController::class, 'ticket'])->name('eticket.ticket');
-    Route::post('/eticket/{id}/feedback', [EticketController::class, 'feedback'])->name('eticket.feedback');
+    Route::get('/eticket/{id}/feedback', [EticketController::class, 'feedback'])->name('eticket.feedback');
+    Route::post('/eticket/{id}/feedback', [EticketController::class, 'saveFeedback'])->name('eticket.save-feedback');
 
     //Rute Manajemen
     Route::prefix('management')->group(function () {
@@ -127,7 +127,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('choir/join/detail/{id}', [ChoirController::class, 'detail'])->name('choir.detail');
         Route::get('choir/search', [ChoirController::class, 'search'])->name('choir.search');
         Route::resource('choir', ChoirController::class)->except(['show', 'update', 'destroy']);
-        Route::get('/kota/search', [KotaController::class, 'search'])->name('kota.search');
 
         //Manajemen Event untuk panit eksternal juga
         //Manajemen Konser

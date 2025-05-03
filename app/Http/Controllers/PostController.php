@@ -25,13 +25,16 @@ class PostController extends Controller
         if ($forum) {
             $data['forums_id'] = $forum->id;
         }
+        if (!$request->concerts_id) {
+            $data['tipe'] = 'post';
+        }
 
         if (!$request->parent_id) {
             $data['tipe'] = $request->tipe;
         } else {
             $data['tipe'] = 'post';
         };
-        
+
         $post = Post::create($data);
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $file) {

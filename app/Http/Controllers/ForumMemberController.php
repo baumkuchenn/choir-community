@@ -42,7 +42,14 @@ class ForumMemberController extends Controller
         ]);
 
         $member = ForumMember::findOrFail($id);
-        $member->update($request->all());
+        $checkAdmin = ForumMember::where('forums_id', $member->forums_id)
+            ->where('jabatan', 'admin')
+            ->count();
+        if ($checkAdmin <= 1) {
+            return redirect()->back()->with('error', 'Forum minimal memiliki 1 admin.');
+        } else {
+            $member->update($request->all());
+        }
 
         return redirect()->back()->with('success', 'Jabatan anggota forum berhasil diperbarui.');
     }
@@ -54,7 +61,13 @@ class ForumMemberController extends Controller
     public function destroy(string $id)
     {
         $member = ForumMember::findOrFail($id);
-        $member->delete();
+        $checkMember = ForumMember::where('forums_id', $member->forums_id)
+            ->count();
+        if ($checkMember <= 1) {
+            return redirect()->back()->with('error', 'Forum minimal memiliki 1 anggota.');
+        } else {
+            $member->delete();
+        }
 
         return redirect()->back()->with('success', 'Anggota forum berhasil dikeluarkan.');
     }

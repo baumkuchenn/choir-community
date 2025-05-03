@@ -23,9 +23,10 @@
                         <div class="ps-2 flex-grow-1">
                             <!-- Select Concert -->
                             <select name="concerts_id" class="form-select mb-2" required>
-                                <option value="" disabled selected>Pilih Topik</option>
+                                <option value="" disabled selected>Pilih Target Audience</option>
+                                <option value="" >Semua Orang</option>
                                 @foreach($concerts as $item)
-                                    <option value="{{ $item->id }}">{{ $item->event->nama }}</option>
+                                    <option value="{{ $item->id }}">Penonton {{ $item->event->nama }}</option>
                                 @endforeach
                             </select>
 

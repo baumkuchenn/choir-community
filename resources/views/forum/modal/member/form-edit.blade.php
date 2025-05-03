@@ -19,8 +19,9 @@
                     <div class="mb-3">
                         <label for="jabatan" class="form-label">Jabatan</label>
                         <select class="form-select" name="jabatan" required>
-                            <option value="moderator">Moderator</option>
-                            <option value="anggota" selected>Anggota</option>
+                            <option value="admin" {{ old('jabatan', $member->jabatan == 'admin' ?? 'selected') }}>Admin</option>    
+                            <option value="moderator" {{ old('jabatan', $member->jabatan == 'moderator' ?? 'selected') }}>Moderator</option>
+                            <option value="anggota" {{ old('jabatan', $member->jabatan == 'anggota' ?? 'selected') }}>Anggota</option>
                         </select>
                     </div>
 

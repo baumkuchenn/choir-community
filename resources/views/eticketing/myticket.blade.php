@@ -97,12 +97,7 @@
                                             </form>
                                         @endif
                                         @if($purchase->check_in == 'ya' && $purchase->feedbacks == 'belum')
-                                            <!-- Pengecekan udah isi feedback atau belum -->
-                                            <form action="{{ route('eticket.feedback', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
-                                                @csrf
-                                                <input type="hidden" name="feedback-menu" value="check-feedback">
-                                                <button class="btn btn-primary">Beri Feedback</button>
-                                            </form>
+                                            <a href="{{ route('eticket.feedback', ['id' => $purchase->concerts_id]) }}" class="btn btn-primary">Beri Feedback</a>
                                         @endif
                                     </div>
                                 </div>
@@ -124,11 +119,7 @@
                                             </form>
                                         @endif
                                         @if($purchase->check_in == 'ya' && $purchase->feedbacks == 'belum')
-                                            <form action="{{ route('eticket.feedback', ['id' => $konser->id]) }}" method="POST" enctype="multipart/form-data">
-                                                @csrf
-                                                <input type="hidden" name="feedback-menu" value="check-feedback">
-                                                <button class="btn btn-primary">Beri Feedback</button>
-                                            </form>
+                                            <a href="{{ route('eticket.feedback', ['id' => $purchase->concerts_id]) }}" class="btn btn-primary">Beri Feedback</a>
                                         @endif
                                     </div>
                                 </div>
@@ -202,11 +193,7 @@
                                             </form>
                                         @endif
                                         @if($purchase->check_in == 'ya' && $purchase->feedbacks == 'belum')
-                                            <form action="{{ route('eticket.feedback', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
-                                                @csrf
-                                                <input type="hidden" name="feedback-menu" value="check-feedback">
-                                                <button class="btn btn-primary">Beri Feedback</button>
-                                            </form>
+                                            <a href="{{ route('eticket.feedback', ['id' => $purchase->concerts_id]) }}" class="btn btn-primary">Beri Feedback</a>
                                         @endif
                                     </div>
                                 </div>
@@ -228,11 +215,7 @@
                                             </form>
                                         @endif
                                         @if($purchase->check_in == 'ya' && $purchase->feedbacks == 'belum')
-                                            <form action="{{ route('eticket.feedback', ['id' => $purchase->id]) }}" method="POST" enctype="multipart/form-data">
-                                                @csrf
-                                                <input type="hidden" name="feedback-menu" value="check-feedback">
-                                                <button class="btn btn-primary">Beri Feedback</button>
-                                            </form>
+                                            <a href="{{ route('eticket.feedback', ['id' => $purchase->concerts_id]) }}" class="btn btn-primary">Beri Feedback</a>
                                         @endif
                                     </div>
                                 </div>

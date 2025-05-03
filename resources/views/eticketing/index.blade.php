@@ -1,7 +1,7 @@
 @extends('layouts.eticket')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @section('content')
-<div id="adCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+<!-- <div id="adCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#adCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#adCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -26,7 +26,7 @@
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
     </button>
-</div>
+</div> -->
 
 <div class="album">
     <div class="container">
@@ -44,7 +44,7 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-        @if(Auth::user())
+        @if(Auth::user() && $recomEvents->isNotEmpty())
             <h3><b>Rekomendasi Konser Untukmu</b></h3>
             <div id="rekomCarousel" class="carousel slide mb-4 p-0" data-bs-ride="false">
                 <div class="carousel-inner carousel-container" data-name="rekomKonser" data-events='@json($recomEvents)'>

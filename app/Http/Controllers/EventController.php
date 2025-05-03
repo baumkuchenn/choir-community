@@ -570,7 +570,7 @@ class EventController extends Controller
             $lastTicketNumber = Ticket::where('ticket_types_id', $detail->ticket_types_id)
                 ->max('number') ?? 0;
             $ticketType = TicketType::find($detail->ticket_types_id);
-            $typeCode = strtoupper(Str::limit(preg_replace('/[^A-Za-z]/', '', $ticketType->name), 3, ''));
+            $typeCode = strtoupper(Str::limit(preg_replace('/[^A-Za-z]/', '', $ticketType->nama), 3, ''));
 
             for ($i = 0; $i < $detail->jumlah; $i++) {
                 $lastTicketNumber++;

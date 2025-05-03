@@ -25,7 +25,7 @@
                                 <td>{{ $ticket->ticket_type->nama }}</td>
                                 <td>{{ $ticket->barcode_code }}</td>
                                 <td>{{ $ticket->check_in === 'ya' ? 'Checked In' : 'belum' }}</td>
-                                <td>{{ $ticket->check_in_time ? \Carbon\Carbon::parse($ticket->check_in_time)->format('d-m-Y H:i') : '-' }}</td>
+                                <td>{{ $ticket->waktu_check_in ? \Carbon\Carbon::parse($ticket->waktu_check_in)->format('d-m-Y H:i') : '-' }}</td>
                                 <td>
                                     @if ($ticket->check_in !== 'ya')
                                         <button class="btn btn-primary btn-check-in" data-ticket-id="{{ $ticket->id }}">Check-In</button>

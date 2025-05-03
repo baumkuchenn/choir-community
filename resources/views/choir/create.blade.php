@@ -76,16 +76,6 @@
 
             <div class="row mb-3">
                 <div class="col-12">
-                    <label for="kotas_id" class="form-label">Kota Beroperasi</label>
-                    <select class="form-select" id="kotas_id" name="kotas_id" required></select>
-                    @error('kotas_id')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-12">
                     <label for="alamat" class="form-label">Alamat</label>
                     <input type="text" class="form-control" id="alamat" name="alamat" placeholder="" value="{{ old('alamat') }}" required>
                     @error('alamat')
@@ -117,28 +107,6 @@
 @section('js')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        //Selector untuk asal kota
-        $('#kotas_id').select2({
-            placeholder: 'Cari Kota...',
-            width: '100%',
-            ajax: {
-                url: '{{ route("kota.search") }}',
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        search: params.term
-                    };
-                },
-                processResults: function(data) {
-                    return {
-                        results: data
-                    };
-                }
-            }
-        });
-
-
         //Update preview logo dan profil
         document.getElementById('logo').addEventListener('change', function(event) {
             const file = event.target.files[0]; // Get the selected file

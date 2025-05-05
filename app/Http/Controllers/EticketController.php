@@ -59,9 +59,7 @@ class EticketController extends Controller
         //Algoritma rekomendasi
         function extractCity($lokasi)
         {
-            // Ambil 2 kata terakhir misalnya
-            $parts = explode(',', $lokasi);
-            return trim(end($parts));
+            return array_map('trim', explode(',', $lokasi));
         }
 
         $purchasedConcertIds = Purchase::where('users_id', auth()->id())
@@ -91,7 +89,7 @@ class EticketController extends Controller
                 ->whereIn('id', $purchasedConcertIds)
                 ->get()
                 ->pluck('event.lokasi') // ini sekarang aman karena sudah diload
-                ->map(fn($lokasi) => extractCity($lokasi))
+                ->map(fn($lokasi) => collect(extractCity($lokasi)))
                 ->unique()
                 ->filter();
         } else {
@@ -99,7 +97,7 @@ class EticketController extends Controller
             if ($user) {
                 $userLocation = $user->kota; // Assuming 'location' field exists on user
 
-                $preferredCities = collect([extractCity($userLocation)]);
+                $preferredCities = collect(extractCity($userLocation));
             }
         }
         $recomEvents = Event::with(['concert', 'choirs'])

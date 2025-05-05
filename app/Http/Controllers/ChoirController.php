@@ -53,15 +53,13 @@ class ChoirController extends Controller
         //Algoritma rekomendasi
         function extractCity($lokasi)
         {
-            // Ambil 2 kata terakhir misalnya
-            $parts = explode(',', $lokasi);
-            return trim(end($parts));
+            return array_map('trim', explode(',', $lokasi));
         }
         $user = auth()->user();
         if ($user) {
             $userLocation = $user->kota;
 
-            $preferredCities = collect([extractCity($userLocation)]);
+            $preferredCities = collect(extractCity($userLocation));
         }
 
         $recomChoirs = Choir::with(['seleksis' => function ($query) {

@@ -29,7 +29,7 @@
                             @elseif (str_contains($attachment->file_type, 'video'))
                                 <video controls>
                                     <source src="{{ asset('storage/' . $attachment->file_path) }}" type="{{ $attachment->file_type }}">
-                                    Your browser does not support the video tag.
+                                    Internet anda tidak bisa memulai video.
                                 </video>
                             @endif
                         </div>
@@ -76,7 +76,7 @@
                             @elseif (str_contains($attachment->file_type, 'video'))
                                 <video controls>
                                     <source src="{{ asset('storage/' . $attachment->file_path) }}" type="{{ $attachment->file_type }}">
-                                    Your browser does not support the video tag.
+                                    Internet anda tidak bisa memulai video.
                                 </video>
                             @endif
                         </div>
@@ -151,7 +151,7 @@
                                 @elseif (str_contains($attachment->file_type, 'video'))
                                     <video controls>
                                         <source src="{{ asset('storage/' . $attachment->file_path) }}" type="{{ $attachment->file_type }}">
-                                        Your browser does not support the video tag.
+                                        Internet anda tidak bisa memulai video.
                                     </video>
                                 @endif
                             </div>

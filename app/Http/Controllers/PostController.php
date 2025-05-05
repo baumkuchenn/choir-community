@@ -56,17 +56,13 @@ class PostController extends Controller
             ]);
         }
         $message = "";
-        if ($data['tipe'] == 'thread') {
-            $message = 'Thread berhasil dibuat.';
-        } else {
-            if ($request->parent_id) {
-                $parentPost = Post::find($request->parent_id);
-                Notification::send($parentPost->creator, new KomentarPostNotification($post));
+        if ($request->parent_id) {
+            $parentPost = Post::find($request->parent_id);
+            Notification::send($parentPost->creator, new KomentarPostNotification($post));
 
-                $message = 'Balasan berhasil ditambahkan.';
-            } else {
-                $message = 'Postingan berhasil dibuat.';
-            }
+            $message = 'Balasan berhasil ditambahkan.';
+        } else {
+            $message = 'Postingan berhasil dibuat.';
         }
         return redirect()->back()->with('success', $message);
     }

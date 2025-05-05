@@ -16,7 +16,7 @@ class ForumController extends Controller
     {
         $user = Auth::user();
         $concerts = collect();
-        $thread = collect();
+        $postConcert = collect();
         $choir = null;
 
         $followForums = Forum::with('members')
@@ -73,7 +73,7 @@ class ForumController extends Controller
                         ->latest()
                         ->get();
                 }
-                $thread = Post::with('postConcerts.choir')
+                $postConcert = Post::with('postConcerts.choir')
                     ->where('tipe', 'thread')
                     ->when($choir, function ($query) use ($choir) {
                         // Choir admin: show threads created by their choir
@@ -90,7 +90,7 @@ class ForumController extends Controller
                     ->get();
             }
 
-            $posts = $posts->merge($thread)->sortByDesc('created_at')->values();
+            $posts = $posts->merge($postConcert)->sortByDesc('created_at')->values();
         }
 
         return view('forum.index', compact('user', 'concerts', 'followForums', 'topForums', 'posts'));

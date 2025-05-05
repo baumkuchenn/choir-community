@@ -1,6 +1,3 @@
-@extends('layouts.bootstrap-only')
-
-@section('content')
 <div style="width: 100%; max-width: 800px; margin: 0 auto; color: #212529;">
     <div style="margin-top: 16px;">
         <div style="width: 100%; padding: 8px;">
@@ -63,20 +60,31 @@
         </div>
     </div>
 
-    <div style="margin-top: 16px; display: flex; flex-wrap: wrap; justify-content: space-between;">
-        @foreach($tickets as $ticket)
-            <div style="width: 100%; max-width: 200px; margin-bottom: 16px; border: 1px solid #dee2e6; border-radius: 6px; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); padding: 16px; text-align: center;">
-                <p style="margin: 0; font-weight: bold;">{{ $ticket->ticket_type->nama }} #{{ $ticket->number }}</p>
-                <hr style="margin: 8px 0;">
-                <img src="{{ asset('storage/' . $ticket->barcode_image) }}" alt="Barcode" style="width: 100%;">
-                <p style="margin: 0;">{{ $ticket->barcode_code }}</p>
-            </div>
-        @endforeach
-    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top: 16px;">
+        <tr>
+            @foreach($tickets as $index => $ticket)
+                <td style="padding: 8px; width: 50%; vertical-align: top;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="border-radius: 6px; text-align: center;">
+                        <tr>
+                            <td style="padding: 12px;">
+                                <p style="margin: 0; font-weight: bold;">{{ $ticket->ticket_type->nama }} #{{ $ticket->number }}</p>
+                                <hr style="margin: 8px 0;">
+                                <img src="{{ asset('storage/' . $ticket->barcode_image) }}" alt="Barcode" style="width: 100%; max-width: 100%;">
+                                <p style="margin: 0;">{{ $ticket->barcode_code }}</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                @if(($index + 1) % 2 == 0)
+                    </tr><tr>
+                @endif
+            @endforeach
+        </tr>
+    </table>
 
     <div style="margin-top: 16px;">
         <h4 style="font-weight: bold;">Syarat & Ketentuan</h4>
         <p>{!! nl2br(e($concert->syarat_ketentuan)) !!}</p>
     </div>
 </div>
-@endsection

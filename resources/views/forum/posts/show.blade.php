@@ -19,8 +19,8 @@
                             <img src="{{ asset('storage/' . $post->forum->foto_profil) }}" alt="Profile" width="32" height="32" class="rounded-circle">
                             <small class="text-muted"><span class="fw-bold">{{ $post->forum->nama }}</span> • {{ $post->created_at->diffForHumans() }}</small>
                         @elseif($post->tipe == 'thread')
-                            <img src="{{ asset('storage/' . $post->postConcerts->choir->logo) }}" alt="Profile" width="32" height="32" class="rounded-circle">
-                            <small class="text-muted"><span class="fw-bold">{{ $post->postConcerts->choir->nama }}</span> • {{ $post->created_at->diffForHumans() }}</small>
+                            <img src="{{ asset('storage/' . $post->creator->members->first()->choir->logo) }}" alt="Profile" width="32" height="32" class="rounded-circle">
+                            <small class="text-muted"><span class="fw-bold">{{ $post->creator->members->first()->choir->nama }}</span> • {{ $post->created_at->diffForHumans() }}</small>
                         @endif
                     </div>
                     <p class="mb-2">{{ $post->isi }}</p>

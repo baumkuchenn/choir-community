@@ -496,7 +496,7 @@ class EticketController extends Controller
                 $purchase->logo = $purchase->concert->event->choirs->first()->logo;
                 $purchase->jumlah_tiket = $purchase->ticketTypes->pluck('pivot.jumlah')->sum();
                 $purchase->check_in = $purchase->invoice?->tickets?->where('check_in', 'ya')->isNotEmpty() ? 'ya' : 'tidak';
-                $purchase->feedbacks = $purchase->concert->feedbacks->where('users_id', $purchase->users_id) ? 'sudah' : 'belum';
+                $purchase->feedbacks = $purchase->concert->feedbacks->where('users_id', $purchase->users_id)->isNotEmpty() ? 'sudah' : 'belum';
                 return $purchase;
             });
         $purchaseLalu = Purchase::with([

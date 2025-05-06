@@ -342,6 +342,12 @@ class EventController extends Controller
             }
         } elseif ($event->jenis_kegiatan == 'latihan') {
             $latihan = Latihan::where('events_id', $event->id)->get();
+        } elseif ($event->jenis_kegiatan == 'event') {
+            $penyanyi = Penyanyi::where('events_id', $event->id)
+                ->get();
+            $panitia = Panitia::with('jabatan')
+                ->where('events_id', $event->id)
+                ->get();
         }
 
         return view('event.show', compact('event', 'events', 'concert', 'choir', 'penyanyi', 'panitia', 'purchases', 'invitations', 'ticketTypes', 'donations', 'kupon', 'referal', 'feedbacks', 'banks', 'seleksi', 'pendaftar', 'hasil', 'latihan'));
@@ -454,7 +460,7 @@ class EventController extends Controller
                 ->with(['ticket_type:id,nama'])
                 ->paginate(5);
         }
-        
+
         return view('event.modal.ticket.form-check-in', compact('purchase', 'invitation', 'tickets'));
     }
 

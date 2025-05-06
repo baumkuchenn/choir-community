@@ -815,4 +815,232 @@
         });
     </script>
     @endpush
+@elseif($event->jenis_kegiatan == 'event')
+    @push('js')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".create-modal").forEach((button) => {
+                button.addEventListener("click", function() {
+                    let route = this.dataset.action;
+                    let name = this.dataset.name;
+                    let id = this.dataset.id;
+
+                    // Clean up any old modals & backdrops first
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    document.body.classList.remove('modal-open');
+                    
+                    fetch(route)
+                        .then(response => response.text())
+                        .then(html => {
+                            let modalContainer = document.getElementById("modalContainer");
+                            modalContainer.innerHTML = '';
+                            modalContainer.innerHTML = html;
+
+                            let createModal = "";
+                            if (name == 'penyanyi'){
+                                createModal = document.getElementById('tambahPenyanyiModal');
+                                createModal.querySelector('#events_id').value = id;
+
+                                createModal.addEventListener('shown.bs.modal', function () {
+                                    $('#members_id').select2({
+                                        placeholder: 'Cari Anggota...',
+                                        dropdownParent: $('#tambahPenyanyiModal'),
+                                        width: '100%',
+                                        ajax: {
+                                            url: @json(route('penyanyi.search')),
+                                            dataType: 'json',
+                                            delay: 250,
+                                            data: function(params) {
+                                                return {
+                                                    search: params.term,
+                                                    only_choir_members: true
+                                                };
+                                            },
+                                            processResults: function(data) {
+                                                return {
+                                                    results: data
+                                                };
+                                            }
+                                        }
+                                    });
+                                    $('#seleksiTable').DataTable({
+                                        "lengthMenu": [5, 10, 20, 40],
+                                        "order": [[1, "asc"]],
+                                        "language": {
+                                            "emptyTable": "Belum ada seleksi penyanyi"
+                                        }
+                                    });
+                                    createModal.querySelectorAll('input[name="mode"]').forEach(radio => {
+                                        radio.addEventListener('change', function () {
+                                            const seleksiSection = document.getElementById('penyanyi-seleksi-section');
+                                            const baruSection = document.getElementById('penyanyi-baru-section');
+                                            const eventSection = document.getElementById('event-lain-section');
+
+                                            if (this.value === 'seleksi') {
+                                                seleksiSection.style.display = 'block';
+                                                baruSection.style.display = 'none';
+                                                eventSection.style.display = 'none';
+
+                                                seleksiSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                                                baruSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                eventSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                            } else if (this.value === 'baru') {
+                                                seleksiSection.style.display = 'none';
+                                                baruSection.style.display = 'block';
+                                                eventSection.style.display = 'none';
+
+                                                seleksiSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                baruSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                                                eventSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                            } else if (this.value === 'event') {
+                                                seleksiSection.style.display = 'none';
+                                                baruSection.style.display = 'none';
+                                                eventSection.style.display = 'block';
+
+                                                seleksiSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                baruSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                eventSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                                            }
+                                        });
+                                    });
+                                    document.getElementById('pilihSemuaBtn').addEventListener('click', function () {
+                                        const checkboxes = document.querySelectorAll('.checkbox-penyanyi');
+                                        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+                                        checkboxes.forEach(checkbox => {
+                                            checkbox.checked = !allChecked;
+                                        });
+
+                                        this.textContent = allChecked ? 'Pilih Semua' : 'Batalkan Semua';
+                                    });
+                                });
+                            } else if (name == 'panitia'){
+                                createModal = document.getElementById('tambahPanitiaModal');
+                                createModal.querySelector('#events_id').value = id;
+
+                                createModal.addEventListener('shown.bs.modal', function () {
+                                    $('#users_id').select2({
+                                        placeholder: 'Cari Pengguna...',
+                                        dropdownParent: $('#tambahPanitiaModal'),
+                                        width: '100%',
+                                        ajax: {
+                                            url: @json(route('panitia.search')),
+                                            dataType: 'json',
+                                            delay: 250,
+                                            data: function(params) {
+                                                return {
+                                                    search: params.term,
+                                                    only_choir_members: false,
+                                                };
+                                            },
+                                            processResults: function(data) {
+                                                return {
+                                                    results: data
+                                                };
+                                            }
+                                        }
+                                    });
+                                    $('#seleksiTable').DataTable({
+                                        "lengthMenu": [5, 10, 20, 40],
+                                        "order": [[1, "asc"]],
+                                        "language": {
+                                            "emptyTable": "Belum ada seleksi panitia"
+                                        }
+                                    });
+                                    createModal.querySelectorAll('input[name="mode"]').forEach(radio => {
+                                        radio.addEventListener('change', function () {
+                                            const seleksiSection = document.getElementById('panitia-seleksi-section');
+                                            const baruSection = document.getElementById('panitia-baru-section');
+                                            const eventSection = document.getElementById('event-lain-section');
+
+                                            if (this.value === 'seleksi') {
+                                                seleksiSection.style.display = 'block';
+                                                baruSection.style.display = 'none';
+                                                eventSection.style.display = 'none';
+
+                                                seleksiSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                                                baruSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                eventSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                            } else if (this.value === 'baru') {
+                                                seleksiSection.style.display = 'none';
+                                                baruSection.style.display = 'block';
+                                                eventSection.style.display = 'none';
+
+                                                seleksiSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                baruSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                                                eventSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                            } else if (this.value === 'event') {
+                                                seleksiSection.style.display = 'none';
+                                                baruSection.style.display = 'none';
+                                                eventSection.style.display = 'block';
+
+                                                seleksiSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                baruSection.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                                                eventSection.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                                            }
+                                        });
+                                    });
+                                    document.getElementById('pilihSemuaBtn').addEventListener('click', function () {
+                                        const checkboxes = document.querySelectorAll('.checkbox-panitia');
+                                        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+                                        checkboxes.forEach(checkbox => {
+                                            checkbox.checked = !allChecked;
+                                        });
+
+                                        this.textContent = allChecked ? 'Pilih Semua' : 'Batalkan Semua';
+                                    });
+                                });
+                            }
+                            new bootstrap.Modal(createModal).show();
+                        });
+                });
+            });
+
+            //Edit Modal
+            document.querySelectorAll(".edit-modal").forEach((button) => {
+                button.addEventListener("click", function() {
+                    let name = this.dataset.name;
+                    let editUrl = this.dataset.route;
+
+                    // Clean up any old modals & backdrops first
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    document.body.classList.remove('modal-open');
+                    
+                    fetch(editUrl)
+                        .then(response => response.text())
+                        .then(html => {
+                            let modalContainer = document.getElementById("modalContainer");
+                            modalContainer.innerHTML = '';
+                            modalContainer.innerHTML = html;
+
+                            let editModal = "";
+                            if (name == 'ticket-type'){
+                                editModal = document.getElementById('editTicketModal');
+                            } else if (name == 'panitia'){
+                                editModal = document.getElementById('editPanitiaModal');
+                            } else if (name == 'kupon'){
+                                editModal = document.getElementById('editKuponModal');
+                            }
+                            new bootstrap.Modal(editModal).show();
+                        })
+                        .catch(error => console.error("Error loading modal:", error));
+                });
+            });
+
+
+            //Data table
+            $('#penyanyiTable').DataTable({
+                "language": {
+                    "emptyTable": "Belum ada penyanyi"
+                }
+            });
+            $('#panitiaTable').DataTable({
+                "language": {
+                    "emptyTable": "Belum ada panitia"
+                }
+            });
+        });
+    </script>
+    @endpush
 @endif

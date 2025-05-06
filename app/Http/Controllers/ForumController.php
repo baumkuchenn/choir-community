@@ -75,16 +75,21 @@ class ForumController extends Controller
                 }
                 $postConcert = Post::with('postConcerts.choir')
                     ->where('tipe', 'thread')
-                    ->when($choir, function ($query) use ($choir) {
-                        // Choir admin: show threads created by their choir
-                        $query->whereHas('postConcerts', function ($sub) use ($choir) {
-                            $sub->where('choirs_id', $choir->id);
+                    ->where(function ($query) use ($choir, $user) {
+                        $query->when($choir, function ($subquery) use ($choir) {
+                            // Choir admin: show threads created by their choir
+                            $subquery->whereHas('postConcerts', function ($sub) use ($choir) {
+                                $sub->where('choirs_id', $choir->id);
+                            });
+                        }, function ($subquery) use ($user) {
+                            // Ticket buyer: show threads for concerts they bought
+                            $subquery->whereHas('postConcerts.concert.purchases', function ($sub) use ($user) {
+                                $sub->where('users_id', $user->id);
+                            });
                         });
-                    }, function ($query) use ($user) {
-                        // Ticket buyer: show threads for concerts they bought
-                        $query->whereHas('postConcerts.concert.purchases', function ($sub) use ($user) {
-                            $sub->where('users_id', $user->id);
-                        });
+
+                        // OR: include posts that have no postConcerts at all
+                        $query->orWhereDoesntHave('postConcerts');
                     })
                     ->latest()
                     ->get();

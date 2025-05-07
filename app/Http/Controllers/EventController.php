@@ -415,12 +415,14 @@ class EventController extends Controller
 
         $allRecipients = $penyanyi->merge($panitia)->unique('id');
 
-        if ($request->jenis_kegiatan == 'latihan' || $request->jenis_kegiatan == 'gladi') {
-            Notification::send($penyanyi, new EventUpdatedNotification($event));
-        } elseif ($request->jenis_kegiatan == 'rapat') {
-            Notification::send($panitia, new EventUpdatedNotification($event));
-        } else {
-            Notification::send($allRecipients, new EventUpdatedNotification($event));
+        if ($request->has('notification')) {
+            if ($request->jenis_kegiatan == 'latihan' || $request->jenis_kegiatan == 'gladi') {
+                Notification::send($penyanyi, new EventUpdatedNotification($event));
+            } elseif ($request->jenis_kegiatan == 'rapat') {
+                Notification::send($panitia, new EventUpdatedNotification($event));
+            } else {
+                Notification::send($allRecipients, new EventUpdatedNotification($event));
+            }
         }
 
         return redirect()->route('events.show', $id)

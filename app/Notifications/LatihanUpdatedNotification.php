@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -29,7 +30,7 @@ class LatihanUpdatedNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'mail'];
     }
 
     public function toDatabase($notifiable)
@@ -41,5 +42,16 @@ class LatihanUpdatedNotification extends Notification
             'button_text' => 'Lihat Detail',
             'url' => route('management.calendar.index'),
         ];
+    }
+
+    public function toMail($notifiable)
+    {
+        return (new MailMessage)
+            ->subject('Perubahan Jadwal Latihan')
+            ->line('Terdapat perubahan pada jadwal latihan untuk kegiatan ' . $this->event->nama . '.')
+            ->line('Tanggal latihan: ' . Carbon::parse($this->latihan->tanggal)->format('d M Y'))
+            ->line('Jam latihan: ' . Carbon::parse($this->latihan->jam_mulai)->format('H:i') . ' - ' . Carbon::parse($this->latihan->jam_selesai)->format('H:i'))
+            ->line('Lokasi: ' . $this->latihan->lokasi)
+            ->action('Lihat Detail', route('management.calendar.index'));
     }
 }

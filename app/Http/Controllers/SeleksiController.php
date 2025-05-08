@@ -73,7 +73,7 @@ class SeleksiController extends Controller
     public function tambahPendaftar(Request $request)
     {
         $seleksi = Seleksi::find($request->seleksis_id);
-        $userId = $request->user_id;
+        $userId = $request->users_id;
         $data = $request->all();
 
         if ($request->mode == 'baru') {
@@ -279,7 +279,22 @@ class SeleksiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id) {}
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'tanggal_mulai' => 'required',
+            'tanggal_selesai' => 'required',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required',
+            'lokasi' => 'required',
+            'pendaftaran_terakhir' => 'required',
+        ]);
+        $seleksi = Seleksi::find($id);
+        $seleksi->update($request->all());
+
+        return redirect()->route('seleksi.show', $id)
+            ->with('success', 'Berhasil merubah data seleksi anggota baru.');
+    }
 
     /**
      * Remove the specified resource from storage.

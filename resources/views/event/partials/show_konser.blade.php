@@ -100,6 +100,16 @@
         </div>
 
         @if(Gate::allows('akses-event') || Gate::allows('akses-event-panitia'))
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="notification" name="notification" value="ya">
+                        <label class="form-check-label" for="notification">
+                            Kirim notifikasi perubahan ke anggota komunitas yang terkait.
+                        </label>
+                    </div>
+                </div>
+            </div>
             <div class="fixed-bottom bg-body-secondary p-3 border-top text-end">
                 <button class="btn btn-primary">Simpan Perubahan</button>
             </div>

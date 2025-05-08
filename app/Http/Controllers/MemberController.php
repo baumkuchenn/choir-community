@@ -43,7 +43,7 @@ class MemberController extends Controller
         if ($choir->jenis_rekrutmen == 'seleksi') {
             return redirect()->route('seleksi.index');
         } else {
-            return view('member.create');
+            return view('member.create', compact('choir'));
         }
     }
 
@@ -79,7 +79,25 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'user_id' => 'required',
+            'suara' => 'required',
+        ]);
+
+        $choirId = Auth::user()->members->first()->choirs_id;
+        $member = Member::where('users_id', $request->user_id)
+            ->where('choirs_id', $choirId)
+            ->first();
+        if ($member) {
+            return redirect()->back()->with('error', 'Pengguna sudah menjadi anggota komunitas ini');
+        }
+        Member::create([
+            'users_id' => $request->user_id,
+            'choirs_id' => $choirId,
+            'suara' => $request->suara,
+        ]);
+        return redirect()->route('members.index')
+            ->with('success', 'Berhasil menambahkan anggota baru.');
     }
 
     /**

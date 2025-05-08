@@ -109,8 +109,17 @@ class ManagementController extends Controller
             })
             ->get()
             ->map(function ($event) {
+                $choirNames = $event->choirs->pluck('nama')->toArray();
+                $isCollaboration = count($choirNames) > 1;
+                $title = $event->nama;
+
+                if ($isCollaboration) {
+                    $otherChoirs = implode(', ', array_filter($choirNames, fn($name) => $name !== Auth::user()->members->first()->choir->nama));
+                    $title .= ' (Kolaborasi' . ($otherChoirs ? ' dengan ' . $otherChoirs : '') . ')';
+                }
+
                 return [
-                    'title' => $event->nama,
+                    'title' => $title,
                     'start' => $event->tanggal_mulai,
                     'end'   => Carbon::parse($event->tanggal_mulai)->eq(Carbon::parse($event->tanggal_selesai))
                         ? $event->tanggal_selesai // one-day event

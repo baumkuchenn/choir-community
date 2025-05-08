@@ -137,7 +137,7 @@
                         <div id="kolaborasi_wrapper" class="row mb-3">
                             <div class="col-12">
                                 <label for="choirs_id" class="form-label">Paduan Suara Kolaborasi</label>
-                                <select class="form-select" id="choirs_id" name="choirs_id"></select>
+                                <select class="form-select" id="choirs_id" name="choirs_id[]"></select>
                                 @error('choirs_id')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror

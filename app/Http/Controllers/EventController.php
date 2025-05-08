@@ -55,15 +55,18 @@ class EventController extends Controller
                 ->whereRaw("events.tanggal_selesai < CURDATE()")
                 ->orderBy('tanggal_mulai', 'desc')
                 ->paginate(5);
-        } else {
+        }
+        if ($user->can('akses-eticket') || $user->can('akses-event')) {
             $eventSelanjutnya = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
                 ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+                ->where('penyelenggara', 'ya')
                 ->whereRaw("events.tanggal_selesai >= CURDATE()")
                 ->orderBy('tanggal_mulai', 'desc')
                 ->paginate(5);
 
             $eventLalu = Event::join('collabs', 'events.id', '=', 'collabs.events_id')
                 ->where('choirs_id', Auth::user()->members->first()->choirs_id)
+                ->where('penyelenggara', 'ya')
                 ->whereRaw("events.tanggal_selesai < CURDATE()")
                 ->orderBy('tanggal_mulai', 'desc')
                 ->paginate(5);
@@ -149,6 +152,7 @@ class EventController extends Controller
                 'nama' => 'required|string|max:255',
                 'jenis_kegiatan' => 'required',
             ]);
+
             $event = Event::create($request->all());
             $message = "Kegiatan utama baru berhasil dibuat.";
         } else {
@@ -242,8 +246,17 @@ class EventController extends Controller
             }
         }
 
-        $choirIds = array_unique(array_merge($userChoirs, $request->choirs_id ?? []));
-        $event->choirs()->attach($choirIds);
+        $choirId = Auth::user()->members->first()->choirs_id;
+        $choirIds = array_unique(array_merge([$choirId], $request->choirs_id ?? []));
+        $attachData = [];
+
+        foreach ($choirIds as $id) {
+            $attachData[$id] = [
+                'penyelenggara' => $id == $choirId ? 'ya' : 'tidak'
+            ];
+        }
+
+        $event->choirs()->attach($attachData);
 
         return redirect()->route('events.index')
             ->with('success', $message);

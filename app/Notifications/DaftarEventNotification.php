@@ -37,7 +37,7 @@ class DaftarEventNotification extends Notification
             'tipe' => 'manajemen',
             'title' => 'Kegiatan Baru',
             'message' => 'Ada kegiatan baru: ' . $this->event->nama,
-            'button_text' => 'Lihat Detail',
+            'button_text' => 'Daftar',
             'modal_id' => 'daftar',
             'event_id' => $this->event->id,
             'event_nama' => $this->event->nama,

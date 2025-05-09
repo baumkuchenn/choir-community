@@ -114,7 +114,6 @@ class PanitiaController extends Controller
                     Panitia::create([
                         'users_id' => $item->users_id,
                         'events_id' => $request->events_id,
-                        'jabatan_id' => $item->jabatan_id,
                         'tipe' => $item->tipe,
                     ]);
                 }

@@ -46,7 +46,7 @@
                 <div class="row mb-3">
                     <div class="col-12">
                         <label for="parent_id" class="form-label">Sub Kegiatan Dari</label>
-                        <select class="form-select" id="parent_id" name="parent_id">
+                        <select class="form-select" id="parent_id" name="parent_id" required>
                             <option value="" disabled selected>Pilih kegiatan utama</option>
                             @foreach ($events as $subEvent)
                                 <option value="{{ $subEvent->id }}" {{ old('parent_id') == $subEvent->id ? 'selected' : '' }}>
@@ -232,7 +232,6 @@
             tidak: [
                 { value: "seleksi", text: "Seleksi" },
                 { value: "latihan", text: "Latihan" },
-                { value: "rapat", text: "Rapat" },
                 { value: "konser", text: "Konser" },
                 { value: "gladi", text: "Gladi Kegiatan" },
                 { value: "event", text: "Hari H Kegiatan (Lomba/Job/Event Lain)" },

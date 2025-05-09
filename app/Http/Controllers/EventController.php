@@ -208,10 +208,10 @@ class EventController extends Controller
                     ->pluck('user')
                     ->filter()
                     ->unique('id');
-                if ($request->jenis_kegiatan == 'latihan' || $request->jenis_kegiatan == 'gladi') {
-                    Notification::send($members, new EventNotification($event));
-                } else {
+                if ($request->jenis_kegiatan == 'seleksi') {
                     Notification::send($members, new DaftarEventNotification($event));
+                } else {
+                    Notification::send($members, new EventNotification($event));
                 }
             } elseif ($request->has('parent_notification')) {
                 $mainEventId = $event->parent_id ?? $event->id;
@@ -236,12 +236,12 @@ class EventController extends Controller
 
                 $allRecipients = $penyanyi->merge($panitia)->unique('id');
 
-                if ($request->jenis_kegiatan == 'latihan' || $request->jenis_kegiatan == 'gladi') {
-                    Notification::send($penyanyi, new EventNotification($event));
-                } elseif ($request->jenis_kegiatan == 'rapat') {
-                    Notification::send($panitia, new EventNotification($event));
-                } else {
+                if ($request->jenis_kegiatan == 'seleksi') {
                     Notification::send($allRecipients, new DaftarEventNotification($event));
+                    // } elseif ($request->jenis_kegiatan == 'rapat') {
+                    //     Notification::send($panitia, new EventNotification($event));
+                } else {
+                    Notification::send($penyanyi, new EventNotification($event));
                 }
             }
         }
@@ -431,8 +431,8 @@ class EventController extends Controller
         if ($request->has('notification')) {
             if ($request->jenis_kegiatan == 'latihan' || $request->jenis_kegiatan == 'gladi') {
                 Notification::send($penyanyi, new EventUpdatedNotification($event));
-            } elseif ($request->jenis_kegiatan == 'rapat') {
-                Notification::send($panitia, new EventUpdatedNotification($event));
+                // } elseif ($request->jenis_kegiatan == 'rapat') {
+                //     Notification::send($panitia, new EventUpdatedNotification($event));
             } else {
                 Notification::send($allRecipients, new EventUpdatedNotification($event));
             }

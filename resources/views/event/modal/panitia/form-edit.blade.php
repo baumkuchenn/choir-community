@@ -52,7 +52,7 @@
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
-                        <label for="jabatan_id" class="form-label">Jabatan Pengurus</label>
+                        <label for="jabatan_id" class="form-label">Jabatan Panitia</label>
                         <select class="form-select" name="jabatan_id" required>
                             <option value="">Tidak Ada</option>
                             @foreach($position as $divisi)

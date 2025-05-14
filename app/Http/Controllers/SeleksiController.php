@@ -90,7 +90,7 @@ class SeleksiController extends Controller
                 return back()->with('error', 'Pengguna ini sudah terdaftar.');
             }
             PendaftarSeleksi::create($data);
-        } elseif ($seleksi->tipe == 'event') {
+        } elseif ($seleksi->tipe == 'panitia') {
             $existingPendaftar = PanitiaPendaftarSeleksi::where('seleksis_id', $request->seleksis_id)
                 ->where('users_id', $userId)
                 ->exists();

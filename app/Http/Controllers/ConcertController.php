@@ -25,6 +25,10 @@ class ConcertController extends Controller
         ]);
 
         $concert = Concert::where('events_id', $id)->firstOrFail();
+        $ticket = $concert->ticketTypes->where('visibility', 'public');
+        if ($ticket->isEmpty()) {
+            return redirect()->back()->with('error', 'Belum ada jenis tiket yang dijual');
+        }
         $previousStatus = $concert->status;
 
         if ($request->hasFile('seating_plan')) {

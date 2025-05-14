@@ -658,11 +658,14 @@
             </div>
             @if($feedbacks->isNotEmpty())
                 @foreach($feedbacks as $feedback)
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-12">
                             <div class="card shadow">
                                 <div class="card-body">
                                     <p>{{ $feedback->isi }}</p>
+                                    @if($feedback->gambar)
+                                        <img src="{{ asset('storage/' . $feedback->gambar) }}" alt="Attachment" class="img-fluid" style="width:360px;">
+                                    @endif
                                     <p class="mb-0 text-end fw-medium">{{ $feedback->user->name }}</p>
                                 </div>
                             </div>

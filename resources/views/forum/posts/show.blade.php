@@ -27,7 +27,7 @@
                     @foreach ($post->postAttachments as $attachment)
                         <div class="attachment">
                             @if (str_contains($attachment->file_type, 'image'))
-                                <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Attachment" class="img-fluid" style="width:360px;">
+                                <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Attachment" class="img-fluid" style="width:360px; aspect-ratio: 16/9; object-fit: cover;">
                             @elseif (str_contains($attachment->file_type, 'video'))
                                 <video controls>
                                     <source src="{{ asset('storage/' . $attachment->file_path) }}" type="{{ $attachment->file_type }}">

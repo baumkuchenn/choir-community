@@ -16,9 +16,11 @@ use App\Models\TicketType;
 use App\Notifications\BeliTiketNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 use function Laravel\Prompts\table;
 
@@ -57,106 +59,154 @@ class EticketController extends Controller
         }
 
         //Algoritma rekomendasi
-        function extractCity($lokasi)
+        function preprocessCity($lokasi)
         {
-            return array_map('trim', explode(',', $lokasi));
+            return collect(explode(',', $lokasi))
+                ->map(fn($city) => Str::of($city)->lower()->trim()->__toString())
+                ->filter();
         }
 
-        $purchasedConcertIds = Purchase::where('users_id', auth()->id())
-            ->whereIn('status', ['verifikasi', 'selesai'])
-            ->with('invoice.tickets.ticket_type.concert')
-            ->get()
-            ->pluck('invoice.tickets')
-            ->flatten()
-            ->pluck('ticket_type.concert.id')
-            ->unique()
-            ->filter();
+        function getTermsFromEvent($event): array
+        {
+            $terms = [];
 
-        $preferredChoirIds = collect();
-        $preferredCities = collect();
+            foreach ($event->choirs as $choir) {
+                if ($choir->pivot->penyelenggara === 'ya') {
+                    $terms[] = "choir_{$choir->id}";
+                }
+            }
 
-        if ($purchasedConcertIds->isNotempty()) {
-            $preferredChoirIds = Concert::whereIn('id', $purchasedConcertIds)
-                ->with('event.choirs')
+            foreach (preprocessCity($event->lokasi) as $city) {
+                $terms[] = "city_{$city}";
+            }
+
+            return $terms;
+        }
+
+        function tfidfVectors(Collection $documents): array
+        {
+            $termFreqs = [];
+            $docFreqs = [];
+
+            foreach ($documents as $docId => $terms) {
+                $counts = array_count_values($terms);
+                $total = count($terms);
+
+                foreach ($counts as $term => $count) {
+                    $tf = $count / $total;
+                    $termFreqs[$docId][$term] = $tf;
+                    $docFreqs[$term] = ($docFreqs[$term] ?? 0) + 1;
+                }
+            }
+
+            $N = count($documents);
+            $idf = [];
+
+            foreach ($docFreqs as $term => $df) {
+                $idf[$term] = log($N / $df);
+            }
+
+            $vectors = [];
+            foreach ($termFreqs as $docId => $tfList) {
+                foreach ($tfList as $term => $tf) {
+                    $vectors[$docId][$term] = $tf * $idf[$term];
+                }
+            }
+
+            return [$vectors, $idf];
+        }
+
+        function cosineSimilarity($vec1, $vec2): float
+        {
+            $dot = 0;
+            $norm1 = 0;
+            $norm2 = 0;
+
+            $allKeys = array_unique(array_merge(array_keys($vec1), array_keys($vec2)));
+
+            foreach ($allKeys as $key) {
+                $v1 = $vec1[$key] ?? 0;
+                $v2 = $vec2[$key] ?? 0;
+                $dot += $v1 * $v2;
+                $norm1 += $v1 * $v1;
+                $norm2 += $v2 * $v2;
+            }
+
+            return ($norm1 && $norm2) ? $dot / (sqrt($norm1) * sqrt($norm2)) : 0;
+        }
+
+        if (!auth()->check()) {
+            $recomEvents = collect();
+        } else {
+            // Step 1: Get user profile events
+            $purchasedConcerts = Purchase::where('users_id', auth()->id())
+                ->whereIn('status', ['verifikasi', 'selesai'])
+                ->with('invoice.tickets.ticket_type.concert.event.choirs')
                 ->get()
-                ->pluck('event.choirs')
+                ->pluck('invoice.tickets')
                 ->flatten()
-                ->where('pivot.penyelenggara', 'ya')
-                ->pluck('id')
-                ->unique();
-
-            $preferredCities = Concert::with('event')
-                ->whereIn('id', $purchasedConcertIds)
-                ->get()
-                ->pluck('event.lokasi') // ini sekarang aman karena sudah diload
-                ->map(fn($lokasi) => collect(extractCity($lokasi)))
+                ->pluck('ticket_type.concert')
                 ->unique()
                 ->filter();
-        } else {
-            $user = auth()->user();
-            if ($user) {
-                $userLocation = $user->kota; // Assuming 'location' field exists on user
 
-                $preferredCities = collect(extractCity($userLocation));
+            $userProfileTerms = [];
+
+            foreach ($purchasedConcerts as $concert) {
+                $event = $concert->event;
+                if ($event) {
+                    $userProfileTerms = array_merge($userProfileTerms, getTermsFromEvent($event));
+                }
             }
-        }
-        $recomEvents = Event::with(['concert', 'choirs'])
-            ->whereHas('concert', function ($query) {
+
+            if (empty($userProfileTerms)) {
+                $user = auth()->user();
+                $userProfileTerms = preprocessCity($user->kota ?? '')->map(fn($city) => "city_{$city}")->toArray();
+            }
+
+            // Step 2: Fetch all candidate events
+            $events = Event::with(['concert', 'choirs'])->whereHas('concert', function ($query) {
                 $query->where('status', 'published')
-                    ->whereHas('ticketTypes', function ($ticketQuery) {
-                        $ticketQuery->where('pembelian_terakhir', '>', now())
-                            ->where('visibility', 'public');
-                    });
-            })
-            ->where(function ($query) use ($preferredChoirIds, $preferredCities) {
-                if (!empty($preferredChoirIds)) {
-                    $query->whereHas(
-                        'choirs',
-                        fn($q) =>
-                        $q->whereIn('choirs.id', $preferredChoirIds)
-                            ->where('penyelenggara', 'ya')
-                    );
-                }
+                    ->whereHas('ticketTypes', fn($q) => $q->where('pembelian_terakhir', '>', now())->where('visibility', 'public'));
+            })->get();
 
-                if (!empty($preferredCities)) {
-                    $query->orWhere(function ($q) use ($preferredCities) {
-                        foreach ($preferredCities as $city) {
-                            $q->orWhere('lokasi', 'like', "%{$city}%");
-                        }
-                    });
-                }
-            })
-            ->get()
-            ->map(function ($event) use ($preferredChoirIds, $preferredCities) {
-                // Scoring based on matching choir and city
-                $event->priority_score = 0;
+            // Step 3: Build term sets
+            $docTerms = [];
+            foreach ($events as $i => $event) {
+                $docTerms[$i] = getTermsFromEvent($event);
+            }
 
-                $choir = $event->choirs->firstWhere('pivot.penyelenggara', 'ya');
-                if ($choir && in_array($choir->id, $preferredChoirIds->toArray())) {
-                    $event->priority_score += 2;
-                }
+            // Add user profile as a pseudo-document
+            $docTerms['user'] = $userProfileTerms;
 
-                foreach ($preferredCities as $city) {
-                    if (stripos($event->lokasi, $city) !== false) {
-                        $event->priority_score += 1;
-                        break;
-                    }
-                }
+            // Step 4: Build TF-IDF vectors
+            [$tfidfVectors, $idf] = tfidfVectors(collect($docTerms));
 
-                return $event;
-            })
-            ->sortByDesc('priority_score')
-            ->values();
-        foreach ($recomEvents as $event) {
-            $event->choir = $event->choirs->first();
-            $event->hargaMulai = number_format(
-                TicketType::where('concerts_id', $event->concert->id ?? null)
-                    ->where('visibility', 'public')
-                    ->min('harga'),
-                0,
-                ',',
-                '.'
-            );
+            $userVector = $tfidfVectors['user'];
+            unset($tfidfVectors['user']);
+
+            // Step 5: Score each event
+            $recomEvents = $events
+                ->map(function ($event, $index) use ($tfidfVectors, $userVector) {
+                    $event->similarity_score = cosineSimilarity($tfidfVectors[$index] ?? [], $userVector);
+                    return $event;
+                })
+                ->sortByDesc('similarity_score')->values();
+
+            $minSimilarity = 0.1;
+            $recomEvents = $recomEvents->filter(fn($event) => $event->similarity_score >= $minSimilarity);
+
+            // Step 6: Add prices (optional)
+            foreach ($recomEvents as $event) {
+                $event->choir = $event->choirs->first();
+                $event->hargaMulai = number_format(
+                    TicketType::where('concerts_id', $event->concert->id ?? null)
+                        ->where('visibility', 'public')
+                        ->min('harga'),
+                    0,
+                    ',',
+                    '.'
+                );
+            }
         }
 
         $penyelenggara = Choir::select('choirs.id', 'choirs.nama', 'choirs.logo')

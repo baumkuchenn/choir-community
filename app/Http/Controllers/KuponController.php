@@ -88,7 +88,6 @@ class KuponController extends Controller
         $kupon = Kupon::findOrFail($id);
         if ($kupon->tipe == 'kupon') {
             $event = $kupon->concert->event;
-            dd($event);
             return view('event.modal.kupon.form-edit', compact('kupon', 'event'));
         } else if ($kupon->tipe == 'referal') {
             $referal = $kupon;

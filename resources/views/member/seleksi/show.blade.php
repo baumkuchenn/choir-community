@@ -23,7 +23,7 @@
                 {{ \Carbon\Carbon::parse($seleksi->tanggal_mulai)->translatedFormat('d F Y') }}
             @endif
         </h5>
-        <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
+        <a href="{{ route('seleksi.index') }}" class="btn btn-outline-primary">Kembali</a>
         <nav class="navbar">
             <div class="d-flex flex-nowrap overflow-auto w-100 hide-scrollbar border-bottom border-black" id="navbarNav">
                 <div class="navbar-nav fs-5 flex-row" role="tablist">

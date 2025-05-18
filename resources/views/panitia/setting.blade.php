@@ -15,7 +15,7 @@
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
         <h3 class="my-3 fw-bold text-center">Pengaturan Divisi dan Jabatan {{ $event->nama }}</h3>
-        <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-3">Kembali</a>
+        <a href="{{ route('events.show', $event->id) }}" class="btn btn-outline-primary mb-3">Kembali</a>
 
         <form action="{{ route('panitia-divisi.ambil-kegiatan-lain', $event->id) }}" method="POST" class="mb-0">
             @csrf

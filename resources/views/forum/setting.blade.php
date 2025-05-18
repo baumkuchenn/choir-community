@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-3">Kembali</a>
+            <a href="{{ route('forum.show', $forum->slug) }}" class="btn btn-outline-primary mb-3">Kembali</a>
 
             @if(in_array($jabatan, ['admin']))
                 <div class="shadow-sm p-3 mb-2">

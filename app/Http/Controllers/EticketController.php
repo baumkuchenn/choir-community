@@ -85,28 +85,31 @@ class EticketController extends Controller
 
         function tfidfVectors(Collection $documents): array
         {
-            $termFreqs = [];
-            $docFreqs = [];
+            $termFreqs = []; // TF(t, d): raw count
+            $docFreqs = [];  // df(t): number of documents with term t
 
+            // Step 1: Count term frequency and document frequency
             foreach ($documents as $docId => $terms) {
-                $counts = array_count_values($terms);
-                $total = count($terms);
+                $counts = array_count_values($terms); // raw counts
 
                 foreach ($counts as $term => $count) {
-                    $tf = $count / $total;
-                    $termFreqs[$docId][$term] = $tf;
+                    $termFreqs[$docId][$term] = $count;
+
+                    // Count DF only once per document
                     $docFreqs[$term] = ($docFreqs[$term] ?? 0) + 1;
                 }
             }
 
-            $N = count($documents);
+            $N = count($documents); // total number of documents
             $idf = [];
 
+            // Step 2: Compute IDF
             foreach ($docFreqs as $term => $df) {
-                $idf[$term] = log($N / $df);
+                $idf[$term] = log($N / $df) + 1; // log base e
             }
-
             $vectors = [];
+
+            // Step 3: Compute TF-IDF using raw TF
             foreach ($termFreqs as $docId => $tfList) {
                 foreach ($tfList as $term => $tf) {
                     $vectors[$docId][$term] = $tf * $idf[$term];
@@ -116,23 +119,22 @@ class EticketController extends Controller
             return [$vectors, $idf];
         }
 
-        function cosineSimilarity($vec1, $vec2): float
+
+        function cosineSimilarity($vec1, $vec2)
         {
-            $dot = 0;
-            $norm1 = 0;
-            $norm2 = 0;
+            $intersection = array_intersect_key($vec1, $vec2);
 
-            $allKeys = array_unique(array_merge(array_keys($vec1), array_keys($vec2)));
-
-            foreach ($allKeys as $key) {
-                $v1 = $vec1[$key] ?? 0;
-                $v2 = $vec2[$key] ?? 0;
-                $dot += $v1 * $v2;
-                $norm1 += $v1 * $v1;
-                $norm2 += $v2 * $v2;
+            $dotProduct = 0;
+            foreach ($intersection as $key => $_) {
+                $dotProduct += $vec1[$key] * $vec2[$key];
             }
 
-            return ($norm1 && $norm2) ? $dot / (sqrt($norm1) * sqrt($norm2)) : 0;
+            $normA = sqrt(array_sum(array_map(fn($v) => $v ** 2, $vec1)));
+            $normB = sqrt(array_sum(array_map(fn($v) => $v ** 2, $vec2)));
+
+            if ($normA == 0 || $normB == 0) return 0;
+
+            return $dotProduct / ($normA * $normB);
         }
 
         if (!auth()->check()) {
@@ -191,7 +193,7 @@ class EticketController extends Controller
                     return $event;
                 })
                 ->sortByDesc('similarity_score')->values();
-
+            
             $minSimilarity = 0.1;
             $recomEvents = $recomEvents->filter(fn($event) => $event->similarity_score >= $minSimilarity);
 

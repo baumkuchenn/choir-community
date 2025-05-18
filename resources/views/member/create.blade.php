@@ -9,7 +9,7 @@
         </div>
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
-        <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
+        <a href="{{ route('members.index') }}" class="btn btn-outline-primary">Kembali</a>
         <h2 class="mb-3 fw-bold text-center">Tambah Anggota Komunitas Baru</h2>
         <form action="{{ route('members.store') }}" method="POST" class="mb-0">
             @csrf

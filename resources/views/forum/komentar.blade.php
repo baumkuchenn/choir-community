@@ -11,7 +11,7 @@
             </div>
         @endif
         <div class="col-lg-11 mx-auto position-relative">
-            <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-2">Kembali</a>
+            <a href="{{ route('posts.show', $post->id) }}" class="btn btn-outline-primary mb-2">Kembali</a>
             <div class="card shadow-sm mb-3">
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-2 mb-2">

@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="col-md-11 col-lg-11 mx-auto">
-        <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
+        <a href="{{ route('forum.index') }}" class="btn btn-outline-primary">Kembali</a>
         <h2 class="mb-3 fw-bold text-center">Isi Detail Forum</h2>
         
         <form method="POST" action="{{ route('forum.store') }}" enctype="multipart/form-data" class="mb-0">

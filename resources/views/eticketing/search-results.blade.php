@@ -32,7 +32,7 @@
                         <div class="row">
                             @foreach($events as $item)
                                 <div class="col-6 col-md-4 col-lg-3 mb-4">
-                                    <a href="{{ route('eticket.show', $item->id) }}" class="text-decoration-none">
+                                    <a href="{{ route('eticket.show', $item->concert->id) }}" class="text-decoration-none">
                                         <div class="card h-100">
                                             <img src="{{ asset('storage/' . $item->concert->gambar) }}" class="card-img-top img-fluid" alt="{{ $item->nama }}" style="aspect-ratio: 16/9; object-fit: cover;">
                                             <div class="card-body d-flex flex-column">

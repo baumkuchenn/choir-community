@@ -10,7 +10,7 @@
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
         <h3 class="mb-3 fw-bold text-center">Data Anggota Komunitas</h3>
-        <a href="{{ url()->previous() }}" class="btn btn-outline-primary mb-3">Kembali</a>
+        <a href="{{ route('members.index') }}" class="btn btn-outline-primary mb-3">Kembali</a>
         <div class="row mb-3">
             <div class="col-6">
                 <label for="name" class="form-label">Nama Lengkap</label>

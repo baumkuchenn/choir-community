@@ -14,26 +14,26 @@
         </div>
     @endif
     <div class="col-md-11 col-lg-11 mx-auto">
-        <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
+        <a href="{{ route('members.index') }}" class="btn btn-outline-primary">Kembali</a>
         <h2 class="mb-3 fw-bold text-center">Daftar Anggota Komunitas</h2>
         <h5 class="mb-3 fw-bold">Pengaturan</h5>
         
-        <form action="{{ route('choir.update', $choir->id) }}" method="POST" class="row mb-3">
-            @csrf
-            @method('PUT')
-            <div class="col-12 mb-3">
-                <label for="nama" class="form-label">Metode Perekrutan Anggota</label>
-                <select name="jenis_rekrutmen" class="form-select">
-                    <option value="invite" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'invite' ? 'selected' : '' }}>Hanya Undangan</option>
-                    <option value="seleksi" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'seleksi' ? 'selected' : '' }}>Seleksi</option>
-                </select>
-            </div>
-            @can('akses-admin')
+        @can('akses-admin')
+            <form action="{{ route('choir.update', $choir->id) }}" method="POST" class="row mb-3">
+                @csrf
+                @method('PUT')
+                <div class="col-12 mb-3">
+                    <label for="nama" class="form-label">Metode Perekrutan Anggota</label>
+                    <select name="jenis_rekrutmen" class="form-select">
+                        <option value="invite" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'invite' ? 'selected' : '' }}>Hanya Undangan</option>
+                        <option value="seleksi" {{ old('jenis_rekrutmen', $choir->jenis_rekrutmen ?? '') == 'seleksi' ? 'selected' : '' }}>Seleksi</option>
+                    </select>
+                </div>
                 <div class="col-2">
                     <button class="btn btn-primary">Simpan</button>
                 </div>
-            @endcan
-        </form>
+            </form>
+        @endcan
 
         <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center">

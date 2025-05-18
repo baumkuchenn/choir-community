@@ -24,7 +24,7 @@
                 {{ \Carbon\Carbon::parse($event->tanggal_mulai)->translatedFormat('d F Y') }}
             @endif 
         </h5>
-        <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
+        <a href="{{ route('events.index') }}" class="btn btn-outline-primary">Kembali</a>
 
         @if ($event->jenis_kegiatan == 'seleksi')
             @if(Gate::allows('akses-event') || Gate::allows('akses-member'))

@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="col-md-11 col-lg-11 mx-auto">
-        <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Kembali</a>
+        <a href="{{ route('seleksi.index') }}" class="btn btn-outline-primary">Kembali</a>
         <h2 class="mb-3 fw-bold text-center">Tambah Seleksi Anggota Baru</h2>
         <form action="{{ route('seleksi.store') }}" method="POST" class="mb-0">
             @csrf

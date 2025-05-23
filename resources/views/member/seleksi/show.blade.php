@@ -236,7 +236,8 @@
                     delay: 250,
                     data: function(params) {
                         return {
-                            search: params.term
+                            search: params.term,
+                            non_choir_members: true,
                         };
                     },
                     processResults: function(data) {

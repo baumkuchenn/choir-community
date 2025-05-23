@@ -402,8 +402,13 @@ class EventController extends Controller
         $request->merge([
             'visibility' => $request->has('parent_display') ? 'inherited' : 'public',
         ]);
-
+        
         $event->update($request->all());
+
+        if($event->jenis_kegiatan == 'seleksi'){
+            $seleksi = Seleksi::where('events_id', $event->id)->first();
+            $seleksi->update($request->all());
+        }
 
         $userChoirs = Auth::user()->members->pluck('id')->toArray();
 

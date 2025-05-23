@@ -2,52 +2,65 @@
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @section('content')
-<div class="container d-flex justify-content-center">
-    <div class="col-12">
-        <h3 class="fw-bold text-center mt-3 mb-3">Notifikasi</h3>
-        <div class="card shadow w-100">
-            <div class="card-body">
-                <div class="mt-2">
-                    @if($notifications->isNotEmpty())
-                        @foreach($notifications as $notification)
-                            @php
-                                $isUnread = is_null($notification->read_at);
-                                $alertClass = $isUnread ? 'alert-info' : 'alert-secondary';
-                            @endphp
+<div class="container">
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @elseif(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    <div class="d-flex justify-content-center">
+        <div class="col-12">
+            <h3 class="fw-bold text-center mt-3 mb-3">Notifikasi</h3>
+            <div class="card shadow w-100">
+                <div class="card-body">
+                    <div class="mt-2">
+                        @if($notifications->isNotEmpty())
+                            @foreach($notifications as $notification)
+                                @php
+                                    $isUnread = is_null($notification->read_at);
+                                    $alertClass = $isUnread ? 'alert-info' : 'alert-secondary';
+                                @endphp
 
-                            <div class="alert {{ $alertClass }} mb-2">
-                                <strong>{{ $notification->data['title'] ?? 'Notifikasi' }}</strong><br>
-                                <p>{{ $notification->data['message'] ?? '-' }}</p>
-                                @if(isset($notification->data['modal_id']))
-                                    <button 
-                                        class="btn btn-primary btn-sm open-daftar-modal"
-                                        data-id="{{ $notification->id }}"
-                                        data-nama="{{ $notification->data['event_nama'] }}"
-                                        data-tanggal="{{ $notification->data['event_tanggal'] }}"
-                                        data-lokasi="{{ $notification->data['event_lokasi'] }}"
-                                        data-action="{{ route('management.event.daftar', ['event' => $notification->data['event_id']]) }}"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#daftarConfirmModal"
-                                    >
-                                        {{ $notification->data['button_text']}}
-                                    </button>
-                                @else
-                                    <form action="{{ route('notifications.readAndRedirect', $notification->id) }}" method="POST" class="mb-0">
-                                        @csrf
-                                        <button class="btn btn-primary btn-sm">{{ $notification->data['button_text']}}</button>
-                                    </form>
-                                @endif
-                            </div>
-                        @endforeach
-                    @else
-                        <p class="text-muted">Tidak ada notifikasi</p>
-                    @endif
+                                <div class="alert {{ $alertClass }} mb-2">
+                                    <strong>{{ $notification->data['title'] ?? 'Notifikasi' }}</strong><br>
+                                    <p>{{ $notification->data['message'] ?? '-' }}</p>
+                                    @if(isset($notification->data['modal_id']))
+                                        <button 
+                                            class="btn btn-primary btn-sm open-daftar-modal"
+                                            data-id="{{ $notification->id }}"
+                                            data-nama="{{ $notification->data['event_nama'] }}"
+                                            data-tanggal="{{ $notification->data['event_tanggal'] }}"
+                                            data-lokasi="{{ $notification->data['event_lokasi'] }}"
+                                            data-action="{{ route('management.event.daftar', $notification->data['event_id']) }}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#daftarConfirmModal"
+                                        >
+                                            {{ $notification->data['button_text']}}
+                                        </button>
+                                    @else
+                                        <form action="{{ route('notifications.readAndRedirect', $notification->id) }}" method="POST" class="mb-0">
+                                            @csrf
+                                            <button class="btn btn-primary btn-sm">{{ $notification->data['button_text']}}</button>
+                                        </form>
+                                    @endif
+                                </div>
+                            @endforeach
+                        @else
+                            <p class="text-muted">Tidak ada notifikasi</p>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    @include('management.modal.daftar')
+        @include('management.modal.daftar')
+    </div>
 </div>
 @endsection
 

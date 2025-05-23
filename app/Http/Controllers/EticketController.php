@@ -193,10 +193,10 @@ class EticketController extends Controller
                     return $event;
                 })
                 ->sortByDesc('similarity_score')->values();
-            
+
             $minSimilarity = 0.1;
             $recomEvents = $recomEvents->filter(fn($event) => $event->similarity_score >= $minSimilarity);
-
+            
             // Step 6: Add prices (optional)
             foreach ($recomEvents as $event) {
                 $event->choir = $event->choirs->first();
@@ -277,7 +277,7 @@ class EticketController extends Controller
 
         $tickets = $concert->ticketTypes->where('visibility', 'public');
         $hargaMulai = $tickets->min('harga');
-
+        
         return view('eticketing.show', compact('concert', 'event', 'tickets', 'hargaMulai'));
     }
 

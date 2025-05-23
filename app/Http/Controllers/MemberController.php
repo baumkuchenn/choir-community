@@ -61,12 +61,19 @@ class MemberController extends Controller
                 ->limit(10)
                 ->get(['id', 'name']);
         } else {
-            $users = User::where('name', 'LIKE', "%{$search}%")
-                ->whereDoesntHave('members', function ($query) {
-                    $query->where('admin', 'ya');
-                })
-                ->limit(10)
-                ->get(['id', 'name']);
+            if ($request->boolean('non_choir_members')) {
+                $users = User::where('name', 'LIKE', "%{$search}%")
+                    ->whereDoesntHave('members')
+                    ->limit(10)
+                    ->get(['id', 'name']);
+            } else {
+                $users = User::where('name', 'LIKE', "%{$search}%")
+                    ->whereDoesntHave('members', function ($query) {
+                        $query->where('admin', 'ya');
+                    })
+                    ->limit(10)
+                    ->get(['id', 'name']);
+            }
         }
 
         return response()->json($users->map(function ($user) {

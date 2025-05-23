@@ -179,7 +179,13 @@ class ManagementController extends Controller
         $event = Event::find($id);
         if ($event->jenis_kegiatan == 'seleksi') {
             $seleksi = Seleksi::where('events_id', $event->id)->first();
-
+            if (now()->toDateString() >= $seleksi->tanggal_mulai){
+                return redirect()->back()->with('error', 'Seleksi sudah tutup');
+            }
+            $pendaftar = PendaftarSeleksi::where('seleksis_id', $seleksi->id)->where('users_id', Auth::id());
+            if ($pendaftar){
+                return redirect()->back()->with('error', 'Sudah terdaftar pada kegiatan');
+            }
             if ($seleksi->tipe == 'event') {
                 PendaftarSeleksi::create([
                     'users_id' => Auth::id(),

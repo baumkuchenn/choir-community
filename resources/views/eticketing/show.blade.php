@@ -70,11 +70,14 @@
                         </div>
                     @else
                         @foreach($tickets as $ticket)
-                            <div class="mb-2 ticket-item" data-id="{{ $ticket->id }}" data-price="{{ $ticket->harga }}">
+                            <div class="mb-2 ticket-item" data-id="{{ $ticket->id }}" data-price="{{ $ticket->harga }}" data-remaining="{{ $ticket->tiket_sisa }}">
                                 <h5>{{ $ticket->nama }}</h5>
                                 <div class="d-flex align-items-center">
-                                    <p class="text-primary fs-6">Berakhir pada {{ \Carbon\Carbon::parse($ticket->pembelian_terakhir)->translatedFormat('d F Y H:i') }} WIB</p>
+                                    <p class="text-primary fs-6 mb-0">Berakhir pada {{ \Carbon\Carbon::parse($ticket->pembelian_terakhir)->translatedFormat('d F Y H:i') }} WIB</p>
                                 </div>
+                                @if($ticket->tiket_sisa <= 10)
+                                    <p class="text-danger mb-1">Sisa tiket : {{ $ticket->tiket_sisa }}</p>
+                                @endif
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center">
                                         <button class="btn circle-btn btn-minus me-2">-</button>
@@ -158,17 +161,22 @@
             button.addEventListener("click", function() {
                 let ticketItem = this.closest(".ticket-item");
                 if (!ticketItem) return;
-
+                
+                let remaining = ticketItem.dataset.remaining;
                 let quantityElement = ticketItem.querySelector(".ticket-quantity");
                 let quantity = parseInt(quantityElement.textContent);
 
-                if (updateTotal() < MAX_TOTAL_TICKETS) {
-                    quantityElement.textContent = quantity + 1;
+                if (updateTotal() == remaining){
+                    alert(`Tidak bisa membeli lebih dari ${remaining} tiket.`);
                 } else {
-                    alert("Total pembelian tiket maksimal adalah 5 per transaksi.");
-                }
+                    if (updateTotal() < MAX_TOTAL_TICKETS) {
+                        quantityElement.textContent = quantity + 1;
+                    } else {
+                        alert("Total pembelian tiket maksimal adalah 5 per transaksi.");
+                    }
 
-                updateTotal();
+                    updateTotal();
+                }
             });
         });
 

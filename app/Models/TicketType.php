@@ -27,4 +27,15 @@ class TicketType extends Model
     {
         return $this->hasMany(Ticket::class, 'ticket_types_id');
     }
+
+    //Cek sisa
+    public function getTiketSisaAttribute()
+    {
+        $terjual = $this->purchases
+            ->whereIn('status', ['verifikasi', 'selesai'])
+            ->sum(function ($purchase) {
+                return $purchase->pivot->jumlah;
+            });
+        return max($this->jumlah - $terjual, 0);
+    }
 }

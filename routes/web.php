@@ -116,6 +116,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/eticket/{id}/ticket', [EticketController::class, 'ticket'])->name('eticket.ticket');
     Route::get('/eticket/{id}/feedback', [EticketController::class, 'feedback'])->name('eticket.feedback');
     Route::post('/eticket/{id}/feedback', [EticketController::class, 'saveFeedback'])->name('eticket.save-feedback');
+    Route::get('/notification', [EticketController::class, 'notification'])->name('eticket.notification');
+    Route::post('/notifications/read/{id}', [EticketController::class, 'readAndRedirect'])->name('eticket.readAndRedirect');
 
     //Rute Manajemen
     Route::prefix('management')->group(function () {

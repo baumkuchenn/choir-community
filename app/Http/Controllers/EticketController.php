@@ -196,7 +196,7 @@ class EticketController extends Controller
 
             $minSimilarity = 0.1;
             $recomEvents = $recomEvents->filter(fn($event) => $event->similarity_score >= $minSimilarity);
-            
+
             // Step 6: Add prices (optional)
             foreach ($recomEvents as $event) {
                 $event->choir = $event->choirs->first();
@@ -229,15 +229,6 @@ class EticketController extends Controller
             ->values()
             ->take(10);
 
-        // $penyelenggara = Choir::select('choirs.id', 'choirs.nama', 'choirs.logo')
-        //     ->whereHas('events', function ($query) {
-        //         $query->where('penyelenggara', 'ya')
-        //             ->whereHas('concert', function ($concertQuery) {
-        //                 $concertQuery->where('status', 'published');
-        //             });
-        //     })
-        //     ->get();
-
         $purchases = null;
         if (Auth::check()) {
             $user = Auth::user();
@@ -246,16 +237,6 @@ class EticketController extends Controller
                 ->where('status', 'bayar')
                 ->withCount('ticketTypes as jumlah_tiket')
                 ->get();
-            // Expiration check
-            foreach ($purchases as $purchase) {
-                $expiredAt = Carbon::parse($purchase->waktu_pembelian)->addHours(24);
-                $isExpired = now()->greaterThan($expiredAt);
-
-                if ($isExpired && $purchase->status === 'bayar') {
-                    $purchase->update(['status' => 'batal']);
-                }
-            }
-            $purchases = $purchases->where('status', 'bayar')->values();
         }
 
         return view('eticketing.index', compact('konserDekat', 'recomEvents', 'penyelenggara', 'purchases'));
@@ -277,7 +258,7 @@ class EticketController extends Controller
 
         $tickets = $concert->ticketTypes->where('visibility', 'public');
         $hargaMulai = $tickets->min('harga');
-        
+
         return view('eticketing.show', compact('concert', 'event', 'tickets', 'hargaMulai'));
     }
 
@@ -577,7 +558,7 @@ class EticketController extends Controller
                 $purchase->logo = $purchase->concert->event->choirs->first()->logo;
                 $purchase->jumlah_tiket = $purchase->ticketTypes->pluck('pivot.jumlah')->sum();
                 $purchase->check_in = $purchase->invoice?->tickets?->where('check_in', 'ya')->isNotEmpty() ? 'ya' : 'tidak';
-                $purchase->feedbacks = $purchase->concert->feedbacks->where('users_id', $purchase->users_id) ? 'sudah' : 'belum';
+                $purchase->feedbacks = $purchase->concert->feedbacks->where('users_id', $purchase->users_id)->isNotEmpty() ? 'sudah' : 'belum';
 
                 return $purchase;
             });
@@ -768,5 +749,21 @@ class EticketController extends Controller
         }
 
         return view('eticketing.search-results', compact('keyword', 'tab', 'events', 'choirs'));
+    }
+
+    public function notification()
+    {
+        $notifications = auth()->user()->notifications->where('data.tipe', 'eticket')->sortByDesc('created_at');
+
+        return view('eticketing.notifications', compact('notifications'));
+    }
+
+    public function readAndRedirect($id)
+    {
+        $notification = auth()->user()->notifications()->findOrFail($id);
+
+        $notification->markAsRead();
+
+        return redirect()->route('eticket.feedback', $notification->data['purchase_id']);
     }
 }

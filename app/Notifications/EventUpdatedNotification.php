@@ -46,6 +46,7 @@ class EventUpdatedNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Perubahan Informasi Kegiatan')
+            ->greeting("Hai, {$notifiable->name}!")
             ->line('Terdapat perubahan informasi pada kegiatan ' . $this->event->nama . '.')
             ->line('Tanggal: ' . Carbon::parse($this->event->tanggal_mulai)->format('d M Y') . ' - ' . Carbon::parse($this->event->tanggal_selesai)->format('d M Y'))
             ->line('Jam: ' . Carbon::parse($this->event->jam_mulai)->format('H:i') . ' - ' . Carbon::parse($this->event->jam_selesai)->format('H:i'))

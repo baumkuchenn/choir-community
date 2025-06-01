@@ -48,6 +48,7 @@ class LatihanUpdatedNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Perubahan Jadwal Latihan')
+            ->greeting("Hai, {$notifiable->name}!")
             ->line('Terdapat perubahan pada jadwal latihan untuk kegiatan ' . $this->event->nama . '.')
             ->line('Tanggal latihan: ' . Carbon::parse($this->latihan->tanggal)->format('d M Y'))
             ->line('Jam latihan: ' . Carbon::parse($this->latihan->jam_mulai)->format('H:i') . ' - ' . Carbon::parse($this->latihan->jam_selesai)->format('H:i'))

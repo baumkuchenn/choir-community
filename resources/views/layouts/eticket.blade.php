@@ -214,6 +214,9 @@
                         @if (Route::has('login'))
                             @auth
                                 <a href="{{ route('eticket.myticket') }}" class="btn me-2"><i class="fas fa-ticket fa-fw"></i> Tiket Saya</a>
+                                <a href="{{ route('eticket.notification') }}" class="btn me-2">
+                                    <i class="fa-solid fa-bell"></i> Notifikasi
+                                </a>
                                 <div class="dropdown">
                                     <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
                                         <img src="https://github.com/mdo.png" alt="Profile" width="32" height="32" class="rounded-circle">
@@ -255,6 +258,9 @@
                     </div>
                     <a href="{{ route('eticket.myticket') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
                         <i class="fas fa-ticket fa-fw" style="width: 20px; text-align: center;"></i> Tiket Saya
+                    </a>
+                    <a href="{{ route('eticket.notification') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
+                        <i class="fa-solid fa-bell" style="width: 20px; text-align: center;"></i> Notifikasi
                     </a>
                     <hr>
                     <a href="{{ route('profile.edit') }}" class="btn btn-link text-decoration-none text-secondary w-100 mb-2 text-start d-flex align-items-center gap-2 p-2">
